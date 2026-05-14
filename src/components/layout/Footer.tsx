@@ -37,10 +37,10 @@ export function Footer() {
           <div className="flex flex-col gap-8 md:col-span-1">
             <h3 className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.2em]">Connect</h3>
             <div className="flex flex-col gap-4 text-sm font-bold text-white uppercase tracking-widest">
-              <a href="https://instagram.com" target="_blank" rel="noreferrer" className="hover:text-zinc-500 transition-colors w-fit">
+              <a href="https://www.instagram.com/rcv.media/" target="_blank" rel="noreferrer" className="hover:text-zinc-500 transition-colors w-fit">
                 Instagram
               </a>
-              <a href="mailto:contact@rcv-media.com" className="hover:text-zinc-500 transition-colors w-fit">
+              <a href="mailto:info@rcv-media.com" className="hover:text-zinc-500 transition-colors w-fit">
                 Email
               </a>
             </div>
