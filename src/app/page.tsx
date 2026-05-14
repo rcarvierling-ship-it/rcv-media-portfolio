@@ -92,18 +92,24 @@ export default function HomePage() {
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-             className="flex flex-col sm:flex-row gap-6"
+             className="flex flex-col sm:flex-row gap-4"
            >
              <Link
                href="/portfolio"
-               className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center"
+               className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none"
              >
                <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
                <span className="relative z-10 group-hover:text-white transition-colors duration-500">View Portfolio</span>
              </Link>
              <Link
+               href="/curated"
+               className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:border-brand-accent transition-all rounded-sm text-center border border-white/10 flex-1 sm:flex-none"
+             >
+               Explore The Vault
+             </Link>
+             <Link
                href="/book"
-               className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-colors rounded-sm text-center border border-white/10"
+               className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-colors rounded-sm text-center border border-white/10 flex-1 sm:flex-none"
              >
                Book a Shoot
              </Link>
