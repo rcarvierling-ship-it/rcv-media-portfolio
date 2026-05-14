@@ -97,7 +97,7 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
             <ul className="space-y-2 mb-8">
               {pkg.features?.map((f: string, i: number) => (
                 <li key={i} className="text-zinc-500 text-xs flex items-center gap-2">
-                  <div className={`w-1 h-1 rounded-full bg-${pkg.accent_color}`} />
+                  <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: pkg.accent_color }} />
                   {f}
                 </li>
               ))}
@@ -145,8 +145,8 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
 
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Accent Color Class</label>
-                  <input name="accent_color" defaultValue={editingPackage.accent_color} placeholder="blue-600" className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Accent Color (HEX)</label>
+                  <input name="accent_color" defaultValue={editingPackage.accent_color} placeholder="#3b82f6" className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Sort Order</label>

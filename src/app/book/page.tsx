@@ -118,7 +118,7 @@ export default function BookPage() {
               >
                 <div className="flex justify-between items-start mb-8">
                   <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{pkg.name}</h3>
-                  <div className={`w-3 h-3 rounded-full bg-${pkg.accent_color || 'blue-600'}`} />
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pkg.accent_color }} />
                 </div>
                 <div className="text-5xl font-black text-white mb-8 tracking-tighter">{pkg.price}</div>
                 <ul className="space-y-4 mb-10">

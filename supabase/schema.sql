@@ -222,3 +222,14 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS about_image_url TEXT D
 
 -- Update Site Settings for Global Vibe Switch
 ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS accent_color TEXT DEFAULT '#3b82f6';
+
+-- Clear and replace pricing packages with updated photography-only tiers
+TRUNCATE public.pricing_packages;
+
+INSERT INTO public.pricing_packages (name, price, features, accent_color, sort_order)
+VALUES 
+('Single Game', '', ARRAY['1.5 Hours Coverage', '25+ Edited Photos', 'Digital Gallery', 'Standard Turnaround'], '#2563EB', 1),
+('Athlete Session', '', ARRAY['3 Hours Coverage', 'Portrait Session + Action Coverage', '50+ Edited Photos', '48-Hour Turnaround'], '#7C3AED', 2),
+('Tournament Coverage', '', ARRAY['Full-Day Coverage', 'Unlimited Photo Coverage', '100+ Edited Photos', 'Priority Delivery'], '#DC2626', 3),
+('Team Media Day', '', ARRAY['2 Hours Coverage', 'Individual Player Photos', 'Team Photos', 'Social Media Ready Edits'], '#10B981', 4),
+('Extended Coverage', '', ARRAY['4 Hours Coverage', '60+ Edited Photos', 'Multiple Locations or Games', 'Cinematic Color Grade'], '#F59E0B', 5);
