@@ -4,36 +4,45 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Lock, ArrowRight, Download, Image as ImageIcon,
-  ChevronLeft, ChevronRight, X, Maximize2
+  ChevronLeft, ChevronRight, X, Maximize2,
+  Loader2
 } from "lucide-react";
+import { validateVaultAccess } from "@/app/actions/booking";
 
 export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
   const [passcode, setPasscode] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(!album.is_private);
+  const [isValidating, setIsValidating] = useState(false);
   const [error, setError] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<any | null>(null);
 
   useEffect(() => {
     // Check session storage for existing unlock
     if (album.is_private) {
-      const stored = sessionStorage.getItem(`vault_${album.id}`);
-      if (stored === album.passcode) {
+      const stored = sessionStorage.getItem(`vault_unlocked_${album.id}`);
+      if (stored === 'true') {
         setIsUnlocked(true);
       }
     }
-  }, [album]);
+  }, [album.id, album.is_private]);
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (passcode === album.passcode) {
+    if (isValidating) return;
+
+    setIsValidating(true);
+    const result = await validateVaultAccess(album.id, passcode);
+    
+    if (result.success) {
       setIsUnlocked(true);
-      sessionStorage.setItem(`vault_${album.id}`, passcode);
+      sessionStorage.setItem(`vault_unlocked_${album.id}`, 'true');
       setError(false);
     } else {
       setError(true);
       setPasscode("");
       setTimeout(() => setError(false), 500);
     }
+    setIsValidating(false);
   };
 
   if (!isUnlocked) {
@@ -65,12 +74,13 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
           <form onSubmit={handleUnlock} className="space-y-4">
              <div className="relative">
                 <input 
-                  type="password" 
-                  value={passcode}
-                  onChange={(e) => setPasscode(e.target.value.toUpperCase())}
-                  placeholder="ENTER PASSCODE"
-                  className={`w-full bg-zinc-900/50 border ${error ? 'border-red-500' : 'border-white/10'} px-8 py-6 text-white text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-blue-500/50 transition-all rounded-sm backdrop-blur-xl uppercase`}
-                  autoFocus
+                   disabled={isValidating}
+                   type="text" 
+                   value={passcode}
+                   onChange={(e) => setPasscode(e.target.value.toUpperCase())}
+                   placeholder="ENTER PASSCODE"
+                   className={`w-full bg-zinc-900/50 border ${error ? 'border-red-500' : 'border-white/10'} px-8 py-6 text-white text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-blue-500/50 transition-all rounded-sm backdrop-blur-xl uppercase disabled:opacity-50`}
+                   autoFocus
                 />
                 {error && (
                   <motion.p 
@@ -83,9 +93,14 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
              </div>
              <button 
                type="submit"
-               className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 group"
+               disabled={isValidating}
+               className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.2em] text-xs hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 group disabled:opacity-50"
              >
-               Unlock Access <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+               {isValidating ? (
+                 <Loader2 className="animate-spin" size={16} />
+               ) : (
+                 <>Unlock Access <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+               )}
              </button>
           </form>
         </motion.div>

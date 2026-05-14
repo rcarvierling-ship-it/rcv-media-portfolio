@@ -352,3 +352,52 @@ export async function deliverGallery(bookingId: string) {
     return { success: false };
   }
 }
+export async function validateVaultAccess(albumId: string, inputPasscode: string) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Get the current album data
+    const { data: album, error } = await supabase
+      .from("albums")
+      .select("passcode, vault_views, failed_attempts")
+      .eq("id", albumId)
+      .single();
+
+    if (error || !album) throw error || new Error("Album not found");
+
+    // 2. Compare passcode
+    if (album.passcode === inputPasscode) {
+      // SUCCESS: Generate new passcode and increment views
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      let newPasscode = "RCV-";
+      for (let i = 0; i < 4; i++) {
+        newPasscode += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      await supabase
+        .from("albums")
+        .update({ 
+          vault_views: (album.vault_views || 0) + 1,
+          passcode: newPasscode 
+        })
+        .eq("id", albumId);
+
+      revalidatePath("/dashboard/albums");
+      return { success: true };
+    } else {
+      // FAILURE: Increment failed attempts
+      await supabase
+        .from("albums")
+        .update({ 
+          failed_attempts: (album.failed_attempts || 0) + 1 
+        })
+        .eq("id", albumId);
+
+      revalidatePath("/dashboard/albums");
+      return { success: false, error: "Invalid passcode" };
+    }
+  } catch (error) {
+    console.error("Vault validation error:", error);
+    return { success: false, error: "Internal error" };
+  }
+}

@@ -157,6 +157,19 @@ export default function AlbumManager() {
                   )}
                </div>
 
+               {album.is_private && (
+                 <div className="grid grid-cols-2 gap-4 mb-8 pt-6 border-t border-white/5">
+                    <div>
+                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Vault Views</span>
+                       <span className="text-sm font-black text-emerald-400">{album.vault_views || 0}</span>
+                    </div>
+                    <div>
+                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Failed Attempts</span>
+                       <span className="text-sm font-black text-red-400">{album.failed_attempts || 0}</span>
+                    </div>
+                 </div>
+               )}
+
                <div className="grid grid-cols-2 gap-3">
                   <Link 
                     href={`/dashboard/albums/${album.id}`}

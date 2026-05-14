@@ -212,6 +212,8 @@ ON CONFLICT DO NOTHING;
 ALTER TABLE public.albums ADD COLUMN IF NOT EXISTS is_private BOOLEAN DEFAULT false;
 ALTER TABLE public.albums ADD COLUMN IF NOT EXISTS passcode TEXT;
 ALTER TABLE public.albums ADD COLUMN IF NOT EXISTS client_name TEXT;
+ALTER TABLE public.albums ADD COLUMN IF NOT EXISTS vault_views INTEGER DEFAULT 0;
+ALTER TABLE public.albums ADD COLUMN IF NOT EXISTS failed_attempts INTEGER DEFAULT 0;
 
 -- Update Policies for Privacy
 DROP POLICY IF EXISTS "Public can view albums" ON public.albums;
