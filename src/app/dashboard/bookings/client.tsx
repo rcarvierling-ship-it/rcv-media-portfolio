@@ -93,6 +93,19 @@ export function BookingsAdminClient({
     setIsProcessing(null);
   };
 
+  const handleSetStatus = async (id: string, status: 'confirmed' | 'canceled') => {
+    setIsProcessing(id);
+    const prevBookings = [...bookings];
+    const pipeline_stage = status === 'confirmed' ? 'confirmed' : 'lead';
+    setBookings(prev => prev.map(b => b.id === id ? { ...b, status, pipeline_stage } : b));
+    const result = await updateBookingPipeline(id, { status, pipeline_stage });
+    if (!result.success) {
+      setBookings(prevBookings);
+      alert("Status sync failed.");
+    } else router.refresh();
+    setIsProcessing(null);
+  };
+
   const handleUpdatePrice = async (id: string, amount: number) => {
     await updateBookingPipeline(id, { total_amount: amount });
     setBookings(prev => prev.map(b => b.id === id ? { ...b, total_amount: amount } : b));
