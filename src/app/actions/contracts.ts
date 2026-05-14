@@ -41,7 +41,7 @@ TERMS AND CONDITIONS
 2. PAYMENT: Payment terms are as agreed upon between the Client and Photographer. Full payment is required for the release of high-resolution digital assets.
 3. COPYRIGHT: The Photographer retains the copyright to all images but grants the Client a license for personal use.
 4. DELIVERY: Digital assets will be delivered via the online gallery within the timeframe specified in the package.
-      `
+`.trim()
     })
     .select()
     .single();
