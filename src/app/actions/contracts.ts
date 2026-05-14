@@ -17,26 +17,15 @@ export async function createContractFromBooking(bookingId: string) {
     return { success: false, error: "Booking not found" };
   }
 
-  // 2. Fetch deposit settings
-  const { data: settings } = await supabase
-    .from("site_settings")
-    .select("deposit_percentage")
-    .single();
-
-  const depositPercent = settings?.deposit_percentage || 50;
   const totalAmount = Number(booking.total_amount);
-  const depositAmount = (totalAmount * depositPercent) / 100;
-  const finalBalanceAmount = totalAmount - depositAmount;
 
-  // 3. Create contract
+  // 2. Create contract
   const { data: contract, error: createError } = await supabase
     .from("contracts")
     .insert({
       booking_id: bookingId,
       title: `Contract: ${booking.name} - ${booking.shoot_type}`,
       amount: totalAmount,
-      deposit_amount: depositAmount,
-      final_balance_amount: finalBalanceAmount,
       status: 'draft',
       content: `
 PHOTOGRAPHY SERVICE AGREEMENT
@@ -44,18 +33,14 @@ PHOTOGRAPHY SERVICE AGREEMENT
 Client: ${booking.name}
 Shoot Type: ${booking.shoot_type}
 Date: ${new Date(booking.event_date).toLocaleDateString()}
-
-FINANCIAL SUMMARY
 Total Amount: $${totalAmount.toLocaleString()}
-Required Deposit: $${depositAmount.toLocaleString()} (${depositPercent}%)
-Final Balance: $${finalBalanceAmount.toLocaleString()}
 
 TERMS AND CONDITIONS
 
 1. SERVICES: The Photographer agrees to provide photography services as described in the selected package.
-2. PAYMENT: A non-refundable deposit of $${depositAmount.toLocaleString()} is required to secure the date. The remaining balance of $${finalBalanceAmount.toLocaleString()} is due upon photo delivery.
+2. PAYMENT: Payment terms are as agreed upon between the Client and Photographer. Full payment is required for the release of high-resolution digital assets.
 3. COPYRIGHT: The Photographer retains the copyright to all images but grants the Client a license for personal use.
-4. DELIVERY: High-resolution assets will be released in the digital gallery once the final balance is paid in full.
+4. DELIVERY: Digital assets will be delivered via the online gallery within the timeframe specified in the package.
       `
     })
     .select()
