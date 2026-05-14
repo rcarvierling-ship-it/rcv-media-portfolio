@@ -39,10 +39,7 @@ export default function DashboardLayout({
                   Visual Intelligence
                 </Link>
                 <Link href="/dashboard/pipeline" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Lead Pipeline
-                </Link>
-                <Link href="/dashboard/bookings" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Command Center
+                  Strategic Pipeline
                 </Link>
                 <Link href="/dashboard/contracts" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
                   Contract Engine
