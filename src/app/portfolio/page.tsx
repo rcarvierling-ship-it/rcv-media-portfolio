@@ -18,12 +18,19 @@ export default function PortfolioPage() {
     async function fetchPhotos() {
       const { data, error } = await supabase
         .from("photos")
-        .select("*")
+        .select(`
+          *,
+          albums!left (
+            is_private
+          )
+        `)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
 
       if (data) {
-        setPhotos(data);
+        // Filter out photos from private albums
+        const publicPhotos = data.filter(p => !p.albums || p.albums.is_private === false);
+        setPhotos(publicPhotos);
       }
       setLoading(false);
     }

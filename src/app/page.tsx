@@ -27,13 +27,19 @@ export default function HomePage() {
 
       const { data: photosData } = await supabase
         .from("photos")
-        .select("*")
+        .select(`
+          *,
+          albums!left (
+            is_private
+          )
+        `)
         .eq("is_featured", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
+        .order("created_at", { ascending: false });
         
       if (photosData) {
-        setFeaturedPhotos(photosData);
+        // Filter out photos from private albums
+        const publicPhotos = photosData.filter(p => !p.albums || p.albums.is_private === false).slice(0, 6);
+        setFeaturedPhotos(publicPhotos);
       }
       
       setLoading(false);
