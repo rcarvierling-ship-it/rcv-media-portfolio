@@ -1,18 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
+import { useSearchParams } from "next/navigation";
 
 const categories = ["All", "Sports", "Basketball", "Volleyball", "Portraits", "Lifestyle", "Events"];
 
-export default function PortfolioPage() {
+function PortfolioContent() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category");
+  
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [photos, setPhotos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
+
+  useEffect(() => {
+    if (initialCategory) {
+      const match = categories.find(c => c.toLowerCase() === initialCategory.toLowerCase());
+      if (match) setActiveCategory(match);
+    }
+  }, [initialCategory]);
 
   useEffect(() => {
     async function fetchPhotos() {
@@ -208,5 +219,13 @@ export default function PortfolioPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function PortfolioPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-zinc-950 flex items-center justify-center text-zinc-500 uppercase tracking-widest text-xs font-black">Syncing Portfolio...</div>}>
+      <PortfolioContent />
+    </Suspense>
   );
 }
