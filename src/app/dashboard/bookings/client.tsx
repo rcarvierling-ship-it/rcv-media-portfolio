@@ -61,6 +61,7 @@ export function BookingsAdminClient({
   const [siteSettings, setSiteSettings] = useState(initialSettings);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [newBlockDate, setNewBlockDate] = useState("");
+  const [filter, setFilter] = useState("all");
   const [isBlocking, setIsBlocking] = useState(false);
 
   const supabase = createClient();
@@ -182,7 +183,7 @@ export function BookingsAdminClient({
         {activeView === "pipeline" && (
           <motion.div key="pipeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-6">
-              {STAGES.map((stage) => (
+              {STAGES.filter(s => filter === "all" || s.id === filter).map((stage) => (
                 <div key={stage.id} className="flex flex-col space-y-4">
                   <div className={`flex items-center justify-between p-4 rounded-sm ${stage.bg} border border-white/5`}>
                     <div className="flex items-center gap-3">
