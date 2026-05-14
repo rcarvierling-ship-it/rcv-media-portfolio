@@ -267,3 +267,88 @@ export async function sendMessageToClient(bookingId: string, message: string) {
     return { success: false };
   }
 }
+export async function updateBookingPipeline(id: string, updates: any) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("bookings")
+      .update(updates)
+      .eq("id", id);
+      
+    if (error) throw error;
+    revalidatePath("/dashboard/bookings");
+    revalidatePath("/dashboard/pipeline");
+    return { success: true };
+  } catch (error) {
+    console.error("Update pipeline error:", error);
+    return { success: false };
+  }
+}
+
+export async function deliverGallery(bookingId: string) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Get booking and linked album details
+    const { data: booking } = await supabase
+      .from("bookings")
+      .select("*, albums!linked_album_id(*)")
+      .eq("id", bookingId)
+      .single();
+
+    if (!booking || !booking.albums) throw new Error("Booking or linked album not found");
+
+    // 2. Send Delivery Email
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+
+      const vaultLink = `${siteUrl}/gallery/${booking.albums.slug}`;
+
+      await resend.emails.send({
+        from: "RCV Media <info@rcv-media.com>",
+        to: booking.email,
+        replyTo: "8129141183@vtext.com",
+        subject: `PHOTOS DELIVERED: ${booking.albums.title}`,
+        html: `
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
+            <div style="margin-bottom: 40px; text-align: center;">
+              <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin: 0;">RCV<span style="color: #52525b;">.</span>MEDIA</h1>
+            </div>
+            
+            <div style="padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 4px;">
+              <h2 style="color: #3b82f6; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin-bottom: 10px;">Your Gallery is Ready</h2>
+              <p style="font-size: 18px; font-weight: 300; line-height: 1.6; margin-bottom: 30px; color: #e4e4e7;">
+                Hi ${booking.name}, your photos are ready for viewing and download.
+              </p>
+              
+              <div style="background-color: #000000; padding: 25px; border: 1px solid #18181b; margin-bottom: 30px;">
+                <p style="margin: 0 0 10px 0; font-[10px] font-bold text-zinc-500 uppercase tracking-widest;">Access Details</p>
+                <p style="margin: 5px 0; font-size: 16px;"><strong>Passcode:</strong> <span style="letter-spacing: 2px; font-family: monospace; color: #3b82f6;">${booking.albums.passcode}</span></p>
+              </div>
+
+              <a href="${vaultLink}" style="display: block; padding: 20px; background-color: #ffffff; color: #000000; text-decoration: none; text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; border-radius: 2px;">Enter Private Vault</a>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center; border-top: 1px solid #18181b; pt: 20px;">
+              <p style="font-size: 10px; color: #52525b; text-transform: uppercase; letter-spacing: 2px;">
+                The vault will remain active for 30 days. Please download your high-res assets soon.
+              </p>
+            </div>
+          </div>
+        `,
+      });
+    }
+
+    // 3. Update status to Delivered
+    await supabase.from("bookings").update({ pipeline_stage: 'delivered' }).eq("id", bookingId);
+    
+    revalidatePath("/dashboard/bookings");
+    revalidatePath("/dashboard/pipeline");
+    return { success: true };
+  } catch (error) {
+    console.error("Gallery delivery error:", error);
+    return { success: false };
+  }
+}

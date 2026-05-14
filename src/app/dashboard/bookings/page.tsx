@@ -20,6 +20,11 @@ export default async function BookingsDashboard() {
     .limit(1)
     .single();
 
+  const { data: albums } = await supabase
+    .from("albums")
+    .select("id, title, is_private")
+    .order("created_at", { ascending: false });
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="mb-12 border-b border-zinc-800 pb-8">
@@ -31,6 +36,7 @@ export default async function BookingsDashboard() {
         initialBookings={bookings || []} 
         initialBlockedDates={blockedDates || []} 
         initialSettings={siteSettings || {}}
+        albums={albums || []}
       />
     </div>
   );

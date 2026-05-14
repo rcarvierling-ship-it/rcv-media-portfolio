@@ -132,8 +132,12 @@ CREATE TABLE public.bookings (
   event_time TEXT,
   location TEXT,
   message TEXT,
-  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  status TEXT DEFAULT 'pending', -- pending, confirmed, cancelled
+  pipeline_stage TEXT DEFAULT 'lead', -- lead, confirmed, shooting, editing, delivered
+  payment_status TEXT DEFAULT 'pending', -- pending, paid
+  total_amount DECIMAL(10, 2) DEFAULT 0,
+  linked_album_id UUID REFERENCES public.albums(id) ON DELETE SET NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Create Blocked Dates Table

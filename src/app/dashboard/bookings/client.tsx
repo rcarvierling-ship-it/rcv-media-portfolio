@@ -3,18 +3,20 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { updateBookingStatus, sendMessageToClient } from "@/app/actions/booking";
-import { MessageSquare, Send, X } from "lucide-react";
+import { updateBookingStatus, sendMessageToClient, updateBookingPipeline, deliverGallery } from "@/app/actions/booking";
+import { MessageSquare, Send, X, DollarSign, ExternalLink, Package, Layout } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function BookingsAdminClient({ 
   initialBookings, 
   initialBlockedDates,
-  initialSettings
+  initialSettings,
+  albums = []
 }: { 
   initialBookings: any[], 
   initialBlockedDates: any[],
-  initialSettings: any
+  initialSettings: any,
+  albums?: any[]
 }) {
   const [bookings, setBookings] = useState(initialBookings);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
@@ -42,6 +44,25 @@ export function BookingsAdminClient({
       router.refresh();
     } else {
       alert("Failed to update status and send email.");
+    }
+  };
+
+  const handleUpdatePipeline = async (id: string, updates: any) => {
+    const result = await updateBookingPipeline(id, updates);
+    if (result.success) {
+      setBookings(bookings.map(b => b.id === id ? { ...b, ...updates } : b));
+      router.refresh();
+    }
+  };
+
+  const handleDeliver = async (bookingId: string) => {
+    if (!confirm("Are you sure you want to deliver this gallery? This will send the vault link and passcode to the client via email.")) return;
+    const result = await deliverGallery(bookingId);
+    if (result.success) {
+      alert("Gallery delivered and client notified!");
+      router.refresh();
+    } else {
+      alert("Failed to deliver gallery. Make sure an album is linked.");
     }
   };
 
@@ -106,7 +127,9 @@ export function BookingsAdminClient({
       
       {/* Left Col: Incoming Bookings */}
       <div className="xl:col-span-2 space-y-8">
-        <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500">Booking Requests</h2>
+        <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-4">
+          Booking Requests
+        </h2>
         
         {bookings.length === 0 ? (
           <div className="p-12 text-center border border-dashed border-zinc-800 rounded-sm text-zinc-600">
@@ -127,6 +150,11 @@ export function BookingsAdminClient({
                       }`}>
                         {booking.status}
                       </span>
+                      {booking.pipeline_stage && booking.pipeline_stage !== 'lead' && (
+                        <span className="px-2 py-1 text-[10px] font-black uppercase tracking-widest bg-zinc-800 text-zinc-400 rounded-sm">
+                           Stage: {booking.pipeline_stage}
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
                       <a href={`mailto:${booking.email}`} className="hover:text-white transition-colors">{booking.email}</a>
@@ -141,40 +169,91 @@ export function BookingsAdminClient({
                     >
                       <MessageSquare size={14} /> <span className="text-[10px] font-bold uppercase tracking-widest">Message</span>
                     </button>
-                    {booking.status !== 'confirmed' && (
-                      <button onClick={() => handleUpdateStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
-                        Confirm
-                      </button>
-                    )}
-                    {booking.status !== 'cancelled' && (
-                      <button onClick={() => handleUpdateStatus(booking.id, 'cancelled')} className="px-4 py-2 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white">
-                        Cancel
-                      </button>
+                    {booking.status === 'pending' && (
+                      <>
+                        <button onClick={() => handleUpdateStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
+                          Confirm
+                        </button>
+                        <button onClick={() => handleUpdateStatus(booking.id, 'cancelled')} className="px-4 py-2 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white">
+                          Cancel
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 mb-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
                   <div>
                     <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Package</span>
                     <span className="text-white font-medium">{booking.package_selected || "N/A"}</span>
                   </div>
                   <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Shoot Type</span>
-                    <span className="text-white font-medium">{booking.shoot_type}</span>
-                  </div>
-                  <div>
                     <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Date & Time</span>
-                    <span className="text-white font-medium">{booking.event_date} @ {booking.event_time || "TBD"}</span>
+                    <span className="text-white font-medium">{booking.event_date}</span>
                   </div>
                   <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Location</span>
-                    <span className="text-white font-medium">{booking.location || "N/A"}</span>
+                     <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Pipeline Stage</span>
+                     <select 
+                       value={booking.pipeline_stage || 'lead'}
+                       onChange={(e) => handleUpdatePipeline(booking.id, { pipeline_stage: e.target.value })}
+                       className="bg-transparent text-white font-medium outline-none focus:text-blue-400"
+                     >
+                       <option value="lead" className="bg-black">Lead</option>
+                       <option value="confirmed" className="bg-black">Confirmed</option>
+                       <option value="shooting" className="bg-black">Shooting</option>
+                       <option value="editing" className="bg-black">Editing</option>
+                       <option value="delivered" className="bg-black">Delivered</option>
+                     </select>
                   </div>
+                  <div>
+                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Payment</span>
+                    <div className="flex items-center gap-2">
+                       <input 
+                         type="number"
+                         value={booking.total_amount || 0}
+                         onChange={(e) => handleUpdatePipeline(booking.id, { total_amount: parseFloat(e.target.value) })}
+                         className="bg-transparent text-white font-medium outline-none w-16 border-b border-zinc-800 focus:border-blue-500"
+                       />
+                       <button 
+                         onClick={() => handleUpdatePipeline(booking.id, { payment_status: booking.payment_status === 'paid' ? 'pending' : 'paid' })}
+                         className={`text-[9px] font-black px-2 py-0.5 rounded-sm ${booking.payment_status === 'paid' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}
+                       >
+                         {booking.payment_status === 'paid' ? 'PAID' : 'PENDING'}
+                       </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pipeline Actions: Linking & Delivery */}
+                <div className="p-6 bg-black/40 border border-white/5 rounded-lg flex flex-col md:flex-row justify-between items-center gap-6">
+                   <div className="w-full md:w-auto">
+                      <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2 flex items-center gap-2">
+                        <LinkIcon size={12} /> Associate Private Vault
+                      </span>
+                      <select 
+                        value={booking.linked_album_id || ""}
+                        onChange={(e) => handleUpdatePipeline(booking.id, { linked_album_id: e.target.value || null })}
+                        className="w-full md:w-64 bg-zinc-900 border border-white/10 px-4 py-2 text-sm text-white outline-none rounded-sm"
+                      >
+                        <option value="">No Album Linked</option>
+                        {albums.map(album => (
+                          <option key={album.id} value={album.id}>{album.title} {album.is_private ? '(Private)' : ''}</option>
+                        ))}
+                      </select>
+                   </div>
+
+                   <button 
+                     disabled={!booking.linked_album_id || booking.pipeline_stage === 'delivered'}
+                     onClick={() => handleDeliver(booking.id)}
+                     className="w-full md:w-auto px-10 py-4 bg-emerald-600 text-white font-black uppercase tracking-widest text-xs hover:bg-emerald-500 disabled:opacity-20 transition-all rounded-sm flex items-center justify-center gap-3"
+                   >
+                     {booking.pipeline_stage === 'delivered' ? 'Photos Delivered' : 'Deliver Gallery'}
+                     <Send size={14} />
+                   </button>
                 </div>
                 
                 {booking.message && (
-                  <div>
+                  <div className="mt-8">
                     <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Message from Client</span>
                     <p className="text-zinc-400 font-light leading-relaxed border-l-2 border-zinc-800 pl-4 italic">"{booking.message}"</p>
                   </div>
@@ -188,6 +267,25 @@ export function BookingsAdminClient({
       {/* Right Col: Settings & Calendar */}
       <div className="xl:col-span-1 space-y-8">
         
+        {/* Statistics Card */}
+        <div className="bg-blue-600 p-8 rounded-sm text-white shadow-2xl shadow-blue-500/20">
+           <Layout className="mb-4 opacity-50" />
+           <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-1">Pipeline Snapshot</h3>
+           <p className="text-4xl font-black mb-4">
+             ${bookings.reduce((acc, b) => acc + (Number(b.total_amount) || 0), 0).toLocaleString()}
+           </p>
+           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
+              <div>
+                 <span className="block text-[9px] font-bold uppercase tracking-widest opacity-60">Active Shoots</span>
+                 <span className="text-xl font-bold">{bookings.filter(b => b.status === 'confirmed').length}</span>
+              </div>
+              <div>
+                 <span className="block text-[9px] font-bold uppercase tracking-widest opacity-60">Total Revenue</span>
+                 <span className="text-xl font-bold">${bookings.filter(b => b.payment_status === 'paid').reduce((acc, b) => acc + (Number(b.total_amount) || 0), 0).toLocaleString()}</span>
+              </div>
+           </div>
+        </div>
+
         {/* Settings Panel */}
         <div>
           <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500 mb-4">Configuration</h2>
@@ -273,7 +371,7 @@ export function BookingsAdminClient({
                    </button>
                 </form>
                 <p className="mt-6 text-[9px] text-zinc-600 font-bold uppercase tracking-widest text-center">
-                  Replies will be sent to your personal email: rcar.vierling@gmail.com
+                  Replies will be sent to your phone: 8129141183
                 </p>
              </motion.div>
           </div>
