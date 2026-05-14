@@ -26,19 +26,19 @@ export async function createContractFromBooking(bookingId: string) {
       amount: booking.total_amount,
       status: 'draft',
       content: `
-# Photography Service Agreement
+PHOTOGRAPHY SERVICE AGREEMENT
 
-**Client:** ${booking.name}
-**Shoot Type:** ${booking.shoot_type}
-**Date:** ${new Date(booking.event_date).toLocaleDateString()}
-**Amount:** $${Number(booking.total_amount).toLocaleString()}
+Client: ${booking.name}
+Shoot Type: ${booking.shoot_type}
+Date: ${new Date(booking.event_date).toLocaleDateString()}
+Amount: $${Number(booking.total_amount).toLocaleString()}
 
-## Terms and Conditions
+TERMS AND CONDITIONS
 
-1. **Services:** The Photographer agrees to provide photography services as described in the selected package.
-2. **Payment:** A deposit is required to secure the date. The remaining balance is due on or before the day of the shoot.
-3. **Copyright:** The Photographer retains the copyright to all images but grants the Client a license for personal use.
-4. **Delivery:** Edits will be delivered within the timeframe specified in the package.
+1. SERVICES: The Photographer agrees to provide photography services as described in the selected package.
+2. PAYMENT: A deposit is required to secure the date. The remaining balance is due on or before the day of the shoot.
+3. COPYRIGHT: The Photographer retains the copyright to all images but grants the Client a license for personal use.
+4. DELIVERY: Edits will be delivered within the timeframe specified in the package.
       `
     })
     .select()
