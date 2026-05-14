@@ -4,8 +4,9 @@ import { useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Palette, Check, RefreshCw } from "lucide-react";
+import { motion, Reorder } from "framer-motion";
+import { Palette, Check, RefreshCw, GripVertical } from "lucide-react";
+import { reorderPhotos } from "@/app/actions/photos";
 
 const COLOR_PRESETS = [
   { name: "Electric Blue", color: "#3b82f6" },
@@ -20,14 +21,17 @@ const COLOR_PRESETS = [
 export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettings: any, allPhotos: any[] }) {
   const [settings, setSettings] = useState(initialSettings);
   const [photos] = useState(allPhotos);
+  const [featuredPhotos, setFeaturedPhotos] = useState(
+    allPhotos.filter(p => p.is_featured).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+  );
   const [showPhotoPicker, setShowPhotoPicker] = useState<{ active: boolean, target: 'hero' | 'featured' }>({ active: false, target: 'hero' });
   const [isSaving, setIsSaving] = useState(false);
+  const [isReordering, setIsReordering] = useState(false);
   const [activeColor, setActiveColor] = useState(initialSettings?.accent_color || "#3b82f6");
   
   const supabase = createClient();
   const router = useRouter();
 
-  const featuredPhotos = photos.filter(p => p.is_featured).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
   const updateAccentColor = async (color: string) => {
     setActiveColor(color);
@@ -58,6 +62,19 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
     if (!error) {
        router.refresh();
        window.location.reload(); 
+    }
+  };
+
+  const handleReorder = async (newOrder: any[]) => {
+    setFeaturedPhotos(newOrder);
+    setIsReordering(true);
+    try {
+      const updates = newOrder.map((p, i) => ({ id: p.id, sort_order: i + 1 }));
+      await reorderPhotos(updates);
+    } catch (err) {
+      console.error("Reorder failed:", err);
+    } finally {
+      setIsReordering(false);
     }
   };
 
@@ -156,15 +173,26 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <Reorder.Group 
+          axis="x" 
+          values={featuredPhotos} 
+          onReorder={handleReorder}
+          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
+        >
            {featuredPhotos.map((photo, i) => (
-             <div key={photo.id} className="relative aspect-square bg-zinc-900 border border-zinc-800 group">
-                <Image src={photo.image_url} alt="Featured" fill className="object-cover" />
-                <div className="absolute top-2 left-2 bg-black/80 text-[8px] font-black px-2 py-1 text-white rounded-full">#{i+1}</div>
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+             <Reorder.Item 
+               key={photo.id} 
+               value={photo}
+               className={`relative aspect-square bg-zinc-900 border transition-all cursor-grab active:cursor-grabbing ${isReordering ? 'border-brand-accent/50 ring-1 ring-brand-accent/20' : 'border-zinc-800'}`}
+             >
+                <Image src={photo.image_url} alt="Featured" fill className="object-cover pointer-events-none" />
+                <div className="absolute top-2 left-2 bg-black/80 text-[8px] font-black px-2 py-1 text-white rounded-full flex items-center gap-1">
+                   <GripVertical size={8} className="text-zinc-500" /> #{i+1}
+                </div>
+                <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
                    <button onClick={() => toggleFeatured(photo)} className="text-[8px] font-black uppercase tracking-widest text-red-500">Remove</button>
                 </div>
-             </div>
+             </Reorder.Item>
            ))}
            {featuredPhotos.length < 6 && (
              <button 
@@ -174,7 +202,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                 <span className="text-xs font-black uppercase tracking-widest">Add Slot</span>
              </button>
            )}
-        </div>
+        </Reorder.Group>
       </section>
 
       {/* PHOTO PICKER MODAL */}

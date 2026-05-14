@@ -86,3 +86,21 @@ export async function updatePhoto(id: string, updates: any) {
   revalidatePath("/dashboard");
   revalidatePath("/curated");
 }
+
+export async function reorderPhotos(orderedIds: { id: string, sort_order: number }[]) {
+  const supabase = await createClient();
+  const { data: user } = await supabase.auth.getUser();
+  
+  if (!user.user) {
+    throw new Error("Unauthorized");
+  }
+
+  for (const item of orderedIds) {
+    await supabase.from("photos").update({ sort_order: item.sort_order }).eq("id", item.id);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/dashboard");
+  revalidatePath("/curated");
+  return { success: true };
+}
