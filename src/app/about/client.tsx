@@ -22,7 +22,7 @@ export function AboutClient({ data }: { data: any }) {
             src={data.imageUrl}
             alt={data.titleFirst + " " + data.titleLast}
             fill
-            className="object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105"
+            className="object-cover transition-all duration-1000 scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-zinc-950 opacity-40 hidden md:block" />
