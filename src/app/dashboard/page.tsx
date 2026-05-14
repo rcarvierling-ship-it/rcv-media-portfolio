@@ -31,6 +31,8 @@ type Booking = {
   package_selected: string;
   shoot_type: string;
   status: string;
+  pipeline_stage: string;
+  total_amount: number;
   created_at: string;
   event_date: string;
 };
@@ -74,6 +76,10 @@ export default function DashboardPage() {
 
   const analytics = useMemo(() => {
     const totalLeads = bookings.length;
+    const activeBookings = bookings.filter(b => 
+      b.status !== "cancelled" && 
+      b.pipeline_stage !== "lead"
+    );
     const confirmed = bookings.filter(b => b.status === "confirmed");
     const pending = bookings.filter(b => b.status === "pending");
     
@@ -81,15 +87,12 @@ export default function DashboardPage() {
     const revenueByMonth: Record<string, number> = {};
     const revenueByType: Record<string, number> = {};
 
-    confirmed.forEach(b => {
-      const pkg = packages.find(p => p.name === b.package_selected);
-      if (pkg) {
-        const priceNum = parseInt(pkg.price.replace(/[^0-9]/g, "")) || 0;
-        totalRevenue += priceNum;
-        const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
-        revenueByMonth[month] = (revenueByMonth[month] || 0) + priceNum;
-        revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + priceNum;
-      }
+    activeBookings.forEach(b => {
+      const priceNum = Number(b.total_amount) || 0;
+      totalRevenue += priceNum;
+      const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
+      revenueByMonth[month] = (revenueByMonth[month] || 0) + priceNum;
+      revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + priceNum;
     });
 
     const typeStats: Record<string, number> = {};
@@ -111,16 +114,16 @@ export default function DashboardPage() {
 
     return {
       totalLeads,
-      confirmedCount: confirmed.length,
+      confirmedCount: activeBookings.length,
       pendingCount: pending.length,
       totalRevenue,
       revenueByMonth,
       revenueByType,
       topTypes,
       dailyStats: Object.entries(days),
-      conversionRate: totalLeads > 0 ? Math.round((confirmed.length / totalLeads) * 100) : 0
+      conversionRate: totalLeads > 0 ? Math.round((activeBookings.length / totalLeads) * 100) : 0
     };
-  }, [bookings, packages]);
+  }, [bookings]);
 
   const confirmDelete = async () => {
     if (!deletingId) return;
