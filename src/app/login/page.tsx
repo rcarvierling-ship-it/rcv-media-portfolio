@@ -1,66 +1,59 @@
-import { signIn } from "@/auth"
-import { Metadata } from "next"
+"use client";
 
-export const metadata: Metadata = {
-    title: "Login | RCV.Media",
-    description: "Admin access only.",
-}
+import { useActionState } from "react";
+import { login } from "@/app/actions/auth";
 
-export default async function LoginPage({
-    searchParams,
-}: {
-    searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-    const params = await searchParams;
+export default function LoginPage() {
+  const [state, formAction, isPending] = useActionState(login, null);
 
-    return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6">
-            <div className="w-full max-w-sm space-y-6">
-                <div className="flex flex-col items-center gap-2 text-center">
-                    <h1 className="text-2xl font-bold tracking-tight">Admin Access</h1>
-                    <p className="text-muted-foreground text-sm">Enter your PIN code or password to continue.</p>
-                </div>
-
-                <form
-                    action={async (formData) => {
-                        "use server"
-                        const redirectTo = (formData.get("redirectTo") as string) || "/dashboard";
-                        await signIn("credentials", {
-                            password: formData.get("password"),
-                            redirectTo,
-                        })
-                    }}
-                    className="flex flex-col gap-4"
-                >
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Password"
-                        required
-                        className="w-full px-4 py-3 rounded-lg bg-secondary/30 border border-border focus:ring-1 focus:ring-primary outline-none transition-all text-center tracking-widest"
-                    />
-
-                    {/* Preserve callbackUrl if present */}
-                    {params?.callbackUrl && (
-                        <input type="hidden" name="redirectTo" value={params.callbackUrl as string} />
-                    )}
-
-                    <button
-                        type="submit"
-                        className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-bold hover:opacity-90 transition-opacity"
-                    >
-                        Unlock Dashboard
-                    </button>
-
-                    {params?.error && (
-                        <div className="text-red-500 text-xs text-center font-medium bg-red-500/10 p-2 rounded">
-                            {params.error === "CredentialsSignin"
-                                ? "Invalid password. Access denied."
-                                : "Authentication failed. Please try again."}
-                        </div>
-                    )}
-                </form>
-            </div>
+  return (
+    <div className="min-h-screen bg-black flex items-center justify-center safe-padding">
+      <div className="w-full max-w-md bg-zinc-900 border border-zinc-800 p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-black uppercase tracking-tighter mb-2">RCV.Media</h1>
+          <p className="text-zinc-500 uppercase tracking-widest text-xs font-bold">Admin Portal</p>
         </div>
-    )
+
+        <form action={formAction} className="space-y-6">
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-zinc-500" htmlFor="email">Email</label>
+            <input 
+              id="email"
+              name="email"
+              type="email" 
+              required
+              className="w-full bg-black border border-zinc-800 focus:border-white px-4 py-3 text-white outline-none transition-colors"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-widest text-zinc-500" htmlFor="password">Password</label>
+            <input 
+              id="password"
+              name="password"
+              type="password" 
+              required
+              className="w-full bg-black border border-zinc-800 focus:border-white px-4 py-3 text-white outline-none transition-colors"
+              placeholder="••••••••"
+            />
+          </div>
+
+          {state?.error && (
+            <div className="text-red-500 text-sm font-semibold p-3 bg-red-500/10 border border-red-500/20">
+              {state.error}
+            </div>
+          )}
+
+          <button 
+            type="submit"
+            disabled={isPending}
+            className="w-full px-8 py-4 bg-white text-black font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors disabled:opacity-50"
+          >
+            {isPending ? "Authenticating..." : "Sign In"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }

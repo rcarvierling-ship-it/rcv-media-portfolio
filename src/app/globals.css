@@ -3,32 +3,6 @@
 @plugin "tailwindcss-animate";
 
 :root {
-  --background: #ffffff;
-  --foreground: #09090b;
-  --card: #ffffff;
-  --card-foreground: #09090b;
-  --popover: #ffffff;
-  --popover-foreground: #09090b;
-  --primary: #18181b;
-  --primary-foreground: #fafafa;
-  --secondary: #f4f4f5;
-  --secondary-foreground: #18181b;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --accent: #f4f4f5;
-  --accent-foreground: #18181b;
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #18181b;
-  --radius: 0.5rem;
-  /* Improved Systems Typography */
-  --font-size-base: 1.05rem;
-  --line-height-relaxed: 1.6;
-}
-
-.dark {
   --background: #09090b;
   --foreground: #fafafa;
   --card: #09090b;
@@ -48,6 +22,13 @@
   --border: #27272a;
   --input: #27272a;
   --ring: #d4d4d8;
+  --radius: 0.5rem;
+  
+  /* Brand Accent Tokens */
+  --accent-primary: #3b82f6;
+  --accent-secondary: #2563eb;
+  --accent-glow: rgba(59, 130, 246, 0.1);
+  --accent-border: rgba(59, 130, 246, 0.2);
 }
 
 @theme inline {
@@ -70,6 +51,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  
+  /* Dynamic Accent utility */
+  --color-brand-accent: var(--accent-primary);
+  --color-brand-glow: var(--accent-glow);
+  
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: calc(var(--radius));
   --radius-lg: calc(var(--radius) + 2px);
@@ -77,156 +63,74 @@
   --font-mono: var(--font-geist-mono);
 }
 
-
-
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-  font-size: var(--font-size-base);
-  line-height: var(--line-height-relaxed);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Clear Visual Hierarchy Utilities */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  letter-spacing: -0.03em;
+/* Premium Textures & Gradients */
+.bg-ambient {
+  background: 
+    radial-gradient(circle at 15% 20%, var(--accent-glow) 0%, transparent 40%),
+    radial-gradient(circle at 85% 80%, var(--accent-glow) 0%, transparent 40%);
+  pointer-events: none;
 }
 
-.text-balance {
-  text-wrap: balance;
+.text-accent-gradient {
+  background: linear-gradient(to r, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Section Spacing Standards */
-.section-spacing {
-  padding-top: 6rem;
-  padding-bottom: 6rem;
+.bg-accent-gradient {
+  background: linear-gradient(to r, var(--accent-primary), var(--accent-secondary));
 }
 
-@media (min-width: 768px) {
-  .section-spacing {
-    padding-top: 8rem;
-    padding-bottom: 8rem;
-  }
+.border-accent {
+  border-color: var(--accent-border);
 }
 
-/* Custom Utilities */
-.glass {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.premium-glass {
+  background: rgba(9, 9, 11, 0.4);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-
-.dark .glass {
-  background: rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+.premium-card {
+  background: linear-gradient(145deg, rgba(39, 39, 42, 0.3) 0%, rgba(9, 9, 11, 0.8) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
 
-@keyframes gradient-flow {
-  0% {
-    background-position: 0% 50%;
-    transform: scale(1);
-  }
-
-  50% {
-    background-position: 100% 50%;
-    transform: scale(1.1);
-  }
-
-  100% {
-    background-position: 0% 50%;
-    transform: scale(1);
-  }
-}
-
-.animate-gradient {
-  animation: gradient-flow 15s ease infinite;
-}
-
-.animate-gradient-reverse {
-  animation: gradient-flow 20s ease-in-out infinite reverse;
-}
-
-/* System / Tech Aesthetic Layers */
-
-.bg-tech-grid {
-  background-size: 100px 100px;
-  background-image:
-    linear-gradient(to right, rgba(128, 128, 128, 0.07) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(128, 128, 128, 0.07) 1px, transparent 1px);
-}
-
-.bg-tech-dots {
-  background-size: 20px 20px;
-  background-image: radial-gradient(rgba(128, 128, 128, 0.15) 1px, transparent 1px);
-}
-
-.bg-noise-subtle {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.4'/%3E%3C/svg%3E");
-  filter: contrast(120%) brightness(100%);
-}
-
-.tech-border-t {
+.diagonal-strike {
   position: relative;
 }
-
-.tech-border-t::before {
-  content: "";
+.diagonal-strike::after {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 50%;
+  left: 10%;
+  right: 10%;
   height: 1px;
-  background: linear-gradient(90deg,
-      transparent 0%,
-      rgba(128, 128, 128, 0.3) 15%,
-      rgba(128, 128, 128, 0.3) 85%,
-      transparent 100%);
+  background: currentColor;
+  transform: rotate(-45deg);
 }
 
-.text-tech {
-  font-family: var(--font-geist-mono);
-  letter-spacing: -0.02em;
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-/* Layout Hardening Utilities */
-.safe-gap {
-  gap: 1rem;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
-
-@media (min-width: 768px) {
-  .safe-gap {
-    gap: 2rem;
-  }
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 4px;
 }
-
-.safe-padding {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
-  padding-top: 4rem;
-  padding-bottom: 4rem;
-}
-
-.text-safe {
-  overflow-wrap: break-word;
-  word-break: break-word;
-  hyphens: auto;
-}
-
-.no-overlap {
-  display: flex;
-  flex-direction: column;
-}
-
-@media (min-width: 768px) {
-  .no-overlap {
-    flex-direction: row;
-  }
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-primary);
 }
