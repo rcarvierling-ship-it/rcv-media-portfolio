@@ -150,8 +150,8 @@ function PortfolioContent() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                    <span className="text-xs text-zinc-400 uppercase tracking-widest mb-2 font-bold">{photo.category || "Highlight"}</span>
-                    <span className="text-xl font-black text-white uppercase">{photo.title || "Untitled"}</span>
+                    <span className="text-xs text-zinc-400 uppercase tracking-widest mb-1 font-bold">{photo.category || "Highlight"}</span>
+                    <span className="text-xl font-black text-white uppercase tracking-tighter">RCV Media Frame</span>
                   </div>
                 </motion.div>
               ))}
@@ -202,11 +202,11 @@ function PortfolioContent() {
               >
                 <img
                   src={filteredPhotos[selectedImageIndex].image_url}
-                  alt={filteredPhotos[selectedImageIndex].title || "Image"}
+                  alt="Portfolio Image"
                   className="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-md"
                 />
                 <div className="absolute -bottom-12 left-0 right-0 text-center text-white/70">
-                  <span className="font-black uppercase tracking-widest text-white">{filteredPhotos[selectedImageIndex].title || "Untitled"}</span>
+                  <span className="font-black uppercase tracking-widest text-white">RCV.Media Archive</span>
                   {filteredPhotos[selectedImageIndex].category && (
                     <>
                       <span className="mx-3 text-white/30">•</span>

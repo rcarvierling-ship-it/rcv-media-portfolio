@@ -130,7 +130,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         
         // 4. Archive in Database
         const result = await addPhoto({
-          title: file.name.split('.')[0],
+          title: "RCV Frame",
           category: tag,
           album_id: album_id || null,
           is_featured: false,

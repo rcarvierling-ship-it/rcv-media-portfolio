@@ -1,0 +1,3 @@
+- [x] Remove grayscale from `src/app/page.tsx`
+- [x] Remove grayscale from `src/app/curated/page.tsx`
+- [x] Verify changes (manual code review + grep)

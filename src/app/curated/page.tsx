@@ -119,7 +119,7 @@ export default function CuratedCollectionPage() {
                        {photo.albums?.title || "Photography"}
                     </span>
                     <h3 className="text-2xl font-black uppercase tracking-tight group-hover:text-blue-500 transition-colors">
-                       {photo.title || "Untitled Moment"}
+                       RCV Frame
                     </h3>
                  </div>
                  <div className="text-[10px] font-black text-zinc-800">
@@ -167,7 +167,7 @@ export default function CuratedCollectionPage() {
                  <div>
                     <span className="text-blue-500 text-[9px] font-black uppercase tracking-widest block mb-1">Master Collection</span>
                     <h3 className="text-white font-black uppercase tracking-widest text-xs">
-                      {selectedPhoto.title || "Elite Moment"}
+                      Elite Capture
                     </h3>
                  </div>
                  <button onClick={() => setSelectedPhoto(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all">

@@ -221,7 +221,7 @@ export default function HomePage() {
                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
                <div className="absolute bottom-10 left-10">
                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2 border border-white/20 px-3 py-1 rounded-full w-fit backdrop-blur-md">Featured Gallery</span>
-                 <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">{featuredPhotos[0]?.title || "Gallery Curating"}</h3>
+                  <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">RCV Frame</h3>
                </div>
             </motion.div>
 
@@ -237,14 +237,14 @@ export default function HomePage() {
                    className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
                  >
                    {featuredPhotos[i]?.image_url ? (
-                     <Image src={featuredPhotos[i].image_url} alt={`Feature ${i}`} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                     <Image src={featuredPhotos[i].image_url} alt="Editorial Feature" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
                    ) : (
                      <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
                    )}
                    <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
                    <div className="absolute bottom-6 left-6">
                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-1">{featuredPhotos[i]?.category || "Editorial"}</span>
-                     <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{featuredPhotos[i]?.title || "Coming Soon"}</h3>
+                     <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Master Archive</h3>
                    </div>
                  </motion.div>
                ))}
