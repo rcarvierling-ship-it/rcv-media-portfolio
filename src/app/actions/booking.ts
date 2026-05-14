@@ -138,6 +138,11 @@ export async function deleteBooking(id: string) {
   }
 }
 
+export async function updateBookingStatus(id: string, status: string) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
+    if (error) throw error;
     revalidatePath("/dashboard/bookings");
     return { success: true };
   } catch (error) {
