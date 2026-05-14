@@ -98,24 +98,19 @@ export async function submitBooking(formData: FormData) {
         });
 
         // 2. SMS NOTIFICATION (Verizon Gateway)
-        // We use a separate call with a very short text body for SMS
         if (process.env.ADMIN_PHONE) {
           const smsEmail = `${process.env.ADMIN_PHONE.replace(/[^0-9]/g, "")}@vtext.com`;
           await resend.emails.send({
             from: "RCV Media <bookings@rcv-media.com>",
             to: smsEmail,
             subject: "NEW BOOKING",
-            text: `RCV Media: New booking from ${name} for ${shoot_type} on ${event_date}. Package: ${package_selected || 'None'}. Check dashboard for details.`,
+            text: `RCV Media: New booking from ${name} for ${shoot_type} on ${event_date}. Check dashboard for details.`,
           });
         }
 
         if (emailError) {
           console.error("Resend Error Detail:", emailError);
-        } else {
-          console.log("Email sent successfully! ID:", data?.id);
         }
-      } else {
-        console.warn("RESEND_API_KEY is missing from environment variables.");
       }
     } catch (err) {
       console.error("Critical Email Failure:", err);
@@ -179,7 +174,7 @@ export async function updateBookingStatus(id: string, status: string) {
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: booking.email,
-        reply_to: "rcar.vierling@gmail.com",
+        replyTo: "8129141183@vtext.com",
         subject: subject,
         html: `
           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
@@ -241,12 +236,11 @@ export async function sendMessageToClient(bookingId: string, message: string) {
 
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
-      const adminEmail = "rcar.vierling@gmail.com";
 
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: booking.email,
-        reply_to: adminEmail,
+        replyTo: "8129141183@vtext.com",
         subject: `Message from RCV.Media regarding your booking`,
         html: `
           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
