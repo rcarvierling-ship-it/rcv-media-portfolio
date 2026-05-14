@@ -5,11 +5,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { deletePhoto, updatePhoto } from "@/app/actions/photos";
+import { deleteBooking } from "@/app/actions/booking";
 import { 
   DollarSign, Users, Target, ArrowRight, TrendingUp, X, 
-  BarChart3, Activity, Calendar, ChevronRight, Info 
+  BarChart3, Activity, Calendar, ChevronRight, Info, Trash2 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 type Photo = {
   id: string;
@@ -46,6 +48,7 @@ export default function DashboardPage() {
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   
   const supabase = createClient();
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
@@ -72,7 +75,6 @@ export default function DashboardPage() {
     const confirmed = bookings.filter(b => b.status === "confirmed");
     const pending = bookings.filter(b => b.status === "pending");
     
-    // 1. Revenue & Package Mapping
     let totalRevenue = 0;
     const revenueByMonth: Record<string, number> = {};
     const revenueByType: Record<string, number> = {};
@@ -82,24 +84,18 @@ export default function DashboardPage() {
       if (pkg) {
         const priceNum = parseInt(pkg.price.replace(/[^0-9]/g, "")) || 0;
         totalRevenue += priceNum;
-
-        // Group by month
         const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
         revenueByMonth[month] = (revenueByMonth[month] || 0) + priceNum;
-
-        // Group by type
         revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + priceNum;
       }
     });
 
-    // 2. Type Count
     const typeStats: Record<string, number> = {};
     bookings.forEach(b => {
       typeStats[b.shoot_type] = (typeStats[b.shoot_type] || 0) + 1;
     });
     const topTypes = Object.entries(typeStats).sort((a, b) => b[1] - a[1]);
 
-    // 3. Last 7 Days Distribution
     const days: Record<string, number> = {};
     for (let i = 6; i >= 0; i--) {
       const date = new Date();
@@ -123,6 +119,15 @@ export default function DashboardPage() {
       conversionRate: totalLeads > 0 ? Math.round((confirmed.length / totalLeads) * 100) : 0
     };
   }, [bookings, packages]);
+
+  const handleDeleteBooking = async (id: string) => {
+    if (!confirm("Are you sure?")) return;
+    const result = await deleteBooking(id);
+    if (result.success) {
+      setBookings(bookings.filter(b => b.id !== id));
+      router.refresh();
+    }
+  };
 
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -159,17 +164,9 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* ANALYTICS TILES */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {/* Tile 1: Revenue */}
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setSelectedMetric("revenue")}
-            className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden"
-          >
-            <div className="absolute -right-4 -top-4 text-white opacity-5 group-hover:opacity-10 transition-opacity">
-              <DollarSign size={100} />
-            </div>
+          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("revenue")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden">
+            <div className="absolute -right-4 -top-4 text-white opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={100} /></div>
             <div className="flex justify-between items-start mb-4">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Confirmed Revenue</span>
               <Info size={12} className="text-zinc-700" />
@@ -178,61 +175,36 @@ export default function DashboardPage() {
               <h3 className="text-4xl font-black tracking-tighter text-white">${analytics.totalRevenue.toLocaleString()}</h3>
               <TrendingUp size={20} className="text-emerald-500 mb-2" />
             </div>
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-4">Click for month-by-month</p>
           </motion.div>
 
-          {/* Tile 2: Momentum */}
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setSelectedMetric("momentum")}
-            className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer"
-          >
+          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("momentum")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
             <div className="flex justify-between items-start mb-4">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Weekly Momentum</span>
               <Activity size={12} className="text-zinc-700" />
             </div>
             <div className="flex items-center gap-3">
-              <h3 className="text-4xl font-black tracking-tighter text-white">
-                +{analytics.dailyStats.reduce((acc, curr) => acc + curr[1], 0)}
-              </h3>
+              <h3 className="text-4xl font-black tracking-tighter text-white">+{analytics.dailyStats.reduce((acc, curr) => acc + curr[1], 0)}</h3>
               <span className="text-[10px] font-black uppercase text-emerald-500">New Leads</span>
             </div>
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-4">View 7-day distribution</p>
           </motion.div>
 
-          {/* Tile 3: Booking Rate */}
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setSelectedMetric("conversion")}
-            className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer"
-          >
+          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("conversion")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
             <div className="flex justify-between items-start mb-4">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Booking Rate</span>
               <Target size={12} className="text-zinc-700" />
             </div>
             <h3 className="text-4xl font-black tracking-tighter text-white">{analytics.conversionRate}%</h3>
             <div className="w-full h-1 bg-zinc-800 mt-4 rounded-full overflow-hidden">
-              <motion.div 
-                initial={{ width: 0 }} 
-                animate={{ width: `${analytics.conversionRate}%` }}
-                className="h-full bg-blue-600" 
-              />
+              <motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-blue-600" />
             </div>
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-4">Analyze sales funnel</p>
           </motion.div>
 
-          {/* Tile 4: Pipeline */}
-          <motion.div 
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setSelectedMetric("segments")}
-            className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer"
-          >
+          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("segments")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
             <div className="flex justify-between items-start mb-4">
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Top Segments</span>
               <BarChart3 size={12} className="text-zinc-700" />
             </div>
             <h3 className="text-4xl font-black tracking-tighter text-white">{analytics.topTypes[0]?.[0] || '---'}</h3>
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest mt-4">View revenue per type</p>
           </motion.div>
         </div>
       </section>
@@ -250,113 +222,56 @@ export default function DashboardPage() {
               className="bg-zinc-950 border border-white/10 w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full max-h-[800px]"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Sidebar Info */}
               <div className="w-full md:w-80 bg-zinc-900/50 p-10 border-r border-white/5 flex flex-col justify-between">
                 <div>
-                  <button onClick={() => setSelectedMetric(null)} className="mb-12 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-[10px] font-black tracking-widest">
-                    <X size={14} /> Close View
-                  </button>
+                  <button onClick={() => setSelectedMetric(null)} className="mb-12 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-[10px] font-black tracking-widest"><X size={14} /> Close View</button>
                   <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4">
-                    {selectedMetric === "revenue" && "Revenue Insights"}
-                    {selectedMetric === "momentum" && "Lead Velocity"}
-                    {selectedMetric === "conversion" && "Sales Funnel"}
-                    {selectedMetric === "segments" && "Segment Data"}
+                    {selectedMetric === "revenue" ? "Revenue" : selectedMetric === "momentum" ? "Leads" : selectedMetric === "conversion" ? "Sales" : "Segments"}
                   </h2>
-                  <p className="text-zinc-500 text-xs leading-relaxed uppercase tracking-wider font-light">
-                    {selectedMetric === "revenue" && "Visualizing your financial growth month-over-month."}
-                    {selectedMetric === "momentum" && "Tracking daily lead volume over the last 7 days."}
-                    {selectedMetric === "conversion" && "Measuring how effectively you convert inquiries to bookings."}
-                    {selectedMetric === "segments" && "Identifying which shoot categories are your biggest drivers."}
-                  </p>
                 </div>
-
-                <div className="pt-12 space-y-6">
-                   <div className="p-6 bg-black rounded-2xl border border-white/5">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600 block mb-2">Primary Metric</span>
-                      <span className="text-2xl font-black text-white">
-                        {selectedMetric === "revenue" && `$${analytics.totalRevenue.toLocaleString()}`}
-                        {selectedMetric === "momentum" && `${analytics.totalLeads} Total`}
-                        {selectedMetric === "conversion" && `${analytics.conversionRate}%`}
-                        {selectedMetric === "segments" && analytics.topTypes[0]?.[0]}
-                      </span>
-                   </div>
+                <div className="p-6 bg-black rounded-2xl border border-white/5">
+                  <span className="text-2xl font-black text-white">
+                    {selectedMetric === "revenue" ? `$${analytics.totalRevenue.toLocaleString()}` : selectedMetric === "momentum" ? `${analytics.totalLeads} Total` : selectedMetric === "conversion" ? `${analytics.conversionRate}%` : analytics.topTypes[0]?.[0]}
+                  </span>
                 </div>
               </div>
-
-              {/* Chart Area */}
               <div className="flex-1 p-12 bg-black relative flex flex-col justify-center">
-                 {/* REVENUE CHART */}
                  {selectedMetric === "revenue" && (
                    <div className="h-64 flex items-end gap-4 w-full">
                       {Object.entries(analytics.revenueByMonth).map(([month, amount]) => (
                         <div key={month} className="flex-1 flex flex-col items-center gap-4 group">
                            <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div 
-                                initial={{ height: 0 }} animate={{ height: `${(amount / analytics.totalRevenue) * 100}%` }}
-                                className="w-full bg-blue-600 rounded-t-sm group-hover:bg-blue-500 transition-colors relative"
-                              >
-                                 <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-3 py-1 rounded-sm font-black text-[10px]">
-                                    ${amount.toLocaleString()}
-                                 </div>
-                              </motion.div>
+                              <motion.div initial={{ height: 0 }} animate={{ height: `${(amount / analytics.totalRevenue) * 100}%` }} className="w-full bg-blue-600 rounded-t-sm group-hover:bg-blue-500 transition-colors" />
                            </div>
                            <span className="text-[10px] font-black uppercase text-zinc-500">{month}</span>
                         </div>
                       ))}
-                      {Object.keys(analytics.revenueByMonth).length === 0 && (
-                        <div className="w-full text-center py-20 text-zinc-700 font-black uppercase tracking-widest text-xs">Waiting for confirmed bookings data...</div>
-                      )}
                    </div>
                  )}
-
-                 {/* MOMENTUM CHART */}
                  {selectedMetric === "momentum" && (
                    <div className="h-64 flex items-end gap-4 w-full">
                       {analytics.dailyStats.map(([day, count]) => (
                         <div key={day} className="flex-1 flex flex-col items-center gap-4 group">
                            <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div 
-                                initial={{ height: 0 }} animate={{ height: count > 0 ? `${(count / 10) * 100}%` : '4px' }}
-                                className={`w-full ${count > 0 ? 'bg-emerald-500' : 'bg-zinc-900'} rounded-t-sm transition-all`}
-                              />
+                              <motion.div initial={{ height: 0 }} animate={{ height: count > 0 ? `${(count / 10) * 100}%` : '4px' }} className={`w-full ${count > 0 ? 'bg-emerald-500' : 'bg-zinc-900'} rounded-t-sm`} />
                            </div>
                            <span className="text-[10px] font-black uppercase text-zinc-500">{day}</span>
                         </div>
                       ))}
                    </div>
                  )}
-
-                 {/* CONVERSION FUNNEL */}
                  {selectedMetric === "conversion" && (
                    <div className="space-y-12 w-full max-w-md mx-auto">
                       <div className="space-y-4">
-                         <div className="flex justify-between items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-white">Total Inquiries</span>
-                            <span className="text-xl font-black text-zinc-500">{analytics.totalLeads}</span>
-                         </div>
-                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden w-full">
-                            <motion.div initial={{ width: 0 }} animate={{ width: '100%' }} className="h-full bg-zinc-700" />
-                         </div>
+                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white"><span>Total Inquiries</span><span>{analytics.totalLeads}</span></div>
+                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: '100%' }} className="h-full bg-zinc-700" /></div>
                       </div>
                       <div className="space-y-4">
-                         <div className="flex justify-between items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Confirmed Bookings</span>
-                            <span className="text-xl font-black text-white">{analytics.confirmedCount}</span>
-                         </div>
-                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden w-full">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" />
-                         </div>
-                      </div>
-                      <div className="pt-8 border-t border-white/5">
-                         <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center leading-relaxed">
-                            Your conversion funnel is currently at <span className="text-white">{analytics.conversionRate}%</span>. 
-                            Increasing response time usually boosts this metric by 15-20%.
-                         </p>
+                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-500"><span>Confirmed Bookings</span><span>{analytics.confirmedCount}</span></div>
+                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" /></div>
                       </div>
                    </div>
                  )}
-
-                 {/* SEGMENTS CHART */}
                  {selectedMetric === "segments" && (
                     <div className="space-y-8 w-full max-w-md mx-auto">
                        {analytics.topTypes.map(([type, count]) => (
@@ -365,11 +280,7 @@ export default function DashboardPage() {
                                <h4 className="text-lg font-black uppercase tracking-tighter text-white">{type}</h4>
                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{count} Active Leads</p>
                             </div>
-                            <div className="text-right">
-                               <span className="text-xs font-black text-blue-500 uppercase tracking-widest">
-                                  {Math.round((count / analytics.totalLeads) * 100)}% Share
-                               </span>
-                            </div>
+                            <span className="text-xs font-black text-blue-500 uppercase tracking-widest">{Math.round((count / analytics.totalLeads) * 100)}% Share</span>
                          </div>
                        ))}
                     </div>
@@ -411,9 +322,17 @@ export default function DashboardPage() {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{booking.shoot_type}</p>
                   </div>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-white">
-                  {new Date(booking.event_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                </span>
+                <div className="flex items-center gap-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-white">
+                    {new Date(booking.event_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                  </span>
+                  <button 
+                    onClick={() => handleDeleteBooking(booking.id)}
+                    className="p-2 text-zinc-700 hover:text-red-500 transition-colors relative z-10"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>

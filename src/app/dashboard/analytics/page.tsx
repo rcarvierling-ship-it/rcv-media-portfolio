@@ -188,8 +188,13 @@ export default function AnalyticsPage() {
                               </td>
                               <td className="px-8 py-6 text-right">
                                  <button 
-                                   onClick={() => handleDelete(b.id)}
-                                   className="p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
+                                   type="button"
+                                   onClick={(e) => {
+                                     e.preventDefault();
+                                     e.stopPropagation();
+                                     handleDelete(b.id);
+                                   }}
+                                   className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                                    title="Delete Record"
                                  >
                                     <Trash2 size={16} />
