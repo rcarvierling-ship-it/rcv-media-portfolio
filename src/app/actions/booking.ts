@@ -179,6 +179,7 @@ export async function updateBookingStatus(id: string, status: string) {
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: booking.email,
+        reply_to: "rcar.vierling@gmail.com",
         subject: subject,
         html: `
           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
@@ -223,6 +224,52 @@ export async function updateBookingStatus(id: string, status: string) {
     return { success: true };
   } catch (error) {
     console.error("Update booking status error:", error);
+    return { success: false };
+  }
+}
+
+export async function sendMessageToClient(bookingId: string, message: string) {
+  try {
+    const supabase = await createClient();
+    const { data: booking } = await supabase
+      .from("bookings")
+      .select("*")
+      .eq("id", bookingId)
+      .single();
+
+    if (!booking) throw new Error("Booking not found");
+
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      const adminEmail = "rcar.vierling@gmail.com";
+
+      await resend.emails.send({
+        from: "RCV Media <info@rcv-media.com>",
+        to: booking.email,
+        reply_to: adminEmail,
+        subject: `Message from RCV.Media regarding your booking`,
+        html: `
+          <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
+            <div style="margin-bottom: 40px; text-align: center;">
+              <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin: 0;">RCV<span style="color: #52525b;">.</span>MEDIA</h1>
+            </div>
+            
+            <div style="padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 4px;">
+              <h2 style="color: #3b82f6; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; margin-bottom: 20px;">Personal Message</h2>
+              <p style="font-size: 16px; font-weight: 300; line-height: 1.6; margin-bottom: 30px; color: #e4e4e7; white-space: pre-wrap;">${message}</p>
+              
+              <div style="border-top: 1px solid #27272a; padding-top: 20px; margin-top: 20px;">
+                <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Reply to this email to respond directly to me.</p>
+              </div>
+            </div>
+          </div>
+        `,
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Send message error:", error);
     return { success: false };
   }
 }

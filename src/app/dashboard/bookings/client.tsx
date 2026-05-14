@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { updateBookingStatus } from "@/app/actions/booking";
+import { updateBookingStatus, sendMessageToClient } from "@/app/actions/booking";
+import { MessageSquare, Send, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function BookingsAdminClient({ 
   initialBookings, 
@@ -16,6 +18,9 @@ export function BookingsAdminClient({
 }) {
   const [bookings, setBookings] = useState(initialBookings);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
+  const [messagingBooking, setMessagingBooking] = useState<any | null>(null);
+  const [messageText, setMessageText] = useState("");
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
   
   // Settings State
   const [minDays, setMinDays] = useState(initialSettings?.booking_min_advance_days ?? 21);
@@ -38,6 +43,22 @@ export function BookingsAdminClient({
     } else {
       alert("Failed to update status and send email.");
     }
+  };
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!messagingBooking || !messageText) return;
+    
+    setIsSendingMessage(true);
+    const result = await sendMessageToClient(messagingBooking.id, messageText);
+    if (result.success) {
+      setMessagingBooking(null);
+      setMessageText("");
+      alert("Message sent successfully!");
+    } else {
+      alert("Failed to send message.");
+    }
+    setIsSendingMessage(false);
   };
 
   const handleBlockDate = async (e: React.FormEvent) => {
@@ -114,6 +135,12 @@ export function BookingsAdminClient({
                   </div>
                   
                   <div className="flex gap-2">
+                    <button 
+                      onClick={() => setMessagingBooking(booking)}
+                      className="p-2 bg-zinc-800 text-zinc-400 hover:text-white transition-colors rounded-sm flex items-center gap-2 px-3"
+                    >
+                      <MessageSquare size={14} /> <span className="text-[10px] font-bold uppercase tracking-widest">Message</span>
+                    </button>
                     {booking.status !== 'confirmed' && (
                       <button onClick={() => handleUpdateStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
                         Confirm
@@ -148,8 +175,8 @@ export function BookingsAdminClient({
                 
                 {booking.message && (
                   <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Message</span>
-                    <p className="text-zinc-400 font-light leading-relaxed border-l-2 border-zinc-800 pl-4">{booking.message}</p>
+                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Message from Client</span>
+                    <p className="text-zinc-400 font-light leading-relaxed border-l-2 border-zinc-800 pl-4 italic">"{booking.message}"</p>
                   </div>
                 )}
               </div>
@@ -208,6 +235,50 @@ export function BookingsAdminClient({
           </div>
         </div>
       </div>
+
+      {/* Messaging Modal */}
+      <AnimatePresence>
+        {messagingBooking && (
+          <div className="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center p-4 backdrop-blur-xl">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.95 }}
+               className="bg-zinc-950 border border-white/10 p-10 w-full max-w-lg rounded-2xl"
+             >
+                <div className="flex justify-between items-center mb-8">
+                   <div>
+                     <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Message Client</h2>
+                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">To: {messagingBooking.name} ({messagingBooking.email})</p>
+                   </div>
+                   <button onClick={() => setMessagingBooking(null)} className="text-zinc-600 hover:text-white transition-colors">
+                      <X size={24} />
+                   </button>
+                </div>
+
+                <form onSubmit={handleSendMessage} className="space-y-6">
+                   <textarea 
+                     required
+                     value={messageText}
+                     onChange={(e) => setMessageText(e.target.value)}
+                     placeholder="Type your message here..."
+                     className="w-full bg-zinc-900 border border-white/5 p-6 text-white text-sm outline-none focus:border-blue-500/50 rounded-sm min-h-[200px] resize-none"
+                   />
+                   <button 
+                     type="submit" 
+                     disabled={isSendingMessage}
+                     className="w-full py-4 bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
+                   >
+                     {isSendingMessage ? "Sending..." : "Dispatch Message"} <Send size={14} />
+                   </button>
+                </form>
+                <p className="mt-6 text-[9px] text-zinc-600 font-bold uppercase tracking-widest text-center">
+                  Replies will be sent to your personal email: rcar.vierling@gmail.com
+                </p>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
