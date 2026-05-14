@@ -155,10 +155,26 @@ export default function HomePage() {
       </section>
 
       {/* 2. INFINITE MARQUEE */}
-      <div className="w-full border-y border-white/5 bg-zinc-900/50 overflow-hidden py-4 premium-glass relative z-10">
-        <div className="flex whitespace-nowrap animate-marquee">
-          {[...Array(2)].map((_, i) => (
-            <div key={i} className="flex items-center gap-8 mx-4">
+      <div className="w-full border-y border-white/5 bg-zinc-900/50 overflow-hidden py-4 premium-glass relative z-10 flex">
+        <div className="flex whitespace-nowrap animate-marquee py-2">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex items-center gap-8 px-4">
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Tournament Coverage</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+            </div>
+          ))}
+        </div>
+        <div className="flex whitespace-nowrap animate-marquee py-2" aria-hidden="true">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="flex items-center gap-8 px-4">
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
