@@ -26,7 +26,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
   
   // Upload State
   const [isUploadOpen, setIsUploadOpen] = useState(false);
-  const [files, setFiles] = useState<File[]>([]);
+  const [stagedFiles, setStagedFiles] = useState<any[]>([]); // { file, category, album_id, is_curated, is_featured }
   const [uploadLoading, setUploadLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -48,9 +48,25 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     accept: { 'image/*': [] },
     maxFiles: 20,
     onDrop: acceptedFiles => {
-      setFiles(prev => [...prev, ...acceptedFiles].slice(0, 20));
+      const newStaged = acceptedFiles.map(file => ({
+        file,
+        category: "Sports",
+        album_id: "",
+        is_curated: true,
+        is_featured: false,
+        preview: URL.createObjectURL(file)
+      }));
+      setStagedFiles(prev => [...prev, ...newStaged].slice(0, 20));
     }
   });
+
+  const updateStaged = (index: number, updates: any) => {
+    setStagedFiles(prev => prev.map((item, i) => i === index ? { ...item, ...updates } : item));
+  };
+
+  const removeStaged = (index: number) => {
+    setStagedFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleToggleFeatured = async (photo: any) => {
     setIsProcessing(photo.id);
@@ -91,23 +107,20 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     setIsProcessing(null);
   };
 
-  const handleBatchUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleBatchUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (files.length === 0) return;
+    if (stagedFiles.length === 0) return;
 
     setUploadLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const tag = formData.get("category") as string;
-    const album_id = formData.get("album_id") as string;
-    const is_curated = formData.get("is_curated") === "on";
-    const is_featured = formData.get("is_featured") === "on";
 
     try {
       const signData = await getCloudinarySignature();
       
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        console.log(`Master Syncing file ${i + 1}/${files.length}: ${file.name}`);
+      for (let i = 0; i < stagedFiles.length; i++) {
+        const item = stagedFiles[i];
+        const { file, category, album_id, is_curated, is_featured } = item;
+        
+        console.log(`Master Syncing file ${i + 1}/${stagedFiles.length}: ${file.name}`);
         
         // 1. Upload MASTER to Supabase Storage
         const fileExt = file.name.split('.').pop();
@@ -120,7 +133,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
         if (storageError) {
            console.error("Supabase Storage Error:", storageError);
-           throw new Error("Master Vault upload failed. Ensure 'master-collection' bucket exists.");
+           throw new Error(`Master Vault upload failed for ${file.name}. Ensure 'master-collection' bucket exists.`);
         }
 
         const { data: { publicUrl: rawImageUrl } } = supabase.storage
@@ -130,8 +143,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         // 2. Prepare Cloudinary Preview (Resize if >10MB)
         let fileToUploadToCloudinary: File | Blob = file;
         if (file.size > 10 * 1024 * 1024) {
-           console.log("Generating web preview for Cloudinary...");
-           // Use canvas to resize
+           console.log(`Generating web preview for ${file.name}...`);
            const img = document.createElement('img');
            img.src = URL.createObjectURL(file);
            await new Promise(resolve => img.onload = resolve);
@@ -175,7 +187,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         // 4. Archive in Database with Dual Links
         const result = await addPhoto({
           title: "RCV Frame",
-          category: tag,
+          category: category,
           album_id: album_id || null,
           is_featured: is_featured,
           is_curated: is_curated,
@@ -192,7 +204,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         }
       }
 
-      setFiles([]);
+      setStagedFiles([]);
       setIsUploadOpen(false);
     } catch (err: any) {
       console.error("Direct sync failed:", err);
@@ -228,90 +240,115 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
              exit={{ height: 0, opacity: 0 }}
              className="overflow-hidden"
            >
-             <div className="premium-card p-10 bg-zinc-900 border border-white/10 rounded-sm mb-12">
-                <form onSubmit={handleBatchUpload} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-                   <div className="lg:col-span-7">
-                      <div 
-                        {...getRootProps()} 
-                        className={`border-2 border-dashed aspect-video rounded-sm flex flex-col items-center justify-center gap-6 transition-all cursor-pointer ${
-                          isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20 bg-black/40'
-                        }`}
-                      >
-                         <input {...getInputProps()} />
-                         <div className="p-6 bg-zinc-800 rounded-full text-zinc-500 group-hover:text-white transition-colors">
-                            <Upload size={32} />
-                         </div>
-                         <div className="text-center">
-                            <p className="text-xs font-black uppercase tracking-widest text-white mb-2">
-                               {files.length > 0 ? `${files.length} Files Prepared` : 'Drag & Drop Media'}
-                            </p>
-                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Supports PNG, JPG, WEBP (Max 20 Files)</p>
-                         </div>
+             <div className="premium-card p-6 md:p-10 bg-zinc-900 border border-white/10 rounded-sm mb-12">
+                <div className="space-y-8">
+                   {/* Dropzone */}
+                   <div 
+                     {...getRootProps()} 
+                     className={`border-2 border-dashed h-40 rounded-sm flex flex-col items-center justify-center gap-4 transition-all cursor-pointer ${
+                       isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20 bg-black/40'
+                     }`}
+                   >
+                      <input {...getInputProps()} />
+                      <div className="p-3 bg-zinc-800 rounded-full text-zinc-500">
+                         <Upload size={24} />
                       </div>
-                      
-                      {files.length > 0 && (
-                        <div className="mt-6 flex flex-wrap gap-2">
-                           {files.map((f, i) => {
-                             const isTooLarge = f.size > 50 * 1024 * 1024;
-                             return (
-                               <div key={i} className={`px-3 py-1 bg-zinc-900/50 text-[8px] font-black uppercase border rounded-full flex items-center gap-2 ${
-                                 isTooLarge ? 'border-red-500/50 text-red-500' : 'border-emerald-500/20 text-zinc-400'
-                               }`}>
-                                  {f.name} ({(f.size / (1024 * 1024)).toFixed(1)}MB) 
-                                  {isTooLarge && <span className="text-red-500 font-bold">[EXCEEDS 50MB CAP]</span>}
-                                  <X size={10} className="cursor-pointer hover:text-white" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} />
-                               </div>
-                             );
-                           })}
-                        </div>
-                      )}
-                   </div>
-
-                   <div className="lg:col-span-5 space-y-8">
-                      <div className="space-y-4">
-                         <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
-                            <Tag size={12} /> Assign Portfolio Tags
-                         </label>
-                         <select name="category" required className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase tracking-widest">
-                            {PORTFOLIO_TAGS.map(tag => (
-                              <option key={tag} value={tag}>{tag}</option>
-                            ))}
-                         </select>
-                      </div>
-
-                      <div className="space-y-4">
-                         <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
-                            <ImageIcon size={12} /> Target Album (Optional)
-                         </label>
-                         <select name="album_id" className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase tracking-widest">
-                            <option value="">No Album</option>
-                            {albums.map(a => (
-                              <option key={a.id} value={a.id}>{a.title}</option>
-                            ))}
-                         </select>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
-                           <input type="checkbox" name="is_curated" id="is_curated" className="w-4 h-4 accent-blue-600" defaultChecked />
-                           <label htmlFor="is_curated" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Add to Curated Hub (Public Website)</label>
-                        </div>
-                        <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
-                           <input type="checkbox" name="is_featured" id="is_featured" className="w-4 h-4 accent-blue-600" />
-                           <label htmlFor="is_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Feature in Homepage Edit</label>
-                        </div>
-                      </div>
-
-                      <div className="pt-6">
-                         <button 
-                           disabled={files.length === 0 || uploadLoading}
-                           className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
-                         >
-                            {uploadLoading ? <Loader2 className="animate-spin" size={16} /> : <>Commence Batch Sync <Upload size={16} /></>}
-                         </button>
+                      <div className="text-center">
+                         <p className="text-[10px] font-black uppercase tracking-widest text-white">Drag & Drop Media to Stage Assets</p>
+                         <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-[0.2em] mt-1">Supports High-Res RAW / JPG / WEBP (Max 20)</p>
                       </div>
                    </div>
-                </form>
+
+                   {/* Staging Area */}
+                   {stagedFiles.length > 0 && (
+                     <div className="space-y-4">
+                        <div className="flex justify-between items-center px-4">
+                           <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Staged for Sync ({stagedFiles.length})</h3>
+                           <button onClick={() => setStagedFiles([])} className="text-[8px] font-black uppercase tracking-widest text-red-500 hover:text-red-400">Clear All</button>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 gap-3">
+                           {stagedFiles.map((item, index) => (
+                             <div key={index} className="bg-black/40 border border-white/5 p-4 rounded-sm flex flex-col xl:flex-row items-center gap-6 group transition-colors hover:border-white/10">
+                                {/* Preview & Info */}
+                                <div className="flex items-center gap-4 w-full xl:w-1/4">
+                                   <div className="w-16 h-16 bg-zinc-800 rounded-sm overflow-hidden flex-shrink-0 border border-white/5">
+                                      <img src={item.preview} className="w-full h-full object-cover" />
+                                   </div>
+                                   <div className="min-w-0">
+                                      <p className="text-[10px] font-black text-white uppercase truncate mb-1">{item.file.name}</p>
+                                      <p className={`text-[8px] font-bold uppercase tracking-widest ${item.file.size > 50*1024*1024 ? 'text-red-500' : 'text-zinc-600'}`}>
+                                         {(item.file.size / (1024 * 1024)).toFixed(1)}MB {item.file.size > 50*1024*1024 && '[TOO LARGE]'}
+                                      </p>
+                                   </div>
+                                </div>
+
+                                {/* Granular Controls */}
+                                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                                   <div className="space-y-1.5">
+                                      <label className="text-[8px] font-black uppercase tracking-widest text-zinc-600">Portfolio Tag</label>
+                                      <select 
+                                        value={item.category} 
+                                        onChange={(e) => updateStaged(index, { category: e.target.value })}
+                                        className="w-full bg-zinc-900 border border-white/5 px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-blue-500/50 transition-all"
+                                      >
+                                         {PORTFOLIO_TAGS.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+                                      </select>
+                                   </div>
+                                   <div className="space-y-1.5">
+                                      <label className="text-[8px] font-black uppercase tracking-widest text-zinc-600">Client Album</label>
+                                      <select 
+                                        value={item.album_id} 
+                                        onChange={(e) => updateStaged(index, { album_id: e.target.value })}
+                                        className="w-full bg-zinc-900 border border-white/5 px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-blue-500/50 transition-all"
+                                      >
+                                         <option value="">No Album</option>
+                                         {albums.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
+                                      </select>
+                                   </div>
+                                   <div className="flex items-center gap-4 pt-4 md:pt-0">
+                                      <button 
+                                        onClick={() => updateStaged(index, { is_curated: !item.is_curated })}
+                                        className={`flex-1 py-2 px-3 border text-[8px] font-black uppercase tracking-widest transition-all ${
+                                          item.is_curated ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-transparent border-white/5 text-zinc-600'
+                                        }`}
+                                      >
+                                         {item.is_curated ? 'Live in Hub' : 'Archive Only'}
+                                      </button>
+                                      <button 
+                                        onClick={() => updateStaged(index, { is_featured: !item.is_featured })}
+                                        className={`flex-1 py-2 px-3 border text-[8px] font-black uppercase tracking-widest transition-all ${
+                                          item.is_featured ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-transparent border-white/5 text-zinc-600'
+                                        }`}
+                                      >
+                                         {item.is_featured ? 'Featured' : 'Standard'}
+                                      </button>
+                                   </div>
+                                   <div className="flex items-center justify-end">
+                                      <button onClick={() => removeStaged(index)} className="p-2 text-zinc-700 hover:text-red-500 transition-colors">
+                                         <Trash2 size={16} />
+                                      </button>
+                                   </div>
+                                </div>
+                             </div>
+                           ))}
+                        </div>
+
+                        <div className="pt-8 border-t border-white/5">
+                           <button 
+                             disabled={uploadLoading || stagedFiles.some(f => f.file.size > 50*1024*1024)}
+                             onClick={handleBatchUpload}
+                             className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-[0_0_50px_rgba(255,255,255,0.1)]"
+                           >
+                              {uploadLoading ? <Loader2 className="animate-spin" size={16} /> : <>Commence Smart Batch Sync <Upload size={16} /></>}
+                           </button>
+                           {stagedFiles.some(f => f.file.size > 50*1024*1024) && (
+                             <p className="text-center text-red-500 text-[8px] font-black uppercase tracking-widest mt-4">One or more files exceed the 50MB Master Limit</p>
+                           )}
+                        </div>
+                     </div>
+                   )}
+                </div>
              </div>
            </motion.section>
          )}
