@@ -7,7 +7,8 @@ import {
   DollarSign, Users, Target, Trash2, 
   TrendingUp, Calendar, Filter, Download,
   Briefcase, ArrowUpRight, ArrowDownRight,
-  Search, BarChart3, Activity, PieChart, Info
+  Search, BarChart3, Activity, PieChart, Info,
+  AlertTriangle, X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -18,6 +19,7 @@ export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   
   const supabase = createClient();
   const router = useRouter();
@@ -35,11 +37,12 @@ export default function AnalyticsPage() {
     fetchData();
   }, [supabase]);
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
-    const result = await deleteBooking(id);
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    const result = await deleteBooking(deletingId);
     if (result.success) {
-      setBookings(bookings.filter(b => b.id !== id));
+      setBookings(bookings.filter(b => b.id !== deletingId));
+      setDeletingId(null);
       router.refresh();
     }
   };
@@ -159,7 +162,6 @@ export default function AnalyticsPage() {
 
       {/* 3. VISUAL GRAPHS SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         {/* REVENUE GROWTH CHART */}
          <section className="premium-card p-10 rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
@@ -190,7 +192,6 @@ export default function AnalyticsPage() {
             </div>
          </section>
 
-         {/* SEGMENT SHARE CHART */}
          <section className="premium-card p-10 rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
@@ -215,7 +216,6 @@ export default function AnalyticsPage() {
                      </div>
                   </div>
                ))}
-               {stats.revenueByType.length === 0 && <p className="text-[10px] text-zinc-700 font-bold uppercase py-10 text-center">No segment revenue data yet</p>}
             </div>
          </section>
       </div>
@@ -285,7 +285,7 @@ export default function AnalyticsPage() {
                               <td className="px-8 py-6 text-right">
                                  <button 
                                    type="button"
-                                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDelete(b.id); }}
+                                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeletingId(b.id); }}
                                    className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
                                  >
                                     <Trash2 size={16} />
@@ -299,6 +299,30 @@ export default function AnalyticsPage() {
             </table>
          </div>
       </section>
+
+      {/* CUSTOM DELETE MODAL */}
+      <AnimatePresence>
+        {deletingId && (
+          <div className="fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-xl">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="bg-zinc-950 border border-red-500/20 p-10 w-full max-w-sm rounded-2xl text-center shadow-[0_0_50px_rgba(239,68,68,0.1)]"
+             >
+                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                   <AlertTriangle size={32} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">Confirm Delete</h2>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">This will permanently remove this record from your analytics and charts.</p>
+                <div className="flex gap-4">
+                   <button onClick={confirmDelete} className="flex-1 py-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-500 transition-colors">Delete</button>
+                   <button onClick={() => setDeletingId(null)} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-colors">Cancel</button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

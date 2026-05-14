@@ -8,7 +8,8 @@ import { deletePhoto, updatePhoto } from "@/app/actions/photos";
 import { deleteBooking } from "@/app/actions/booking";
 import { 
   DollarSign, Users, Target, ArrowRight, TrendingUp, X, 
-  BarChart3, Activity, Calendar, ChevronRight, Info, Trash2 
+  BarChart3, Activity, Calendar, ChevronRight, Info, Trash2,
+  AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -46,6 +47,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   
   const supabase = createClient();
   const router = useRouter();
@@ -120,11 +122,12 @@ export default function DashboardPage() {
     };
   }, [bookings, packages]);
 
-  const handleDeleteBooking = async (id: string) => {
-    if (!confirm("Are you sure?")) return;
-    const result = await deleteBooking(id);
+  const confirmDelete = async () => {
+    if (!deletingId) return;
+    const result = await deleteBooking(deletingId);
     if (result.success) {
-      setBookings(bookings.filter(b => b.id !== id));
+      setBookings(bookings.filter(b => b.id !== deletingId));
+      setDeletingId(null);
       router.refresh();
     }
   };
@@ -327,7 +330,7 @@ export default function DashboardPage() {
                     {new Date(booking.event_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                   </span>
                   <button 
-                    onClick={() => handleDeleteBooking(booking.id)}
+                    onClick={() => setDeletingId(booking.id)}
                     className="p-2 text-zinc-700 hover:text-red-500 transition-colors relative z-10"
                   >
                     <Trash2 size={14} />
@@ -339,27 +342,51 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {editingPhoto && (
-        <div className="fixed inset-0 bg-black/95 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
-          <div className="bg-zinc-950 border border-white/10 p-10 w-full max-w-md rounded-2xl shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
-              <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Edit Photo</h2>
-              <button onClick={() => setEditingPhoto(null)} className="text-zinc-500 hover:text-white"><X /></button>
+      {/* 4. MODALS (EDIT & DELETE) */}
+      <AnimatePresence>
+        {editingPhoto && (
+          <div className="fixed inset-0 bg-black/95 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
+            <div className="bg-zinc-950 border border-white/10 p-10 w-full max-md rounded-2xl shadow-2xl">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Edit Photo</h2>
+                <button onClick={() => setEditingPhoto(null)} className="text-zinc-500 hover:text-white"><X /></button>
+              </div>
+              <form onSubmit={handleUpdate} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Title</label>
+                  <input name="title" defaultValue={editingPhoto.title} className="w-full bg-zinc-900 border border-white/5 focus:border-blue-500/50 px-6 py-4 text-white outline-none rounded-sm" required />
+                </div>
+                <div className="flex items-center gap-3">
+                  <input type="checkbox" name="is_featured" id="edit_featured" defaultChecked={editingPhoto.is_featured} className="w-5 h-5 accent-blue-600" />
+                  <label htmlFor="edit_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Feature on Homepage</label>
+                </div>
+                <button type="submit" className="w-full bg-white text-black font-black uppercase py-4 rounded-sm hover:bg-zinc-200 transition-colors">Save Changes</button>
+              </form>
             </div>
-            <form onSubmit={handleUpdate} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Title</label>
-                <input name="title" defaultValue={editingPhoto.title} className="w-full bg-zinc-900 border border-white/5 focus:border-blue-500/50 px-6 py-4 text-white outline-none rounded-sm" required />
-              </div>
-              <div className="flex items-center gap-3">
-                <input type="checkbox" name="is_featured" id="edit_featured" defaultChecked={editingPhoto.is_featured} className="w-5 h-5 accent-blue-600" />
-                <label htmlFor="edit_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Feature on Homepage</label>
-              </div>
-              <button type="submit" className="w-full bg-white text-black font-black uppercase py-4 rounded-sm hover:bg-zinc-200 transition-colors">Save Changes</button>
-            </form>
           </div>
-        </div>
-      )}
+        )}
+
+        {deletingId && (
+          <div className="fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-xl">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               exit={{ opacity: 0, scale: 0.9 }}
+               className="bg-zinc-950 border border-red-500/20 p-10 w-full max-w-sm rounded-2xl text-center shadow-[0_0_50px_rgba(239,68,68,0.1)]"
+             >
+                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
+                   <AlertTriangle size={32} />
+                </div>
+                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">Confirm Delete</h2>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">This will permanently remove this record from your analytics.</p>
+                <div className="flex gap-4">
+                   <button onClick={confirmDelete} className="flex-1 py-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-500 transition-colors">Delete</button>
+                   <button onClick={() => setDeletingId(null)} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-colors">Cancel</button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
