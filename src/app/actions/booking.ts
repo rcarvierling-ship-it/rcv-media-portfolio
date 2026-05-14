@@ -37,6 +37,7 @@ export async function submitBooking(formData: FormData) {
           event_time,
           location,
           message,
+          total_amount: parseFloat(formData.get("total_amount") as string || "0"),
         },
       ]);
 

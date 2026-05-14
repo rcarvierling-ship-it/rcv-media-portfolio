@@ -166,6 +166,11 @@ export default function BookPage() {
                 <input type="hidden" name="shoot_type" value={selectedPackage || ""} />
                 <input type="hidden" name="package_selected" value={selectedPackage || ""} />
                 <input type="hidden" name="event_date" value={selectedDate} />
+                <input 
+                  type="hidden" 
+                  name="total_amount" 
+                  value={packages.find(p => p.name === selectedPackage)?.price.replace(/[^0-9.]/g, '') || "0"} 
+                />
 
                 {/* Step 1: Client Info */}
                 <div className="space-y-8">
