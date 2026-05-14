@@ -65,7 +65,7 @@ export default function AlbumMediaManager() {
       
       const cloudinaryResults = await uploadMultipleToCloudinary(uploadData);
       
-      const newPhotoIds = [];
+      const newPhotoIds: string[] = [];
       for (let i = 0; i < cloudinaryResults.length; i++) {
         const res = cloudinaryResults[i];
         const result = await addPhoto({
