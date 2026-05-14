@@ -495,7 +495,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
                     <div className="pt-10 border-t border-white/5">
                        <button 
-                         onClick={() => handleDelete(selectedPhoto, selectedPhoto.raw_storage_path)}
+                         onClick={() => handleDelete(selectedPhoto)}
                          className="w-full py-4 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all rounded-sm flex items-center justify-center gap-2"
                        >
                           <Trash2 size={14} /> Delete Asset Permanently
