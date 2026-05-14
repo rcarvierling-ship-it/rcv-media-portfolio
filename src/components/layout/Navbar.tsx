@@ -45,7 +45,7 @@ export function Navbar() {
           scrolled || mobileMenuOpen ? "premium-glass py-4 border-b border-white/5 shadow-2xl" : "bg-transparent py-8"
         )}
       >
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div className="container-premium flex items-center justify-between">
           <Link href="/" className="text-2xl font-black tracking-tighter uppercase text-white hover:text-zinc-300 transition-colors z-[210]">
             RCV<span className="text-zinc-500">.</span>
           </Link>
