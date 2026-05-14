@@ -81,8 +81,8 @@ export function GalleryClient({ album }: { album: any }) {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-md w-full premium-card p-12 border border-white/10 rounded-2xl relative z-10 text-center"
         >
-          <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
-            <Lock className="text-blue-500" size={24} />
+          <div className="w-16 h-16 bg-brand-accent/10 rounded-full flex items-center justify-center mx-auto mb-8">
+            <Lock className="text-brand-accent" size={24} />
           </div>
           <h1 className="text-3xl font-black uppercase tracking-tighter text-white mb-2">Private Gallery</h1>
           <p className="text-zinc-500 text-sm font-bold uppercase tracking-widest mb-8">
@@ -123,9 +123,9 @@ export function GalleryClient({ album }: { album: any }) {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-4 text-blue-500 mb-6"
+              className="flex items-center gap-4 text-brand-accent mb-6"
             >
-              <div className="w-8 h-px bg-blue-500" />
+              <div className="w-8 h-px bg-brand-accent" />
               <span className="text-[10px] font-black uppercase tracking-[0.3em]">Client Portal</span>
             </motion.div>
             <motion.h1 
@@ -186,7 +186,7 @@ export function GalleryClient({ album }: { album: any }) {
                            <Download size={18} />
                          </button>
                        </div>
-                       <span className="text-xs font-black uppercase tracking-widest text-white border-l-2 border-blue-500 pl-4">
+                       <span className="text-xs font-black uppercase tracking-widest text-white border-l-2 border-brand-accent pl-4">
                          {photo.title || `RCV-${index + 1}`}
                        </span>
                     </div>

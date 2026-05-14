@@ -87,7 +87,7 @@ export default function SettingsDashboardPage() {
         <div className="flex items-center gap-4">
            <AnimatePresence>
              {success && (
-               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest bg-emerald-500/5 px-4 py-2 border border-emerald-500/10 rounded-sm">
+               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="flex items-center gap-2 text-brand-accent text-[10px] font-black uppercase tracking-widest bg-brand-accent/5 px-4 py-2 border border-brand-accent/10 rounded-sm">
                   <CheckCircle2 size={14} /> System Synced
                </motion.div>
              )}
@@ -109,7 +109,7 @@ export default function SettingsDashboardPage() {
           <section className="premium-card p-10 bg-zinc-900/40 border border-white/5 rounded-sm relative overflow-hidden">
              <div className="absolute top-0 right-0 p-8 opacity-5"><Globe size={120} /></div>
              <div className="flex items-center gap-4 mb-10 pb-6 border-b border-white/5">
-                <div className="p-3 bg-blue-600/10 rounded-sm text-blue-500"><Globe size={20} /></div>
+                <div className="p-3 bg-brand-accent/10 rounded-sm text-brand-accent"><Globe size={20} /></div>
                 <div>
                    <h2 className="text-xl font-black uppercase tracking-tight text-white">Homepage Identity</h2>
                    <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Main landing page messaging & imagery</p>
@@ -120,17 +120,17 @@ export default function SettingsDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hero Title</label>
-                      <input name="hero_title" defaultValue={settings?.hero_title} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="hero_title" defaultValue={settings?.hero_title} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hero Subtitle</label>
-                      <input name="hero_subtitle" defaultValue={settings?.hero_subtitle} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="hero_subtitle" defaultValue={settings?.hero_subtitle} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                 </div>
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hero Background Image URL</label>
                    <div className="flex gap-4">
-                      <input name="hero_image_url" defaultValue={settings?.hero_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="hero_image_url" defaultValue={settings?.hero_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                       <div className="w-14 h-14 bg-zinc-800 rounded-sm overflow-hidden border border-white/5">
                          <img src={settings?.hero_image_url} alt="Preview" className="w-full h-full object-cover" />
                       </div>
@@ -143,7 +143,7 @@ export default function SettingsDashboardPage() {
           <section className="premium-card p-10 bg-zinc-900/40 border border-white/5 rounded-sm relative overflow-hidden">
              <div className="absolute top-0 right-0 p-8 opacity-5"><User size={120} /></div>
              <div className="flex items-center gap-4 mb-10 pb-6 border-b border-white/5">
-                <div className="p-3 bg-emerald-600/10 rounded-sm text-emerald-500"><User size={20} /></div>
+                <div className="p-3 bg-brand-accent/10 rounded-sm text-brand-accent"><User size={20} /></div>
                 <div>
                    <h2 className="text-xl font-black uppercase tracking-tight text-white">About Page Mastery</h2>
                    <p className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest">Managing your personal bio & profile</p>
@@ -154,21 +154,21 @@ export default function SettingsDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name</label>
-                      <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name</label>
-                      <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                 </div>
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Full Biography</label>
-                   <textarea name="about_bio" rows={6} defaultValue={settings?.about_bio} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold resize-none leading-relaxed" />
+                   <textarea name="about_bio" rows={6} defaultValue={settings?.about_bio} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold resize-none leading-relaxed" />
                 </div>
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Profile Image URL</label>
                    <div className="flex gap-4">
-                      <input name="about_image_url" defaultValue={settings?.about_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="about_image_url" defaultValue={settings?.about_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                       <div className="w-14 h-14 bg-zinc-800 rounded-sm overflow-hidden border border-white/5">
                          <img src={settings?.about_image_url} alt="Preview" className="w-full h-full object-cover" />
                       </div>
@@ -197,7 +197,7 @@ export default function SettingsDashboardPage() {
                    <button 
                      type="button"
                      onClick={() => setSettings({...settings, booking_is_active: !settings.booking_is_active})}
-                     className={`w-14 h-7 rounded-full relative transition-all ${settings?.booking_is_active ? 'bg-blue-600' : 'bg-zinc-800'}`}
+                     className={`w-14 h-7 rounded-full relative transition-all ${settings?.booking_is_active ? 'bg-brand-accent' : 'bg-zinc-800'}`}
                    >
                       <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${settings?.booking_is_active ? 'left-8' : 'left-1'}`} />
                       <input type="checkbox" name="booking_is_active" checked={settings?.booking_is_active} className="hidden" readOnly />
@@ -207,11 +207,11 @@ export default function SettingsDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Min Advance Days</label>
-                      <input name="booking_min_advance_days" type="number" defaultValue={settings?.booking_min_advance_days} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="booking_min_advance_days" type="number" defaultValue={settings?.booking_min_advance_days} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Max Advance Days</label>
-                      <input name="booking_max_advance_days" type="number" defaultValue={settings?.booking_max_advance_days} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                      <input name="booking_max_advance_days" type="number" defaultValue={settings?.booking_max_advance_days} className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                    </div>
                 </div>
              </div>
@@ -225,7 +225,7 @@ export default function SettingsDashboardPage() {
              {/* Branding Hub */}
              <section className="premium-card p-10 bg-zinc-900/40 border border-white/5 rounded-sm">
                 <div className="flex items-center gap-4 mb-10">
-                   <div className="p-3 bg-purple-600/10 rounded-sm text-purple-500"><Palette size={20} /></div>
+                   <div className="p-3 bg-brand-accent/10 rounded-sm text-brand-accent"><Palette size={20} /></div>
                    <div>
                       <h2 className="text-xl font-black uppercase tracking-tight text-white">The Vibe</h2>
                    </div>
@@ -235,7 +235,7 @@ export default function SettingsDashboardPage() {
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Global Accent Color</label>
                       <div className="flex gap-4">
-                         <input name="accent_color" defaultValue={settings?.accent_color} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-[10px] font-mono" />
+                         <input name="accent_color" defaultValue={settings?.accent_color} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-[10px] font-mono" />
                          <div className="w-14 h-14 rounded-full border border-white/10" style={{ backgroundColor: settings?.accent_color }} />
                       </div>
                    </div>
@@ -244,7 +244,7 @@ export default function SettingsDashboardPage() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Instagram Handle</label>
                       <div className="relative">
                          <Instagram className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-                         <input name="instagram_url" defaultValue={settings?.instagram_url} className="w-full bg-black/40 border border-white/10 pl-14 pr-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                         <input name="instagram_url" defaultValue={settings?.instagram_url} className="w-full bg-black/40 border border-white/10 pl-14 pr-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                       </div>
                    </div>
 
@@ -252,7 +252,7 @@ export default function SettingsDashboardPage() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Professional Email</label>
                       <div className="relative">
                          <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-                         <input name="contact_email" type="email" defaultValue={settings?.contact_email} className="w-full bg-black/40 border border-white/10 pl-14 pr-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all text-sm font-bold" />
+                         <input name="contact_email" type="email" defaultValue={settings?.contact_email} className="w-full bg-black/40 border border-white/10 pl-14 pr-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
                       </div>
                    </div>
                 </div>

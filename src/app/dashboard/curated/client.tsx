@@ -100,7 +100,7 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
                  className={`w-full py-3 rounded-sm flex items-center justify-center gap-2 transition-all ${
                    photo.is_curated 
                    ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white' 
-                   : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                   : 'bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-white'
                  }`}
                >
                  {loading === photo.id ? (

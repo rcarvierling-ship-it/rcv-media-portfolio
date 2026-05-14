@@ -31,7 +31,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-zinc-950 pt-32 pb-24 relative overflow-hidden">
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-500/10 blur-[150px] rounded-full" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-accent/10 blur-[150px] rounded-full" />
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-zinc-900/20 blur-[150px] rounded-full" />
       </div>
 
@@ -45,7 +45,7 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block text-center lg:text-left">Inquiries</span>
+              <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.4em] mb-4 block text-center lg:text-left">Inquiries</span>
               <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-8 leading-[0.9] text-center lg:text-left">
                 Let's <br className="hidden lg:block"/> <span className="text-zinc-800 italic">Connect</span>
               </h1>
@@ -55,8 +55,8 @@ export default function ContactPage() {
 
               <div className="space-y-8 max-w-sm mx-auto lg:mx-0">
                 <div className="flex items-center gap-6 group">
-                   <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-blue-500/50 transition-colors">
-                      <Mail className="text-zinc-500 group-hover:text-blue-500 transition-colors" size={20} />
+                   <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-brand-accent/50 transition-colors">
+                      <Mail className="text-zinc-500 group-hover:text-brand-accent transition-colors" size={20} />
                    </div>
                    <div>
                       <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-1">Email</span>
@@ -64,8 +64,8 @@ export default function ContactPage() {
                    </div>
                 </div>
                 <div className="flex items-center gap-6 group">
-                   <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-blue-500/50 transition-colors">
-                      <User className="text-zinc-500 group-hover:text-blue-500 transition-colors" size={20} />
+                   <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-brand-accent/50 transition-colors">
+                      <User className="text-zinc-500 group-hover:text-brand-accent transition-colors" size={20} />
                    </div>
                    <div>
                       <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-1">Social</span>
@@ -101,7 +101,7 @@ export default function ContactPage() {
                           type="text"
                           value={formData.name}
                           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
+                          className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all"
                           placeholder="Your Name"
                         />
                       </div>
@@ -112,7 +112,7 @@ export default function ContactPage() {
                           type="email"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
+                          className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all"
                           placeholder="email@example.com"
                         />
                       </div>
@@ -125,7 +125,7 @@ export default function ContactPage() {
                         type="text"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                        className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all"
+                        className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all"
                         placeholder="What's this about?"
                       />
                     </div>
@@ -137,7 +137,7 @@ export default function ContactPage() {
                         rows={6}
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                        className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-blue-500/50 transition-all resize-none"
+                        className="w-full bg-black/50 border border-white/10 rounded-sm px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all resize-none"
                         placeholder="Type your message here..."
                       />
                     </div>
@@ -161,8 +161,8 @@ export default function ContactPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     className="py-20 text-center"
                   >
-                    <div className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-8">
-                       <CheckCircle2 className="text-emerald-500" size={40} />
+                    <div className="w-20 h-20 bg-brand-accent/10 border border-brand-accent/20 rounded-full flex items-center justify-center mx-auto mb-8">
+                       <CheckCircle2 className="text-brand-accent" size={40} />
                     </div>
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4">Message Sent</h2>
                     <p className="text-zinc-500 font-light mb-10 max-w-sm mx-auto">

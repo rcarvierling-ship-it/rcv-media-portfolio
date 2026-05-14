@@ -64,7 +64,7 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
     <div className="space-y-12">
       <div className="flex justify-end">
         <button 
-          onClick={() => setEditingPackage({ name: "", price: "", features: [], accent_color: "blue-600", sort_order: 0 })}
+          onClick={() => setEditingPackage({ name: "", price: "", features: [], accent_color: "brand-accent", sort_order: 0 })}
           className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200"
         >
           Add New Package
@@ -106,7 +106,7 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
             <button 
               onClick={() => handleToggleActive(pkg.id, pkg.is_active)}
               className={`w-full py-2 text-[10px] font-black uppercase tracking-widest border transition-colors ${
-                pkg.is_active ? 'border-zinc-800 text-zinc-500 hover:bg-zinc-800' : 'border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white'
+                pkg.is_active ? 'border-zinc-800 text-zinc-500 hover:bg-zinc-800' : 'border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white'
               }`}
             >
               {pkg.is_active ? 'Set Inactive' : 'Set Active'}

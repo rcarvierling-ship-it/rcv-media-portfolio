@@ -167,8 +167,8 @@ export default function DashboardPage() {
             <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Real-time business performance & deep analytics</p>
           </div>
           <div className="text-right hidden md:block">
-             <div className="flex items-center gap-2 text-blue-500">
-               <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
+             <div className="flex items-center gap-2 text-brand-accent">
+               <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse" />
                <span className="text-[10px] font-black uppercase tracking-widest">Live Sync Active</span>
              </div>
           </div>
@@ -183,7 +183,7 @@ export default function DashboardPage() {
             </div>
             <div className="flex items-end gap-2">
               <h3 className="text-4xl font-black tracking-tighter text-white">${analytics.realizedRevenue.toLocaleString()}</h3>
-              <TrendingUp size={20} className="text-emerald-500 mb-2" />
+              <TrendingUp size={20} className="text-brand-accent mb-2" />
             </div>
           </motion.div>
 
@@ -193,8 +193,8 @@ export default function DashboardPage() {
               <Activity size={12} className="text-zinc-700" />
             </div>
             <div className="flex items-center gap-3">
-              <h3 className="text-4xl font-black tracking-tighter text-blue-500">${analytics.projectedPipelineValue.toLocaleString()}</h3>
-              <span className="text-[10px] font-black uppercase text-blue-500">Active</span>
+              <h3 className="text-4xl font-black tracking-tighter text-brand-accent">${analytics.projectedPipelineValue.toLocaleString()}</h3>
+              <span className="text-[10px] font-black uppercase text-brand-accent">Active</span>
             </div>
           </motion.div>
 
@@ -205,7 +205,7 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-4xl font-black tracking-tighter text-white">{analytics.conversionRate}%</h3>
             <div className="w-full h-1 bg-zinc-800 mt-4 rounded-full overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-blue-600" />
+              <motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-brand-accent" />
             </div>
           </motion.div>
 
@@ -251,7 +251,7 @@ export default function DashboardPage() {
                       {Object.entries(analytics.revenueByMonth).map(([month, amount]) => (
                         <div key={month} className="flex-1 flex flex-col items-center gap-4 group">
                            <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div initial={{ height: 0 }} animate={{ height: analytics.realizedRevenue > 0 ? `${(amount / analytics.realizedRevenue) * 100}%` : '4px' }} className="w-full bg-blue-600 rounded-t-sm group-hover:bg-blue-500 transition-colors" />
+                              <motion.div initial={{ height: 0 }} animate={{ height: analytics.realizedRevenue > 0 ? `${(amount / analytics.realizedRevenue) * 100}%` : '4px' }} className="w-full bg-brand-accent rounded-t-sm group-hover:bg-brand-accent transition-colors" />
                            </div>
                            <span className="text-[10px] font-black uppercase text-zinc-500">{month}</span>
                         </div>
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                       {analytics.dailyStats.map(([day, count]) => (
                         <div key={day} className="flex-1 flex flex-col items-center gap-4 group">
                            <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div initial={{ height: 0 }} animate={{ height: count > 0 ? `${(count / 10) * 100}%` : '4px' }} className={`w-full ${count > 0 ? 'bg-emerald-500' : 'bg-zinc-900'} rounded-t-sm`} />
+                              <motion.div initial={{ height: 0 }} animate={{ height: count > 0 ? `${(count / 10) * 100}%` : '4px' }} className={`w-full ${count > 0 ? 'bg-brand-accent' : 'bg-zinc-900'} rounded-t-sm`} />
                            </div>
                            <span className="text-[10px] font-black uppercase text-zinc-500">{day}</span>
                         </div>
@@ -277,20 +277,20 @@ export default function DashboardPage() {
                          <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: '100%' }} className="h-full bg-zinc-700" /></div>
                       </div>
                       <div className="space-y-4">
-                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-500"><span>Realized Bookings</span><span>{analytics.realizedCount}</span></div>
-                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" /></div>
+                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-brand-accent"><span>Realized Bookings</span><span>{analytics.realizedCount}</span></div>
+                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-brand-accent shadow-[0_0_20px_rgba(16,185,129,0.4)]" /></div>
                       </div>
                    </div>
                  )}
                  {selectedMetric === "segments" && (
                     <div className="space-y-8 w-full max-w-md mx-auto">
                        {analytics.topTypes.map(([type, count]) => (
-                         <div key={type} className="group flex items-center justify-between p-6 bg-zinc-900/40 border border-white/5 rounded-2xl hover:border-blue-500/50 transition-all">
+                         <div key={type} className="group flex items-center justify-between p-6 bg-zinc-900/40 border border-white/5 rounded-2xl hover:border-brand-accent/50 transition-all">
                             <div>
                                <h4 className="text-lg font-black uppercase tracking-tighter text-white">{type}</h4>
                                <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{count} Active Leads</p>
                             </div>
-                            <span className="text-xs font-black text-blue-500 uppercase tracking-widest">{Math.round((count / analytics.totalLeads) * 100)}% Share</span>
+                            <span className="text-xs font-black text-brand-accent uppercase tracking-widest">{Math.round((count / analytics.totalLeads) * 100)}% Share</span>
                          </div>
                        ))}
                     </div>
@@ -326,7 +326,7 @@ export default function DashboardPage() {
             {bookings.slice(0, 6).map((booking) => (
               <div key={booking.id} className="p-6 bg-zinc-900/50 border border-white/5 rounded-xl flex items-center justify-between group hover:border-white/10 transition-all">
                 <div className="flex items-center gap-4">
-                  <div className={`w-2 h-2 rounded-full ${booking.status === 'confirmed' ? 'bg-emerald-500' : 'bg-zinc-700 animate-pulse'}`} />
+                  <div className={`w-2 h-2 rounded-full ${booking.status === 'confirmed' ? 'bg-brand-accent' : 'bg-zinc-700 animate-pulse'}`} />
                   <div>
                     <h4 className="text-sm font-black uppercase tracking-tight text-white">{booking.name}</h4>
                     <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{booking.shoot_type}</p>
@@ -361,10 +361,10 @@ export default function DashboardPage() {
               <form onSubmit={handleUpdate} className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Title</label>
-                  <input name="title" defaultValue={editingPhoto.title} className="w-full bg-zinc-900 border border-white/5 focus:border-blue-500/50 px-6 py-4 text-white outline-none rounded-sm" required />
+                  <input name="title" defaultValue={editingPhoto.title} className="w-full bg-zinc-900 border border-white/5 focus:border-brand-accent/50 px-6 py-4 text-white outline-none rounded-sm" required />
                 </div>
                 <div className="flex items-center gap-3">
-                  <input type="checkbox" name="is_featured" id="edit_featured" defaultChecked={editingPhoto.is_featured} className="w-5 h-5 accent-blue-600" />
+                  <input type="checkbox" name="is_featured" id="edit_featured" defaultChecked={editingPhoto.is_featured} className="w-5 h-5 accent-brand-accent" />
                   <label htmlFor="edit_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Feature on Homepage</label>
                 </div>
                 <button type="submit" className="w-full bg-white text-black font-black uppercase py-4 rounded-sm hover:bg-zinc-200 transition-colors">Save Changes</button>

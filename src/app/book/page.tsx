@@ -112,7 +112,7 @@ export default function BookPage() {
                 onClick={() => setSelectedPackage(pkg.name)}
                 className={`premium-card p-6 md:p-10 rounded-2xl border transition-all cursor-pointer group ${
                   selectedPackage === pkg.name 
-                    ? 'border-blue-500 bg-blue-500/5 ring-1 ring-blue-500' 
+                    ? 'border-brand-accent bg-brand-accent/5 ring-1 ring-brand-accent' 
                     : 'border-white/5 hover:border-white/20'
                 }`}
               >
@@ -131,7 +131,7 @@ export default function BookPage() {
                 </ul>
                 <div className={`text-[10px] font-black uppercase tracking-widest text-center py-4 border rounded-sm transition-all ${
                   selectedPackage === pkg.name 
-                    ? 'bg-blue-600 border-blue-600 text-white' 
+                    ? 'bg-brand-accent border-brand-accent text-white' 
                     : 'border-white/10 text-zinc-500 group-hover:border-white/30 group-hover:text-white'
                 }`}>
                   {selectedPackage === pkg.name ? 'Selected' : 'Select Package'}
@@ -178,17 +178,17 @@ export default function BookPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Full Name</label>
-                      <input name="name" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" />
+                      <input name="name" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Email Address</label>
-                      <input name="email" type="email" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" />
+                      <input name="email" type="email" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
-                      <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" />
+                      <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                 </div>
@@ -211,16 +211,16 @@ export default function BookPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Event Time</label>
-                      <input name="event_time" type="time" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" style={{ colorScheme: 'dark' }} />
+                      <input name="event_time" type="time" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" style={{ colorScheme: 'dark' }} />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Location</label>
-                      <input name="location" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" placeholder="Stadium, Park, Studio, etc." />
+                      <input name="location" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" placeholder="Stadium, Park, Studio, etc." />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Additional Details</label>
-                    <textarea name="message" rows={4} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50 resize-none" placeholder="Tell me more about the shoot..." />
+                    <textarea name="message" rows={4} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none" placeholder="Tell me more about the shoot..." />
                   </div>
                 </div>
 

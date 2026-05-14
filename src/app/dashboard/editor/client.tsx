@@ -104,7 +104,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
               </div>
             </div>
             {isSaving && (
-               <div className="flex items-center gap-2 text-blue-500 animate-pulse">
+               <div className="flex items-center gap-2 text-brand-accent animate-pulse">
                  <RefreshCw size={12} className="animate-spin" />
                  <span className="text-[10px] font-black uppercase tracking-widest">Syncing Site vibe...</span>
                </div>
@@ -150,7 +150,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
           </div>
           <button 
             onClick={() => setShowPhotoPicker({ active: true, target: 'featured' })}
-            className="text-xs font-black uppercase tracking-widest text-blue-500 hover:text-blue-400"
+            className="text-xs font-black uppercase tracking-widest text-brand-accent hover:text-brand-accent"
           >
             Manage Featured
           </button>
@@ -190,12 +190,12 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                    <div 
                      key={photo.id} 
                      onClick={() => showPhotoPicker.target === 'hero' ? updateHeroImage(photo.image_url) : toggleFeatured(photo)}
-                     className="relative aspect-square cursor-pointer group border-2 border-transparent hover:border-blue-500 transition-all"
+                     className="relative aspect-square cursor-pointer group border-2 border-transparent hover:border-brand-accent transition-all"
                    >
                       <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
                       {photo.is_featured && showPhotoPicker.target === 'featured' && (
-                        <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 px-3 py-1">Featured</span>
+                        <div className="absolute inset-0 bg-brand-accent/20 flex items-center justify-center">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-brand-accent px-3 py-1">Featured</span>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">

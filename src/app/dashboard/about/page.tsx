@@ -74,11 +74,11 @@ export default function AboutEditorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name</label>
-              <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" required />
+              <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" required />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name</label>
-              <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" required />
+              <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" required />
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@ export default function AboutEditorPage() {
               name="about_bio" 
               defaultValue={settings?.about_bio} 
               rows={8}
-              className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50 resize-none leading-relaxed" 
+              className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none leading-relaxed" 
               required 
             />
           </div>
@@ -151,12 +151,12 @@ export default function AboutEditorPage() {
                    <div 
                      key={photo.id} 
                      onClick={() => selectImage(photo.image_url)}
-                     className={`relative aspect-square cursor-pointer group border-2 transition-all ${settings.about_image_url === photo.image_url ? 'border-blue-500' : 'border-transparent hover:border-white/20'}`}
+                     className={`relative aspect-square cursor-pointer group border-2 transition-all ${settings.about_image_url === photo.image_url ? 'border-brand-accent' : 'border-transparent hover:border-white/20'}`}
                    >
                       <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
                       {settings.about_image_url === photo.image_url && (
-                        <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 px-3 py-1">Active</span>
+                        <div className="absolute inset-0 bg-brand-accent/20 flex items-center justify-center">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-brand-accent px-3 py-1">Active</span>
                         </div>
                       )}
                    </div>

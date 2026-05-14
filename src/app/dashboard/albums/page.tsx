@@ -110,7 +110,7 @@ export default function AlbumManager() {
                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
                <div className="absolute top-4 right-4">
                   {album.is_private ? (
-                    <div className="px-3 py-1 bg-blue-600 rounded-full flex items-center gap-2">
+                    <div className="px-3 py-1 bg-brand-accent rounded-full flex items-center gap-2">
                        <Lock size={10} className="text-white" />
                        <span className="text-[8px] font-black uppercase tracking-widest text-white">Private Vault</span>
                     </div>
@@ -150,9 +150,9 @@ export default function AlbumManager() {
                          </span>
                          <button 
                            onClick={() => handleCopy(`${window.location.origin}${album.is_private ? '/gallery/' : '/albums/'}${album.slug}`, album.id + '_url')}
-                           className="text-blue-500 hover:text-white transition-colors"
+                           className="text-brand-accent hover:text-white transition-colors"
                          >
-                            {copiedId === album.id + '_url' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                            {copiedId === album.id + '_url' ? <Check size={12} className="text-brand-accent" /> : <Copy size={12} />}
                          </button>
                       </div>
                    </div>
@@ -160,13 +160,13 @@ export default function AlbumManager() {
                    {album.is_private && album.passcode && (
                      <div className="flex flex-col gap-2">
                         <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Access Passcode</span>
-                        <div className="flex items-center justify-between p-3 bg-blue-600/5 rounded-sm border border-blue-600/20 group/pass">
-                           <span className="text-[10px] font-mono font-black tracking-widest text-blue-400">{album.passcode}</span>
+                        <div className="flex items-center justify-between p-3 bg-brand-accent/5 rounded-sm border border-brand-accent/20 group/pass">
+                           <span className="text-[10px] font-mono font-black tracking-widest text-brand-accent">{album.passcode}</span>
                            <button 
                              onClick={() => handleCopy(album.passcode, album.id + '_pass')}
-                             className="text-blue-400 hover:text-white transition-colors"
+                             className="text-brand-accent hover:text-white transition-colors"
                            >
-                              {copiedId === album.id + '_pass' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                              {copiedId === album.id + '_pass' ? <Check size={12} className="text-brand-accent" /> : <Copy size={12} />}
                            </button>
                         </div>
                      </div>
@@ -176,7 +176,7 @@ export default function AlbumManager() {
                 <div className="grid grid-cols-2 gap-4 mb-8">
                    <div>
                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Engagement</span>
-                      <span className="text-sm font-black text-emerald-400">{album.vault_views || 0} Views</span>
+                      <span className="text-sm font-black text-brand-accent">{album.vault_views || 0} Views</span>
                    </div>
                    <div>
                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Sync Status</span>
@@ -196,7 +196,7 @@ export default function AlbumManager() {
                    <Link 
                      href={album.is_private ? `/gallery/${album.slug}` : `/albums/${album.slug}`}
                      target="_blank"
-                     className="flex-1 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-blue-500 transition-all rounded-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                     className="flex-1 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-brand-accent transition-all rounded-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
                    >
                      View Live <ExternalLink size={10} />
                    </Link>
@@ -248,17 +248,17 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Album Title</label>
-                 <input name="title" defaultValue={album?.title} required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+                 <input name="title" defaultValue={album?.title} required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
               </div>
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">URL Slug</label>
-                 <input name="slug" defaultValue={album?.slug} placeholder="athlete-name-event" required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+                 <input name="slug" defaultValue={album?.slug} placeholder="athlete-name-event" required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
               </div>
             </div>
 
             <div className="space-y-2">
                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Client Name</label>
-               <input name="client_name" defaultValue={album?.client_name} placeholder="e.g. LeBron James" className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+               <input name="client_name" defaultValue={album?.client_name} placeholder="e.g. LeBron James" className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
             </div>
 
             <div className="p-6 bg-zinc-900/50 rounded-xl border border-white/5 space-y-6">
@@ -272,7 +272,7 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
                    name="is_private" 
                    checked={isPrivate} 
                    onChange={togglePrivacy}
-                   className="w-6 h-6 accent-blue-600" 
+                   className="w-6 h-6 accent-brand-accent" 
                  />
               </div>
               <div className="space-y-2">
@@ -282,7 +282,7 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
                       <button 
                         type="button" 
                         onClick={() => setPasscode(generatePasscode())}
-                        className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-white flex items-center gap-1 transition-colors"
+                        className="text-[9px] font-black uppercase tracking-widest text-brand-accent hover:text-white flex items-center gap-1 transition-colors"
                       >
                         <RefreshCw size={10} /> Regenerate
                       </button>
@@ -293,7 +293,7 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
                    value={passcode} 
                    onChange={(e) => setPasscode(e.target.value)}
                    placeholder="SECRET123" 
-                   className="w-full bg-black border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm font-mono tracking-widest" 
+                   className="w-full bg-black border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm font-mono tracking-widest" 
                  />
               </div>
             </div>

@@ -137,6 +137,14 @@ body {
   background: var(--accent-primary);
 }
 
+.text-brand-accent { color: var(--accent-primary); }
+.bg-brand-accent { background-color: var(--accent-primary); }
+.border-brand-accent { border-color: var(--accent-primary); }
+.bg-brand-glow { background-color: var(--accent-glow); }
+.border-brand-glow { border-color: var(--accent-border); }
+.ring-brand-accent { --tw-ring-color: var(--accent-border); }
+.accent-brand-accent { accent-color: var(--accent-primary); }
+
 .container-premium {
   width: 100%;
   max-width: 3200px;

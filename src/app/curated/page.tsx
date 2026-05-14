@@ -177,7 +177,7 @@ export default function CuratedCollectionPage() {
                          target="_blank"
                          rel="noopener noreferrer"
                          download
-                         className="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+                         className="px-6 py-4 bg-brand-accent hover:bg-brand-accent text-white rounded-full transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
                        >
                           <Download size={20} />
                           <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">Download High-Res Master</span>

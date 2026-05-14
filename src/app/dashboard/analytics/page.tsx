@@ -114,7 +114,7 @@ export default function AnalyticsPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
-       <Loader2 className="animate-spin text-blue-500" size={40} />
+       <Loader2 className="animate-spin text-brand-accent" size={40} />
        <p className="text-zinc-500 uppercase font-black tracking-[0.3em] text-[10px]">Generating Intelligence...</p>
     </div>
   );
@@ -124,7 +124,7 @@ export default function AnalyticsPage() {
       {/* 1. HEADER */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-12">
         <div>
-          <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Intelligence.Hub</span>
+          <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Intelligence.Hub</span>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">Business <br/><span className="text-zinc-800">Analytics.</span></h1>
         </div>
         <div className="flex gap-4">
@@ -140,7 +140,7 @@ export default function AnalyticsPage() {
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block flex items-center gap-2">Realized Revenue <Info size={10} className="opacity-30" /></span>
             <div className="flex items-end gap-2">
                <h3 className="text-4xl font-black tracking-tighter text-white">${stats.grossRevenue.toLocaleString()}</h3>
-               <TrendingUp className="text-emerald-500 mb-2" size={18} />
+               <TrendingUp className="text-brand-accent mb-2" size={18} />
             </div>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
                Delivered & Paid Projects
@@ -149,7 +149,7 @@ export default function AnalyticsPage() {
 
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Total Pipeline</span>
-            <h3 className="text-4xl font-black tracking-tighter text-blue-500">${stats.projectedRevenue.toLocaleString()}</h3>
+            <h3 className="text-4xl font-black tracking-tighter text-brand-accent">${stats.projectedRevenue.toLocaleString()}</h3>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
                Inquiries to Editing
             </div>
@@ -158,7 +158,7 @@ export default function AnalyticsPage() {
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">In Fulfillment</span>
             <h3 className="text-4xl font-black tracking-tighter text-white">${stats.activePipelineValue.toLocaleString()}</h3>
-            <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-emerald-500">
+            <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-brand-accent">
                Confirmed projects
             </div>
          </motion.div>
@@ -176,7 +176,7 @@ export default function AnalyticsPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-md">
             <div className="flex justify-between items-start mb-6">
-               <div className="p-3 bg-blue-500/10 rounded-lg text-blue-500">
+               <div className="p-3 bg-brand-accent/10 rounded-lg text-brand-accent">
                   <ImageIcon size={20} />
                </div>
                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Total Assets</span>
@@ -198,7 +198,7 @@ export default function AnalyticsPage() {
 
          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-md">
             <div className="flex justify-between items-start mb-6">
-               <div className="p-3 bg-purple-500/10 rounded-lg text-purple-500">
+               <div className="p-3 bg-brand-accent/10 rounded-lg text-brand-accent">
                   <Album size={20} />
                </div>
                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Active Albums</span>
@@ -214,7 +214,7 @@ export default function AnalyticsPage() {
          <section className="premium-card p-10 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
-                  <BarChart3 className="text-blue-500" size={18} />
+                  <BarChart3 className="text-brand-accent" size={18} />
                   <h3 className="text-sm font-black uppercase tracking-widest text-white">Revenue Growth</h3>
                </div>
                <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Confirmed & Delivered</span>
@@ -226,7 +226,7 @@ export default function AnalyticsPage() {
                         <motion.div 
                            initial={{ height: 0 }} 
                            animate={{ height: stats.grossRevenue > 0 ? `${(m.amount / stats.grossRevenue) * 100}%` : '4px' }}
-                           className={`w-full ${m.amount > 0 ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.2)]' : 'bg-zinc-800/50'} rounded-t-sm group-hover:bg-blue-500 transition-all`}
+                           className={`w-full ${m.amount > 0 ? 'bg-brand-accent shadow-[0_0_20px_rgba(37,99,235,0.2)]' : 'bg-zinc-800/50'} rounded-t-sm group-hover:bg-brand-accent transition-all`}
                         >
                            {m.amount > 0 && (
                               <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-3 py-1 rounded-sm font-black text-[10px] whitespace-nowrap">
@@ -245,16 +245,16 @@ export default function AnalyticsPage() {
          <section className="premium-card p-10 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
-                  <Activity className="text-emerald-500" size={18} />
+                  <Activity className="text-brand-accent" size={18} />
                   <h3 className="text-sm font-black uppercase tracking-widest text-white">Pipeline Velocity</h3>
                </div>
                <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Projects by Stage</span>
             </div>
             <div className="space-y-6">
                {[
-                 { id: 'lead', label: 'Leads', icon: Clock, color: 'bg-blue-500' },
-                 { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'bg-emerald-500' },
-                 { id: 'shooting', label: 'Shooting', icon: Camera, color: 'bg-purple-500' },
+                 { id: 'lead', label: 'Leads', icon: Clock, color: 'bg-brand-accent' },
+                 { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'bg-brand-accent' },
+                 { id: 'shooting', label: 'Shooting', icon: Camera, color: 'bg-brand-accent' },
                  { id: 'editing', label: 'Editing', icon: Edit3, color: 'bg-amber-500' },
                  { id: 'delivered', label: 'Delivered', icon: Send, color: 'bg-zinc-500' }
                ].map((stage) => {
@@ -293,7 +293,7 @@ export default function AnalyticsPage() {
                  placeholder="Search ledger..."
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-sm text-xs text-white outline-none focus:border-blue-500/50 transition-all"
+                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-sm text-xs text-white outline-none focus:border-brand-accent/50 transition-all"
                />
             </div>
             <div className="flex items-center gap-4">
@@ -341,7 +341,7 @@ export default function AnalyticsPage() {
                                <td className="px-8 py-6 text-white font-black text-sm">${(b.total_amount || 0).toLocaleString()}</td>
                                <td className="px-8 py-6">
                                   <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                                     b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-500'
+                                     b.status === 'confirmed' ? 'bg-brand-accent/10 text-brand-accent border border-brand-accent/20' : 'bg-zinc-800 text-zinc-500'
                                   }`}>
                                      {b.pipeline_stage || b.status}
                                   </span>
@@ -374,7 +374,7 @@ export default function AnalyticsPage() {
                          <div className="flex justify-between items-start mb-4">
                             <div>
                                <div className="font-black text-white uppercase tracking-tight text-lg">{b.name}</div>
-                               <div className="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-1">{b.shoot_type}</div>
+                               <div className="text-[10px] text-brand-accent font-black uppercase tracking-widest mt-1">{b.shoot_type}</div>
                             </div>
                             <button onClick={() => setDeletingId(b.id)} className="text-zinc-700 hover:text-red-500"><Trash2 size={16} /></button>
                          </div>
@@ -390,7 +390,7 @@ export default function AnalyticsPage() {
                          </div>
                          <div className="flex justify-between items-center">
                             <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                               b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-800 text-zinc-500'
+                               b.status === 'confirmed' ? 'bg-brand-accent/10 text-brand-accent' : 'bg-zinc-800 text-zinc-500'
                             }`}>
                                {b.pipeline_stage || b.status}
                             </span>

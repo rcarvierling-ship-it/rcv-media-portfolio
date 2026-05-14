@@ -166,13 +166,13 @@ export default function HomePage() {
           {[...Array(8)].map((_, i) => (
             <div key={i} className="flex items-center gap-8 px-4">
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Tournament Coverage</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
@@ -182,13 +182,13 @@ export default function HomePage() {
           {[...Array(8)].map((_, i) => (
             <div key={i} className="flex items-center gap-8 px-4">
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Tournament Coverage</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
@@ -289,7 +289,7 @@ export default function HomePage() {
                   </div>
                   
                   <div className="absolute bottom-10 left-10 pr-10">
-                     <h3 className="text-3xl font-black uppercase text-white mb-4 tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-blue-500 transition-all">{cat.title}</h3>
+                     <h3 className="text-3xl font-black uppercase text-white mb-4 tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-brand-accent transition-all">{cat.title}</h3>
                      <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-[200px]">{cat.desc}</p>
                   </div>
                   
@@ -315,7 +315,7 @@ export default function HomePage() {
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 block mb-6 border border-zinc-800 px-3 py-1 rounded-full w-fit">Services</span>
                 <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter text-white leading-[0.9] mb-8">
                   Built For <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-800">The Moment</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent">The Moment</span>
                 </h2>
                 <p className="text-zinc-400 font-light text-lg leading-relaxed mb-10">
                   Delivering imagery that demands attention. From the intensity of a championship game to the sleek aesthetic of a media day.

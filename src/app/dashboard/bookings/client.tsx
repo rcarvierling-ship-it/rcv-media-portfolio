@@ -24,12 +24,12 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const STAGES = [
-  { id: 'lead', label: 'Leads', icon: Clock, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-  { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { id: 'shooting', label: 'Shooting', icon: Camera, color: 'text-purple-400', bg: 'bg-purple-400/10' },
-  { id: 'editing', label: 'Editing', icon: Edit3, color: 'text-amber-400', bg: 'bg-amber-400/10' },
+  { id: 'lead', label: 'Leads', icon: Clock, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+  { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+  { id: 'shooting', label: 'Shooting', icon: Camera, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+  { id: 'editing', label: 'Editing', icon: Edit3, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
   { id: 'delivered', label: 'Delivered', icon: Send, color: 'text-zinc-400', bg: 'bg-zinc-400/10' },
-  { id: 'paid', label: 'Payment Received', icon: DollarSign, color: 'text-emerald-500', bg: 'bg-emerald-500/10' }
+  { id: 'paid', label: 'Payment Received', icon: DollarSign, color: 'text-brand-accent', bg: 'bg-brand-accent/10' }
 ];
 
 export function BookingsAdminClient({ 
@@ -151,7 +151,7 @@ export function BookingsAdminClient({
       {/* COMMAND CENTER HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b border-white/5 pb-12">
         <div className="space-y-2">
-          <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em]">Fulfillment.Active</span>
+          <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em]">Fulfillment.Active</span>
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">Command <br/> <span className="text-zinc-800">Center.</span></h1>
         </div>
 
@@ -220,7 +220,7 @@ export function BookingsAdminClient({
              {/* 1. BOOKING GUARDRAILS */}
              <div className="premium-card p-10 border border-white/5 bg-zinc-900/20 rounded-sm">
                 <div className="flex items-center gap-4 mb-10">
-                   <div className="w-12 h-12 bg-blue-600/10 text-blue-500 rounded-full flex items-center justify-center"><Clock size={20} /></div>
+                   <div className="w-12 h-12 bg-brand-accent/10 text-brand-accent rounded-full flex items-center justify-center"><Clock size={20} /></div>
                    <div>
                       <h2 className="text-xl font-black uppercase tracking-tighter text-white">Booking Guardrails</h2>
                       <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest">Control your scheduling window</p>
@@ -235,7 +235,7 @@ export function BookingsAdminClient({
                            type="range" min="1" max="60" 
                            value={siteSettings.booking_min_advance_days} 
                            onChange={(e) => setSiteSettings({ ...siteSettings, booking_min_advance_days: parseInt(e.target.value) })}
-                           className="flex-1 accent-blue-600"
+                           className="flex-1 accent-brand-accent"
                          />
                          <span className="text-2xl font-black text-white w-12">{siteSettings.booking_min_advance_days}d</span>
                       </div>
@@ -249,7 +249,7 @@ export function BookingsAdminClient({
                            type="range" min="30" max="365" 
                            value={siteSettings.booking_max_advance_days} 
                            onChange={(e) => setSiteSettings({ ...siteSettings, booking_max_advance_days: parseInt(e.target.value) })}
-                           className="flex-1 accent-blue-600"
+                           className="flex-1 accent-brand-accent"
                          />
                          <span className="text-2xl font-black text-white w-12">{siteSettings.booking_max_advance_days}d</span>
                       </div>
@@ -258,7 +258,7 @@ export function BookingsAdminClient({
 
                 <div className="mt-12 flex justify-between items-center pt-8 border-t border-white/5">
                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${siteSettings.booking_is_active ? 'bg-blue-600' : 'bg-zinc-800'}`} onClick={() => setSiteSettings({ ...siteSettings, booking_is_active: !siteSettings.booking_is_active })}>
+                      <div className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${siteSettings.booking_is_active ? 'bg-brand-accent' : 'bg-zinc-800'}`} onClick={() => setSiteSettings({ ...siteSettings, booking_is_active: !siteSettings.booking_is_active })}>
                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${siteSettings.booking_is_active ? 'left-5' : 'left-1'}`} />
                       </div>
                       <span className="text-[10px] font-black uppercase tracking-widest text-white">Accepting New Leads</span>
@@ -275,7 +275,7 @@ export function BookingsAdminClient({
                      <div key={pkg.id} className="premium-card p-8 border border-white/5 bg-zinc-900/20 rounded-sm">
                         <input className="bg-transparent text-xl font-black uppercase text-white mb-6 border-b border-white/5 outline-none w-full" value={pkg.name} onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, name: e.target.value } : p))} />
                         <div className="flex items-center gap-2 mb-6">
-                           <DollarSign size={16} className="text-emerald-500" />
+                           <DollarSign size={16} className="text-brand-accent" />
                            <input className="bg-transparent text-2xl font-black text-white outline-none" value={pkg.price} onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, price: e.target.value } : p))} />
                         </div>
                         <button onClick={() => handleSavePackage(pkg)} className="w-full py-3 bg-white/5 border border-white/10 text-white font-black uppercase text-[9px] tracking-widest hover:bg-white/10 transition-all">Save Changes</button>
@@ -330,13 +330,13 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
   return (
     <>
       <motion.div layout className="bg-zinc-900/50 backdrop-blur-md border border-white/5 p-6 rounded-sm relative group hover:border-white/20 transition-all">
-        {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-blue-500" /></div>)}
+        {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-brand-accent" /></div>)}
         <div className="flex justify-between items-start mb-6">
             <div className="cursor-pointer group/title" onClick={() => setShowDetails(true)}>
-              <h4 className="text-base font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors">{booking.name}</h4>
+              <h4 className="text-base font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-brand-accent transition-colors">{booking.name}</h4>
                 <div className="flex items-center gap-3 flex-wrap">
-                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
-                  <span className="text-[9px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
+                  <span className="text-[9px] font-black text-brand-accent uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
+                  <span className="text-[9px] text-brand-accent font-black uppercase tracking-widest flex items-center gap-1">
                     <DollarSign size={8} /> {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(booking.total_amount || 0)}
                   </span>
                 </div>
@@ -345,7 +345,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               {stage.id === 'lead' && (
                 <button 
                   onClick={() => { onMove(booking.id, 'confirmed'); onSetStatus(booking.id, 'confirmed'); }} 
-                  className="p-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all rounded-sm group/check"
+                  className="p-2 bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-white transition-all rounded-sm group/check"
                   title="Confirm & Move"
                 >
                   <Check size={14} className="group-hover/check:scale-110 transition-transform" />
@@ -387,15 +387,15 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               <div className="space-y-3">
                 <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Fulfillment Asset</span>
                 {linkedAlbum ? (
-                  <div className="flex items-center justify-between p-3 bg-blue-500/5 border border-blue-500/20 rounded-sm">
+                  <div className="flex items-center justify-between p-3 bg-brand-accent/5 border border-brand-accent/20 rounded-sm">
                     <div className="flex items-center gap-3">
-                      <ImageIcon size={14} className="text-blue-500" />
+                      <ImageIcon size={14} className="text-brand-accent" />
                       <span className="text-[11px] font-bold uppercase text-white truncate max-w-[120px]">{linkedAlbum.title}</span>
                     </div>
-                    <button onClick={() => setShowAlbumLinker(true)} className="text-[9px] font-black uppercase text-blue-500 hover:text-white">Change</button>
+                    <button onClick={() => setShowAlbumLinker(true)} className="text-[9px] font-black uppercase text-brand-accent hover:text-white">Change</button>
                   </div>
                 ) : (
-                  <button onClick={() => setShowAlbumLinker(true)} className="w-full py-3 border border-dashed border-zinc-800 text-zinc-600 hover:border-blue-500 hover:text-blue-500 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                  <button onClick={() => setShowAlbumLinker(true)} className="w-full py-3 border border-dashed border-zinc-800 text-zinc-600 hover:border-brand-accent hover:text-brand-accent text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
                     <Plus size={14} /> Link Gallery
                   </button>
                 )}
@@ -404,7 +404,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
 
             {stage.id === 'delivered' && (
               <div className="space-y-4 bg-zinc-950 p-4 border border-white/5 rounded-sm">
-                <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-2">
+                <div className="flex items-center gap-2 text-brand-accent text-[10px] font-black uppercase tracking-widest mb-2">
                   <CheckCircle size={14} /> Ready for Delivery
                 </div>
                 <div className="space-y-2">
@@ -420,7 +420,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
                 <button 
                   disabled={isDelivering || !linkedAlbum}
                   onClick={handleGalleryDelivery} 
-                  className="w-full py-3 bg-blue-600 text-white font-black uppercase text-[9px] tracking-widest rounded-sm hover:bg-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full py-3 bg-brand-accent text-white font-black uppercase text-[9px] tracking-widest rounded-sm hover:bg-brand-accent transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   {isDelivering ? <Loader2 className="animate-spin" size={12} /> : <Send size={12} />} 
                   {isDelivering ? 'Dispatching...' : 'Email Gallery Link'}
@@ -435,7 +435,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
                   <Calendar size={12} />
                   <span>{booking.event_date || 'Date TBD'}</span>
               </div>
-              <div className="flex items-center gap-1 text-emerald-500">
+              <div className="flex items-center gap-1 text-brand-accent">
                   <DollarSign size={14} />
                   <input 
                     type="number" 
@@ -449,7 +449,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               <button disabled={stage.id === 'lead'} onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx-1].id); }} className="flex-1 py-3 bg-zinc-800 text-white rounded-sm disabled:opacity-20 flex items-center justify-center hover:bg-zinc-700 transition-colors">
                   <ChevronRight size={16} className="rotate-180" />
               </button>
-              <button onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx+1].id); }} className={`flex-[3] py-3 rounded-sm flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] gap-2 transition-all ${stage.id === 'delivered' ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-white text-black hover:bg-zinc-200'}`}>
+              <button onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx+1].id); }} className={`flex-[3] py-3 rounded-sm flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] gap-2 transition-all ${stage.id === 'delivered' ? 'bg-brand-accent text-black hover:bg-brand-accent' : 'bg-white text-black hover:bg-zinc-200'}`}>
                   {stage.id === 'lead' ? 'CONFIRM LEAD' : stage.id === 'delivered' ? 'PAYMENT RECEIVED' : 'NEXT STAGE'} <ChevronRight size={16} />
               </button>
             </div>
@@ -468,7 +468,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
                   <button 
                     key={album.id} 
                     onClick={() => { onLinkAlbum(booking.id, album.id); setShowAlbumLinker(false); }} 
-                    className={`w-full p-4 text-left rounded-sm border transition-all ${booking.linked_album_id === album.id ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
+                    className={`w-full p-4 text-left rounded-sm border transition-all ${booking.linked_album_id === album.id ? 'border-brand-accent bg-brand-accent/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
                   >
                     <p className="text-[11px] font-bold uppercase text-white truncate">{album.title}</p>
                     <p className="text-[9px] text-zinc-500 uppercase">{album.is_private ? 'Private Vault' : 'Public Gallery'}</p>
@@ -488,7 +488,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               <button onClick={() => setShowDetails(false)} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"><X size={24} /></button>
               
               <div className="mb-10">
-                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">Project Details</span>
+                <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">Project Details</span>
                 <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-2">{booking.name}</h2>
                 <p className="text-zinc-500 text-[11px] font-black uppercase tracking-widest">{booking.email} • {booking.phone || 'No Phone'}</p>
               </div>
@@ -511,7 +511,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
 
                 <div className="space-y-6 bg-black/30 p-6 border border-white/5 rounded-sm">
                   <div>
-                    <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-2">Financial Snapshot</p>
+                    <p className="text-[9px] font-black text-brand-accent uppercase tracking-widest mb-2">Financial Snapshot</p>
                     <div className="flex items-center gap-2">
                       <span className="text-3xl font-black text-white">$</span>
                       <input 
@@ -524,7 +524,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
                   </div>
                   <div>
                     <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Payment Status</p>
-                    <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full border ${booking.payment_status === 'paid' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                    <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full border ${booking.payment_status === 'paid' ? 'bg-brand-accent/10 text-brand-accent border-brand-accent/20' : 'bg-brand-accent/10 text-brand-accent border-brand-accent/20'}`}>
                       {booking.payment_status || 'Pending'}
                     </span>
                   </div>
@@ -532,7 +532,7 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               </div>
 
               {booking.message && (
-                <div className="mb-10 p-6 bg-zinc-950 border-l-2 border-blue-600">
+                <div className="mb-10 p-6 bg-zinc-950 border-l-2 border-brand-accent">
                   <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">Client Message</p>
                   <p className="text-zinc-400 text-sm leading-relaxed italic">"{booking.message}"</p>
                 </div>

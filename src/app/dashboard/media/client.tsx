@@ -246,7 +246,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                    <div 
                      {...getRootProps()} 
                      className={`border-2 border-dashed h-40 rounded-sm flex flex-col items-center justify-center gap-4 transition-all cursor-pointer ${
-                       isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20 bg-black/40'
+                       isDragActive ? 'border-brand-accent bg-brand-accent/5' : 'border-white/5 hover:border-white/20 bg-black/40'
                      }`}
                    >
                       <input {...getInputProps()} />
@@ -290,7 +290,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                       <select 
                                         value={item.category} 
                                         onChange={(e) => updateStaged(index, { category: e.target.value })}
-                                        className="w-full bg-zinc-900 border border-white/5 px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-blue-500/50 transition-all"
+                                        className="w-full bg-zinc-900 border border-brand-border px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-brand-accent transition-all"
                                       >
                                          {PORTFOLIO_TAGS.map(tag => <option key={tag} value={tag}>{tag}</option>)}
                                       </select>
@@ -300,7 +300,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                       <select 
                                         value={item.album_id} 
                                         onChange={(e) => updateStaged(index, { album_id: e.target.value })}
-                                        className="w-full bg-zinc-900 border border-white/5 px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-blue-500/50 transition-all"
+                                        className="w-full bg-zinc-900 border border-white/5 px-3 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-brand-accent/50 transition-all"
                                       >
                                          <option value="">No Album</option>
                                          {albums.map(a => <option key={a.id} value={a.id}>{a.title}</option>)}
@@ -310,7 +310,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                       <button 
                                         onClick={() => updateStaged(index, { is_curated: !item.is_curated })}
                                         className={`flex-1 py-2 px-3 border text-[8px] font-black uppercase tracking-widest transition-all ${
-                                          item.is_curated ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-transparent border-white/5 text-zinc-600'
+                                          item.is_curated ? 'bg-brand-glow border-brand-border text-brand-accent' : 'bg-transparent border-white/5 text-zinc-600'
                                         }`}
                                       >
                                          {item.is_curated ? 'Live in Hub' : 'Archive Only'}
@@ -318,7 +318,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                       <button 
                                         onClick={() => updateStaged(index, { is_featured: !item.is_featured })}
                                         className={`flex-1 py-2 px-3 border text-[8px] font-black uppercase tracking-widest transition-all ${
-                                          item.is_featured ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-transparent border-white/5 text-zinc-600'
+                                          item.is_featured ? 'bg-brand-glow border-brand-border text-brand-accent' : 'bg-transparent border-white/5 text-zinc-600'
                                         }`}
                                       >
                                          {item.is_featured ? 'Featured' : 'Standard'}
@@ -363,7 +363,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
               placeholder="Search your library..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-blue-500/50 transition-all"
+              className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-accent transition-all"
             />
          </div>
          <div className="flex flex-wrap gap-3">
@@ -372,7 +372,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                 key={cat} 
                 onClick={() => setCategoryFilter(cat)}
                 className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest border transition-all whitespace-nowrap ${
-                  categoryFilter === cat ? 'bg-blue-600 border-blue-600 text-white' : 'border-white/5 text-zinc-500 hover:text-white'
+                  categoryFilter === cat ? 'bg-brand-accent border-brand-accent text-white' : 'border-white/5 text-zinc-500 hover:text-white'
                 }`}
               >
                 {cat}
@@ -388,7 +388,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
               layout
               key={photo.id}
               className={`relative aspect-square group bg-zinc-900 border transition-all overflow-hidden rounded-sm ${
-                selectedPhoto?.id === photo.id ? 'border-blue-500 ring-2 ring-blue-500/20' : 'border-white/5'
+                selectedPhoto?.id === photo.id ? 'border-brand-accent ring-2 ring-brand-glow' : 'border-white/5'
               }`}
            >
               <img src={photo.image_url} alt={photo.title} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" />
@@ -396,7 +396,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
               {/* Curation Badges */}
               <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
                  {photo.is_curated ? (
-                   <div className="bg-emerald-500 text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
+                   <div className="bg-brand-accent text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
                       <Check size={8} /> Live
                    </div>
                  ) : (
@@ -405,7 +405,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                    </div>
                  )}
                  {photo.is_featured && (
-                   <div className="bg-blue-500 text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
+                   <div className="bg-brand-accent text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
                       <Star size={8} fill="currentColor" /> Featured
                    </div>
                  )}
@@ -416,12 +416,12 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                  <div className="flex justify-between items-start">
                     <button 
                       onClick={() => handleToggleFeatured(photo)}
-                      className={`p-2 rounded-full transition-all ${photo.is_featured ? 'text-blue-500 bg-white' : 'text-white hover:text-blue-500 bg-black/40'}`}
+                      className={`p-2 rounded-full transition-all ${photo.is_featured ? 'text-brand-accent bg-white' : 'text-white hover:text-brand-accent bg-black/40'}`}
                     >
                       <Star size={14} fill={photo.is_featured ? "currentColor" : "none"} />
                     </button>
                     <div className="flex gap-2">
-                       <button onClick={() => setSelectedPhoto(photo)} className="p-2 text-white hover:text-blue-500 bg-black/40 rounded-full transition-all"><Edit3 size={14} /></button>
+                       <button onClick={() => setSelectedPhoto(photo)} className="p-2 text-white hover:text-brand-accent bg-black/40 rounded-full transition-all"><Edit3 size={14} /></button>
                     </div>
                  </div>
                  <div className="flex justify-between items-end">
@@ -435,7 +435,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
               {isProcessing === photo.id && (
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center">
-                   <Loader2 className="animate-spin text-blue-500" />
+                   <Loader2 className="animate-spin text-brand-accent" />
                 </div>
               )}
            </motion.div>
@@ -458,7 +458,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                  <button onClick={() => setSelectedPhoto(null)} className="absolute top-8 right-8 text-zinc-500 hover:text-white transition-colors"><X size={24} /></button>
                  
                  <div className="mb-12">
-                    <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Asset Intelligence</span>
+                    <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Asset Intelligence</span>
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-4">Edit Details</h2>
                  </div>
 
@@ -482,7 +482,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                     <div className="space-y-4">
                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Asset Title</label>
                        <input 
-                         className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold"
+                         className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold"
                          value={selectedPhoto.title || ""}
                          onChange={(e) => setSelectedPhoto({ ...selectedPhoto, title: e.target.value })}
                          onBlur={(e) => handleUpdatePhoto(selectedPhoto.id, { title: e.target.value })}
@@ -493,7 +493,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                        <div className="space-y-4">
                           <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Image Tag</label>
                           <select 
-                            className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase"
+                            className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase"
                             value={selectedPhoto.category || ""}
                             onChange={(e) => handleUpdatePhoto(selectedPhoto.id, { category: e.target.value })}
                           >
@@ -505,7 +505,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                        <div className="space-y-4">
                           <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Associated Album</label>
                           <select 
-                            className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase"
+                            className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase"
                             value={selectedPhoto.album_id || ""}
                             onChange={(e) => handleUpdatePhoto(selectedPhoto.id, { album_id: e.target.value || null })}
                           >
@@ -525,12 +525,12 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                           </div>
                           <button 
                             onClick={() => handleToggleCurated(selectedPhoto)}
-                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_curated ? 'bg-emerald-600' : 'bg-zinc-800'}`}
+                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_curated ? 'bg-brand-accent' : 'bg-zinc-800'}`}
                           >
                              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_curated ? 'left-7' : 'left-1'}`} />
                           </button>
                        </div>
-
+ 
                        <div className="flex items-center justify-between p-6 bg-zinc-900/50 border border-white/5 rounded-sm">
                           <div>
                              <p className="text-[10px] font-black uppercase tracking-widest text-white mb-1">Feature on Homepage</p>
@@ -538,19 +538,19 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                           </div>
                           <button 
                             onClick={() => handleToggleFeatured(selectedPhoto)}
-                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_featured ? 'bg-blue-600' : 'bg-zinc-800'}`}
+                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_featured ? 'bg-brand-accent' : 'bg-zinc-800'}`}
                           >
                              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_featured ? 'left-7' : 'left-1'}`} />
                           </button>
                        </div>
 
                        {selectedPhoto.raw_image_url && (
-                         <div className="flex items-center justify-between p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-sm">
+                         <div className="flex items-center justify-between p-6 bg-brand-glow border border-brand-border rounded-sm">
                             <div>
-                               <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-1">Master Collection Asset</p>
+                               <p className="text-[10px] font-black uppercase tracking-widest text-brand-accent mb-1">Master Collection Asset</p>
                                <p className="text-[9px] text-zinc-500 uppercase">High-resolution archive is active and secure</p>
                             </div>
-                            <div className="p-2 bg-emerald-500/20 rounded-full text-emerald-500">
+                            <div className="p-2 bg-brand-glow rounded-full text-brand-accent">
                                <HardDrive size={16} />
                             </div>
                          </div>

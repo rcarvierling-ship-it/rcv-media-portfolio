@@ -63,7 +63,7 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10 w-full max-w-md text-center"
         >
-          <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-10 shadow-[0_0_50px_rgba(37,99,235,0.3)]">
+          <div className="w-20 h-20 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-10 shadow-[0_0_50px_rgba(37,99,235,0.3)]">
              <Lock className="text-white" size={32} />
           </div>
           <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">Private Vault</h1>
@@ -79,7 +79,7 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
                    value={passcode}
                    onChange={(e) => setPasscode(e.target.value.toUpperCase())}
                    placeholder="ENTER PASSCODE"
-                   className={`w-full bg-zinc-900/50 border ${error ? 'border-red-500' : 'border-white/10'} px-8 py-6 text-white text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-blue-500/50 transition-all rounded-sm backdrop-blur-xl uppercase disabled:opacity-50`}
+                   className={`w-full bg-zinc-900/50 border ${error ? 'border-red-500' : 'border-white/10'} px-8 py-6 text-white text-center text-2xl font-black tracking-[0.5em] outline-none focus:border-brand-accent/50 transition-all rounded-sm backdrop-blur-xl uppercase disabled:opacity-50`}
                    autoFocus
                 />
                 {error && (
@@ -120,7 +120,7 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
         <header className="mb-20">
            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
               <div>
-                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Client Delivery</span>
+                <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Client Delivery</span>
                 <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-white mb-4 leading-none">
                   {album.title}
                 </h1>

@@ -171,7 +171,7 @@ export default function AlbumMediaManager() {
           <button 
             onClick={handleSave}
             disabled={isSaving}
-            className="px-10 py-4 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-500 transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-10 py-4 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest hover:bg-brand-accent transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {isSaving ? "Syncing..." : "Sync Vault"} <Save size={14} />
           </button>
@@ -186,16 +186,16 @@ export default function AlbumMediaManager() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="premium-card p-10 bg-blue-600/5 border border-blue-600/20 rounded-2xl">
+            <div className="premium-card p-10 bg-brand-accent/5 border border-brand-accent/20 rounded-2xl">
                <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-black uppercase tracking-tighter text-white">Direct Upload Bridge</h2>
-                  <p className="text-[10px] text-blue-400 font-black uppercase tracking-widest">Assets will be auto-linked to this vault</p>
+                  <p className="text-[10px] text-brand-accent font-black uppercase tracking-widest">Assets will be auto-linked to this vault</p>
                </div>
                
                <div 
                   {...getRootProps()} 
                   className={`border-2 border-dashed p-16 text-center cursor-pointer transition-all rounded-xl mb-8 ${
-                    isDragActive ? "border-blue-500 bg-blue-500/10" : "border-zinc-800 hover:border-blue-500/50 bg-black/40"
+                    isDragActive ? "border-brand-accent bg-brand-accent/10" : "border-zinc-800 hover:border-brand-accent/50 bg-black/40"
                   }`}
                 >
                   <input {...getInputProps()} />
@@ -239,7 +239,7 @@ export default function AlbumMediaManager() {
                  placeholder="Filter library..."
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-blue-500/50 transition-all"
+                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-accent/50 transition-all"
                />
             </div>
             <div className="flex gap-6">
@@ -258,13 +258,13 @@ export default function AlbumMediaManager() {
                     whileTap={{ scale: 0.98 }}
                     onClick={() => togglePhoto(photo.id)}
                     className={`relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all ${
-                      isSelected ? 'border-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-transparent'
+                      isSelected ? 'border-brand-accent shadow-[0_0_15px_rgba(59,130,246,0.3)]' : 'border-transparent'
                     }`}
                   >
                      <img src={photo.image_url} alt={photo.title} className={`w-full h-full object-cover transition-opacity ${isSelected ? 'opacity-100' : 'opacity-40'}`} />
                      <div className="absolute top-2 right-2">
                         {isSelected ? (
-                          <CheckCircle2 size={20} className="text-blue-500 bg-black rounded-full" />
+                          <CheckCircle2 size={20} className="text-brand-accent bg-black rounded-full" />
                         ) : (
                           <Circle size={20} className="text-white/20" />
                         )}
