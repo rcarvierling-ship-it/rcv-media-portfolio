@@ -4,6 +4,7 @@ import {
   ArrowUpRight, ArrowDownRight, Briefcase,
   Target, Zap, PieChart
 } from "lucide-react";
+import { OptimizeWorkflowButton } from "./optimize-button";
 
 export default async function AnalyticsPage() {
   const supabase = await createClient();
@@ -155,7 +156,7 @@ export default async function AnalyticsPage() {
                    <Zap size={32} className="mb-6" />
                    <h4 className="text-2xl font-black uppercase tracking-tighter mb-2">Elite Status</h4>
                    <p className="text-[11px] font-medium leading-relaxed opacity-80 mb-8 italic">"Your performance metrics are in the top 5% of regional media agencies. Keep pushing the narrative."</p>
-                   <button className="w-full py-4 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-100 transition-all">Optimize Workflow</button>
+                   <OptimizeWorkflowButton />
                 </div>
              </div>
           </div>
