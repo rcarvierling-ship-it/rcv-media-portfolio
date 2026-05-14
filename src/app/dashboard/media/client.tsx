@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import { updatePhoto, deletePhoto, addPhoto } from "@/app/actions/photos";
-import { uploadMultipleToCloudinary } from "@/app/actions/upload";
+import { uploadToCloudinary } from "@/app/actions/upload";
 import { createClient } from "@/utils/supabase/client";
 
 export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: any[], albums: any[] }) {
