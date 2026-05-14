@@ -84,4 +84,5 @@ export async function updatePhoto(id: string, updates: any) {
   revalidatePath("/");
   revalidatePath("/portfolio");
   revalidatePath("/dashboard");
+  revalidatePath("/curated");
 }

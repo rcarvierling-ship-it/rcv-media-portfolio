@@ -99,7 +99,8 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     const formData = new FormData(e.currentTarget);
     const tag = formData.get("category") as string;
     const album_id = formData.get("album_id") as string;
-    const auto_publish = formData.get("auto_publish") === "on";
+    const is_curated = formData.get("is_curated") === "on";
+    const is_featured = formData.get("is_featured") === "on";
 
     try {
       const signData = await getCloudinarySignature();
@@ -176,8 +177,8 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
           title: "RCV Frame",
           category: tag,
           album_id: album_id || null,
-          is_featured: false,
-          is_curated: auto_publish,
+          is_featured: is_featured,
+          is_curated: is_curated,
           image_url: res.secure_url,
           raw_image_url: rawImageUrl,
           raw_storage_path: filePath,
@@ -290,9 +291,15 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                          </select>
                       </div>
 
-                      <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
-                         <input type="checkbox" name="auto_publish" id="auto_publish" className="w-4 h-4 accent-blue-600" />
-                         <label htmlFor="auto_publish" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Publish Instantly to Website</label>
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
+                           <input type="checkbox" name="is_curated" id="is_curated" className="w-4 h-4 accent-blue-600" defaultChecked />
+                           <label htmlFor="is_curated" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Add to Curated Hub (Public Website)</label>
+                        </div>
+                        <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
+                           <input type="checkbox" name="is_featured" id="is_featured" className="w-4 h-4 accent-blue-600" />
+                           <label htmlFor="is_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Feature in Homepage Edit</label>
+                        </div>
                       </div>
 
                       <div className="pt-6">
