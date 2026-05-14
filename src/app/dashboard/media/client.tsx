@@ -102,6 +102,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
           title: files[i].name.split('.')[0],
           category: tag,
           album_id: album_id || null,
+          is_featured: false,
           image_url: res.url,
           public_id: res.public_id,
           width: res.width,
