@@ -27,7 +27,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
 
   const { data: album } = await supabase
     .from('albums')
-    .select('*')
+    .select('*, bookings(*, contracts(*))')
     .eq('slug', slug)
     .single();
 
@@ -37,6 +37,12 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
     redirect(`/vault/${slug}`);
   }
 
+  // Determine if downloads are locked based on payment status
+  // An album is locked if it's linked to a booking that has a contract which isn't fully paid
+  const booking = album.bookings?.[0];
+  const contract = booking?.contracts?.[0];
+  const isLocked = contract ? !contract.is_final_paid : false;
+
   const { data: photos } = await supabase
     .from('photos')
     .select('*')
@@ -44,5 +50,12 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 
-  return <AlbumClientView album={album} initialPhotos={photos || []} />;
+  return (
+    <AlbumClientView 
+      album={album} 
+      initialPhotos={photos || []} 
+      isLocked={isLocked}
+      contractId={contract?.id}
+    />
+  );
 }
