@@ -16,6 +16,9 @@ export default function DashboardLayout({
               <Link href="/dashboard" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Overview
               </Link>
+              <Link href="/dashboard/analytics" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
+                Analytics
+              </Link>
               <Link href="/dashboard/upload" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Upload New
               </Link>

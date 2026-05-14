@@ -98,8 +98,20 @@ export async function submitBooking(formData: FormData) {
 
     revalidatePath("/dashboard/bookings");
     return { success: true };
-  } catch (error: any) {
-    console.error("Booking error:", error);
-    return { success: false, error: error.message || "Failed to submit booking." };
+  } catch (error) {
+    console.error("Booking submission error:", error);
+    return { success: false, error: "Failed to submit booking." };
+  }
+}
+
+export async function deleteBooking(id: string) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase.from("bookings").delete().eq("id", id);
+    if (error) throw error;
+    return { success: true };
+  } catch (error) {
+    console.error("Delete booking error:", error);
+    return { success: false };
   }
 }
