@@ -237,7 +237,7 @@ export default function HomePage() {
                    className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
                  >
                    {featuredPhotos[i]?.image_url ? (
-                     <Image src={featuredPhotos[i].image_url} alt={`Feature ${i}`} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02] grayscale group-hover:grayscale-0" />
+                     <Image src={featuredPhotos[i].image_url} alt={`Feature ${i}`} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
                    ) : (
                      <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
                    )}
@@ -372,7 +372,7 @@ export default function HomePage() {
                 className="min-w-[300px] md:min-w-[400px] h-[500px] premium-placeholder rounded-sm border border-white/10 shrink-0 snap-center relative overflow-hidden group bg-court-grid"
               >
                  {featuredPhotos[i]?.image_url ? (
-                   <Image src={featuredPhotos[i].image_url} alt="Recent Frame" fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                   <Image src={featuredPhotos[i].image_url} alt="Recent Frame" fill className="object-cover transition-all duration-700" />
                  ) : (
                    <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-black" />
                  )}

@@ -55,7 +55,7 @@ export default function CuratedCollectionPage() {
                animate={{ scale: 1, opacity: 0.5 }}
                transition={{ duration: 2 }}
                src={photos[0].image_url} 
-               className="w-full h-full object-cover grayscale"
+               className="w-full h-full object-cover"
              />
           )}
         </div>
