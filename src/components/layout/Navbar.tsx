@@ -14,7 +14,8 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 const navItems = [
   { path: "/portfolio", label: "Portfolio" },
-  { path: "/curated", label: "The Vault" },
+  { path: "/curated", label: "The Edit" },
+  { path: "/vault", label: "The Vault" },
   { path: "/albums", label: "Albums" },
   { path: "/contact", label: "Contact" },
   { path: "/about", label: "About" },

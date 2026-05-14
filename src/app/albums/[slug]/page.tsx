@@ -25,7 +25,7 @@ export default function AlbumDetailPage() {
 
       if (albumData) {
         if (albumData.is_private) {
-          window.location.href = `/gallery/${slug}`;
+          window.location.href = `/vault/${slug}`;
           return;
         }
         setAlbum(albumData);

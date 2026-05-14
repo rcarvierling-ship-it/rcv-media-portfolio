@@ -146,10 +146,10 @@ export default function AlbumManager() {
                       <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Vault Location</span>
                       <div className="flex items-center justify-between p-3 bg-black/40 rounded-sm border border-white/5 group/url">
                          <span className="text-[10px] font-mono text-zinc-400 truncate max-w-[200px]">
-                           {album.is_private ? `/gallery/${album.slug}` : `/albums/${album.slug}`}
+                           {album.is_private ? `/vault/${album.slug}` : `/albums/${album.slug}`}
                          </span>
                          <button 
-                           onClick={() => handleCopy(`${window.location.origin}${album.is_private ? '/gallery/' : '/albums/'}${album.slug}`, album.id + '_url')}
+                           onClick={() => handleCopy(`${window.location.origin}${album.is_private ? '/vault/' : '/albums/'}${album.slug}`, album.id + '_url')}
                            className="text-brand-accent hover:text-white transition-colors"
                          >
                             {copiedId === album.id + '_url' ? <Check size={12} className="text-brand-accent" /> : <Copy size={12} />}
@@ -194,7 +194,7 @@ export default function AlbumManager() {
                      Manage Media
                    </Link>
                    <Link 
-                     href={album.is_private ? `/gallery/${album.slug}` : `/albums/${album.slug}`}
+                     href={album.is_private ? `/vault/${album.slug}` : `/albums/${album.slug}`}
                      target="_blank"
                      className="flex-1 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-brand-accent transition-all rounded-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
                    >
