@@ -4,8 +4,8 @@ import { useState } from "react";
 import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { motion, Reorder } from "framer-motion";
-import { Palette, Check, RefreshCw, GripVertical } from "lucide-react";
+import { motion, Reorder, AnimatePresence } from "framer-motion";
+import { Palette, Check, RefreshCw, GripVertical, Move, X, Maximize2 } from "lucide-react";
 import { reorderPhotos } from "@/app/actions/photos";
 
 const COLOR_PRESETS = [
@@ -25,6 +25,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
     allPhotos.filter(p => p.is_featured).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
   );
   const [showPhotoPicker, setShowPhotoPicker] = useState<{ active: boolean, target: 'hero' | 'featured' }>({ active: false, target: 'hero' });
+  const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
   const [activeColor, setActiveColor] = useState(initialSettings?.accent_color || "#3b82f6");
@@ -165,34 +166,34 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
             <h2 className="text-xl font-black uppercase tracking-widest text-zinc-500 mb-2">Featured Photos</h2>
             <p className="text-zinc-600 text-xs">These 6 images appear in the "The Edit" section on the homepage.</p>
           </div>
-          <button 
-            onClick={() => setShowPhotoPicker({ active: true, target: 'featured' })}
-            className="text-xs font-black uppercase tracking-widest text-brand-accent hover:text-brand-accent"
-          >
-            Manage Featured
-          </button>
-        </div>
-
-        <Reorder.Group 
-          axis="x" 
-          values={featuredPhotos} 
-          onReorder={handleReorder}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4"
-        >
-           {featuredPhotos.map((photo, i) => (
-             <Reorder.Item 
-               key={photo.id} 
-               value={photo}
-               className={`relative aspect-square bg-zinc-900 border transition-all cursor-grab active:cursor-grabbing ${isReordering ? 'border-brand-accent/50 ring-1 ring-brand-accent/20' : 'border-zinc-800'}`}
+          <div className="flex gap-4">
+             <button 
+               onClick={() => setIsReorderModalOpen(true)}
+               className="px-6 py-3 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest hover:bg-zinc-700 transition-all flex items-center gap-2 border border-white/5"
              >
-                <Image src={photo.image_url} alt="Featured" fill className="object-cover pointer-events-none" />
-                <div className="absolute top-2 left-2 bg-black/80 text-[8px] font-black px-2 py-1 text-white rounded-full flex items-center gap-1">
-                   <GripVertical size={8} className="text-zinc-500" /> #{i+1}
-                </div>
-                <div className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
+               <Move size={14} /> Edit Carousel Order
+             </button>
+             <button 
+               onClick={() => setShowPhotoPicker({ active: true, target: 'featured' })}
+               className="text-xs font-black uppercase tracking-widest text-brand-accent hover:text-brand-accent flex items-center gap-2"
+             >
+               Manage Featured
+             </button>
+          </div>
+        </div>
+ 
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+           {featuredPhotos.map((photo, i) => (
+             <div 
+               key={photo.id} 
+               className="relative aspect-square bg-zinc-900 border border-zinc-800 overflow-hidden group"
+             >
+                <Image src={photo.image_url} alt="Featured" fill className="object-cover" />
+                <div className="absolute top-2 left-2 bg-black/80 text-[8px] font-black px-2 py-1 text-white rounded-full">#{i+1}</div>
+                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                    <button onClick={() => toggleFeatured(photo)} className="text-[8px] font-black uppercase tracking-widest text-red-500">Remove</button>
                 </div>
-             </Reorder.Item>
+             </div>
            ))}
            {featuredPhotos.length < 6 && (
              <button 
@@ -202,7 +203,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                 <span className="text-xs font-black uppercase tracking-widest">Add Slot</span>
              </button>
            )}
-        </Reorder.Group>
+        </div>
       </section>
 
       {/* PHOTO PICKER MODAL */}
@@ -235,6 +236,93 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
            </div>
         </div>
       )}
+
+      {/* CAROUSEL REORDER MODAL */}
+      <AnimatePresence>
+        {isReorderModalOpen && (
+          <div className="fixed inset-0 bg-black/98 z-[600] flex items-center justify-center p-8 backdrop-blur-2xl">
+             <motion.div 
+               initial={{ opacity: 0, scale: 0.9, y: 20 }}
+               animate={{ opacity: 1, scale: 1, y: 0 }}
+               exit={{ opacity: 0, scale: 0.9, y: 20 }}
+               className="bg-zinc-950 border border-white/5 w-full max-w-6xl rounded-sm flex flex-col h-[85vh] shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+             >
+                <div className="p-10 border-b border-white/5 flex justify-between items-center bg-zinc-900/20">
+                   <div>
+                      <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-2 italic">The Edit <span className="text-zinc-600 not-italic">//</span> Reorder</h2>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Drag items to surgically arrange your homepage sequence</p>
+                   </div>
+                   <div className="flex items-center gap-6">
+                      {isReordering && (
+                        <div className="flex items-center gap-2 text-brand-accent animate-pulse">
+                           <RefreshCw size={12} className="animate-spin" />
+                           <span className="text-[10px] font-black uppercase tracking-widest">Syncing Order...</span>
+                        </div>
+                      )}
+                      <button 
+                        onClick={() => setIsReorderModalOpen(false)}
+                        className="p-4 bg-white text-black hover:bg-zinc-200 transition-all rounded-full shadow-2xl"
+                      >
+                         <Check size={20} strokeWidth={4} />
+                      </button>
+                   </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto p-12">
+                   <Reorder.Group 
+                     axis="x" 
+                     values={featuredPhotos} 
+                     onReorder={handleReorder}
+                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+                   >
+                      {featuredPhotos.map((photo, i) => (
+                        <Reorder.Item 
+                          key={photo.id} 
+                          value={photo}
+                          whileDrag={{ 
+                            scale: 1.05, 
+                            boxShadow: "0 30px 60px rgba(0,0,0,0.6)",
+                            zIndex: 100 
+                          }}
+                          className={`relative aspect-[16/10] bg-zinc-900 border-2 transition-all cursor-grab active:cursor-grabbing group rounded-sm overflow-hidden ${
+                            isReordering ? 'border-brand-accent shadow-[0_0_30px_var(--accent-glow)]' : 'border-white/5 hover:border-white/20 shadow-xl'
+                          }`}
+                        >
+                           <Image src={photo.image_url} alt="Featured" fill className="object-cover pointer-events-none" />
+                           
+                           {/* Grip Indicator */}
+                           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                              <div className="p-4 bg-black/60 backdrop-blur-md rounded-full border border-white/20 scale-90 group-hover:scale-100 transition-transform">
+                                 <GripVertical size={24} className="text-white" />
+                              </div>
+                           </div>
+
+                           {/* Numerical Badge */}
+                           <div className="absolute top-6 left-6 flex items-center gap-3">
+                              <div className="w-10 h-10 bg-brand-accent text-white flex items-center justify-center font-black text-xs italic shadow-xl border border-white/20">
+                                 {i+1}
+                              </div>
+                              <div className="px-3 py-1 bg-black/80 backdrop-blur-md border border-white/10">
+                                 <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white">Position {i+1}</p>
+                              </div>
+                           </div>
+
+                           {/* Label */}
+                           <div className="absolute bottom-6 left-6 right-6">
+                              <p className="text-[10px] font-black uppercase tracking-tighter text-white truncate drop-shadow-lg">{photo.title}</p>
+                           </div>
+                        </Reorder.Item>
+                      ))}
+                   </Reorder.Group>
+                </div>
+
+                <div className="p-8 border-t border-white/5 bg-zinc-900/10 flex justify-center">
+                   <p className="text-[9px] font-black uppercase tracking-[0.5em] text-zinc-700">RCV.MEDIA // VISUAL INTELLIGENCE SEQUENCER</p>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
     </div>
   );
