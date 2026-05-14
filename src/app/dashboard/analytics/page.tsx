@@ -8,14 +8,13 @@ import {
   TrendingUp, Calendar, Filter, Download,
   Briefcase, ArrowUpRight, ArrowDownRight,
   Search, BarChart3, Activity, PieChart, Info,
-  AlertTriangle, X
+  AlertTriangle, X, Clock, CheckCircle2, Camera, Edit3, Send
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 export default function AnalyticsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
-  const [packages, setPackages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -26,12 +25,8 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const [{ data: bData }, { data: pData }] = await Promise.all([
-        supabase.from("bookings").select("*").order("created_at", { ascending: false }),
-        supabase.from("pricing_packages").select("*")
-      ]);
+      const { data: bData } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
       if (bData) setBookings(bData);
-      if (pData) setPackages(pData);
       setLoading(false);
     }
     fetchData();
@@ -48,33 +43,37 @@ export default function AnalyticsPage() {
   };
 
   const stats = useMemo(() => {
-    const confirmed = bookings.filter(b => b.status === "confirmed");
-    const pending = bookings.filter(b => b.status === "pending");
+    // Stage-based categorization
+    const leads = bookings.filter(b => (b.pipeline_stage || 'lead') === 'lead' && b.status !== 'canceled');
+    const activePipeline = bookings.filter(b => (b.pipeline_stage !== 'lead' && b.pipeline_stage !== 'delivered') && b.status !== 'canceled');
+    const delivered = bookings.filter(b => b.pipeline_stage === 'delivered');
     
-    let totalRevenue = 0;
-    let pendingRevenue = 0;
+    let grossRevenue = 0; // Confirmed + Shot + Edited + Delivered
+    let projectedRevenue = 0; // Leads
+    let activePipelineValue = 0; // Everything currently in progress
+    
     const revenueByMonth: Record<string, number> = {};
     const revenueByType: Record<string, number> = {};
-    const countByType: Record<string, number> = {};
-
-    confirmed.forEach(b => {
-      const pkg = packages.find(p => p.name === b.package_selected);
-      if (pkg) {
-        const price = parseInt(pkg.price.replace(/[^0-9]/g, "")) || 0;
-        totalRevenue += price;
-        const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
-        revenueByMonth[month] = (revenueByMonth[month] || 0) + price;
-        revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + price;
-      }
-    });
-
-    pending.forEach(b => {
-      const pkg = packages.find(p => p.name === b.package_selected);
-      if (pkg) pendingRevenue += parseInt(pkg.price.replace(/[^0-9]/g, "")) || 0;
-    });
+    const countByStage: Record<string, number> = {};
 
     bookings.forEach(b => {
-      countByType[b.shoot_type] = (countByType[b.shoot_type] || 0) + 1;
+      if (b.status === 'canceled') return;
+      
+      const val = b.total_amount || 0;
+      const stage = b.pipeline_stage || 'lead';
+      
+      countByStage[stage] = (countByStage[stage] || 0) + 1;
+
+      if (stage === 'lead') {
+        projectedRevenue += val;
+      } else {
+        grossRevenue += val;
+        if (stage !== 'delivered') activePipelineValue += val;
+        
+        const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
+        revenueByMonth[month] = (revenueByMonth[month] || 0) + val;
+        revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + val;
+      }
     });
 
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -86,16 +85,16 @@ export default function AnalyticsPage() {
     }
 
     return {
-      totalRevenue,
-      pendingRevenue,
-      totalLeads: bookings.length,
-      confirmedCount: confirmed.length,
-      conversionRate: bookings.length > 0 ? Math.round((confirmed.length / bookings.length) * 100) : 0,
+      grossRevenue,
+      projectedRevenue,
+      activePipelineValue,
+      totalProjects: bookings.filter(b => b.status !== 'canceled').length,
+      conversionRate: bookings.length > 0 ? Math.round((bookings.filter(b => b.status === 'confirmed').length / bookings.length) * 100) : 0,
       revenueByMonth: last6Months,
       revenueByType: Object.entries(revenueByType).sort((a, b) => b[1] - a[1]),
-      countByType: Object.entries(countByType).sort((a, b) => b[1] - a[1])
+      countByStage
     };
-  }, [bookings, packages]);
+  }, [bookings]);
 
   const filteredBookings = useMemo(() => {
     return bookings.filter(b => {
@@ -106,69 +105,76 @@ export default function AnalyticsPage() {
     });
   }, [bookings, searchTerm, filterStatus]);
 
-  if (loading) return <div className="p-12 text-zinc-500 uppercase font-black tracking-widest text-xs">Generating Intelligence...</div>;
+  if (loading) return (
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4">
+       <Loader2 className="animate-spin text-blue-500" size={40} />
+       <p className="text-zinc-500 uppercase font-black tracking-[0.3em] text-[10px]">Generating Intelligence...</p>
+    </div>
+  );
 
   return (
     <div className="space-y-12 pb-24">
       {/* 1. HEADER */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-12">
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2">Business Analytics</h1>
-          <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Deep-dive performance tracking & growth charts</p>
+          <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Intelligence.Hub</span>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">Business <br/><span className="text-zinc-800">Analytics.</span></h1>
         </div>
         <div className="flex gap-4">
-           <button className="px-6 py-3 bg-zinc-900 border border-white/5 rounded-sm text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors flex items-center gap-2">
+           <button className="px-8 py-4 bg-white text-black rounded-sm text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center gap-2">
              <Download size={14} /> Export Dataset
            </button>
         </div>
       </header>
 
-      {/* 2. TOP LEVEL METRICS */}
+      {/* 2. LIVE PIPELINE METRICS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl group">
+         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block flex items-center gap-2">Gross Revenue <Info size={10} className="opacity-30" /></span>
             <div className="flex items-end gap-2">
-               <h3 className="text-4xl font-black tracking-tighter text-white">${stats.totalRevenue.toLocaleString()}</h3>
+               <h3 className="text-4xl font-black tracking-tighter text-white">${stats.grossRevenue.toLocaleString()}</h3>
                <TrendingUp className="text-emerald-500 mb-2" size={18} />
             </div>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
-               +${stats.pendingRevenue.toLocaleString()} Projected Pipeline
+               Total across all stages
             </div>
          </motion.div>
 
-         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Conversion Rate</span>
+         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Projected Pipeline</span>
+            <h3 className="text-4xl font-black tracking-tighter text-blue-500">${stats.projectedRevenue.toLocaleString()}</h3>
+            <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
+               Value of current Leads
+            </div>
+         </motion.div>
+
+         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Active Workload</span>
+            <h3 className="text-4xl font-black tracking-tighter text-white">${stats.activePipelineValue.toLocaleString()}</h3>
+            <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-emerald-500">
+               In fulfillment cycle
+            </div>
+         </motion.div>
+
+         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Conversion</span>
             <h3 className="text-4xl font-black tracking-tighter text-white">{stats.conversionRate}%</h3>
-            <div className="w-full h-1 bg-zinc-800 mt-4 rounded-full overflow-hidden">
-               <motion.div initial={{ width: 0 }} animate={{ width: `${stats.conversionRate}%` }} className="h-full bg-blue-600" />
+            <div className="w-full h-1 bg-zinc-800 mt-6 rounded-full overflow-hidden">
+               <motion.div initial={{ width: 0 }} animate={{ width: `${stats.conversionRate}%` }} className="h-full bg-white" />
             </div>
-         </motion.div>
-
-         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Total Pipeline</span>
-            <h3 className="text-4xl font-black tracking-tighter text-white">{stats.totalLeads}</h3>
-            <div className="mt-4 flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-               <span className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">{stats.confirmedCount} Active Projects</span>
-            </div>
-         </motion.div>
-
-         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Avg Deal Size</span>
-            <h3 className="text-4xl font-black tracking-tighter text-white">${stats.confirmedCount > 0 ? Math.round(stats.totalRevenue / stats.confirmedCount).toLocaleString() : '0'}</h3>
-            <p className="text-[9px] text-zinc-600 font-bold uppercase mt-4">Calculated from confirmed</p>
          </motion.div>
       </div>
 
-      {/* 3. VISUAL GRAPHS SECTION */}
+      {/* 3. VISUAL INTELLIGENCE SECTION */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-         <section className="premium-card p-10 rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
+         {/* REVENUE CHART */}
+         <section className="premium-card p-10 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
                   <BarChart3 className="text-blue-500" size={18} />
                   <h3 className="text-sm font-black uppercase tracking-widest text-white">Revenue Growth</h3>
                </div>
-               <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Last 6 Months</span>
+               <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Confirmed & Delivered</span>
             </div>
             <div className="h-64 flex items-end gap-4 w-full px-4">
                {stats.revenueByMonth.map((m, i) => (
@@ -176,11 +182,11 @@ export default function AnalyticsPage() {
                      <div className="relative w-full flex flex-col justify-end h-full">
                         <motion.div 
                            initial={{ height: 0 }} 
-                           animate={{ height: stats.totalRevenue > 0 ? `${(m.amount / stats.totalRevenue) * 100}%` : '4px' }}
+                           animate={{ height: stats.grossRevenue > 0 ? `${(m.amount / stats.grossRevenue) * 100}%` : '4px' }}
                            className={`w-full ${m.amount > 0 ? 'bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.2)]' : 'bg-zinc-800/50'} rounded-t-sm group-hover:bg-blue-500 transition-all`}
                         >
                            {m.amount > 0 && (
-                              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-3 py-1 rounded-sm font-black text-[10px]">
+                              <div className="absolute -top-10 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-white text-black px-3 py-1 rounded-sm font-black text-[10px] whitespace-nowrap">
                                  ${m.amount.toLocaleString()}
                               </div>
                            )}
@@ -192,52 +198,66 @@ export default function AnalyticsPage() {
             </div>
          </section>
 
-         <section className="premium-card p-10 rounded-2xl border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
+         {/* PIPELINE DISTRIBUTION */}
+         <section className="premium-card p-10 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-xl">
             <div className="flex justify-between items-center mb-12">
                <div className="flex items-center gap-3">
-                  <PieChart className="text-emerald-500" size={18} />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Segment Share</h3>
+                  <Activity className="text-emerald-500" size={18} />
+                  <h3 className="text-sm font-black uppercase tracking-widest text-white">Pipeline Velocity</h3>
                </div>
-               <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Revenue by Type</span>
+               <span className="text-[10px] font-bold uppercase text-zinc-600 tracking-widest">Projects by Stage</span>
             </div>
             <div className="space-y-6">
-               {stats.revenueByType.map(([type, amount], i) => (
-                  <div key={i} className="space-y-2">
-                     <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                        <span className="text-white">{type}</span>
-                        <span className="text-zinc-500">${amount.toLocaleString()}</span>
-                     </div>
-                     <div className="w-full h-2 bg-zinc-800/50 rounded-full overflow-hidden">
-                        <motion.div 
-                           initial={{ width: 0 }} 
-                           animate={{ width: `${(amount / stats.totalRevenue) * 100}%` }}
-                           className="h-full bg-emerald-500" 
-                        />
-                     </div>
-                  </div>
-               ))}
+               {[
+                 { id: 'lead', label: 'Leads', icon: Clock, color: 'bg-blue-500' },
+                 { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'bg-emerald-500' },
+                 { id: 'shooting', label: 'Shooting', icon: Camera, color: 'bg-purple-500' },
+                 { id: 'editing', label: 'Editing', icon: Edit3, color: 'bg-amber-500' },
+                 { id: 'delivered', label: 'Delivered', icon: Send, color: 'bg-zinc-500' }
+               ].map((stage) => {
+                 const count = stats.countByStage[stage.id] || 0;
+                 const percentage = stats.totalProjects > 0 ? (count / stats.totalProjects) * 100 : 0;
+                 return (
+                    <div key={stage.id} className="space-y-2">
+                       <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                          <div className="flex items-center gap-2 text-white">
+                             <stage.icon size={12} className="text-zinc-600" />
+                             {stage.label}
+                          </div>
+                          <span className="text-zinc-500">{count} Active</span>
+                       </div>
+                       <div className="w-full h-2 bg-zinc-800/50 rounded-full overflow-hidden">
+                          <motion.div 
+                             initial={{ width: 0 }} 
+                             animate={{ width: `${percentage}%` }}
+                             className={`h-full ${stage.color}`}
+                          />
+                       </div>
+                    </div>
+                 );
+               })}
             </div>
          </section>
       </div>
 
-      {/* 4. RECORDS MANAGEMENT TABLE */}
-      <section className="premium-card rounded-2xl border border-white/5 bg-zinc-900/10 overflow-hidden">
+      {/* 4. MASTER RECORD LEDGER */}
+      <section className="premium-card rounded-sm border border-white/5 bg-zinc-900/10 overflow-hidden">
          <div className="p-8 border-b border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 bg-zinc-900/40">
             <div className="relative w-full md:w-96">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
                <input 
                  type="text" 
-                 placeholder="Search records..."
+                 placeholder="Search ledger..."
                  value={searchTerm}
                  onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-sm text-white outline-none focus:border-blue-500/50 transition-all"
+                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-sm text-xs text-white outline-none focus:border-blue-500/50 transition-all"
                />
             </div>
             <div className="flex items-center gap-4">
                <select 
                  value={filterStatus}
                  onChange={(e) => setFilterStatus(e.target.value)}
-                 className="bg-black/40 border border-white/10 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none"
+                 className="bg-black/40 border border-white/10 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest text-white outline-none"
                >
                   <option value="all">All Records</option>
                   <option value="confirmed">Confirmed</option>
@@ -252,69 +272,64 @@ export default function AnalyticsPage() {
                   <tr className="border-b border-white/5 bg-zinc-900/20">
                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Client / Shoot</th>
                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Tier</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Gross</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Status</th>
+                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Value</th>
+                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Stage</th>
                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Delete</th>
                   </tr>
                </thead>
                <tbody className="divide-y divide-white/5">
                   <AnimatePresence>
-                     {filteredBookings.map((b) => {
-                        const pkg = packages.find(p => p.name === b.package_selected);
-                        return (
-                           <motion.tr 
-                             key={b.id}
-                             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}
-                             className="group hover:bg-white/[0.02] transition-colors"
-                           >
-                              <td className="px-8 py-6">
-                                 <div className="font-black text-white uppercase tracking-tight">{b.name}</div>
-                                 <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">{b.shoot_type}</div>
-                              </td>
-                              <td className="px-8 py-6">
-                                 <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{b.package_selected}</span>
-                              </td>
-                              <td className="px-8 py-6 text-white font-black text-sm">{pkg?.price || '---'}</td>
-                              <td className="px-8 py-6">
-                                 <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                                    b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-500'
-                                 }`}>
-                                    {b.status}
-                                 </span>
-                              </td>
-                              <td className="px-8 py-6 text-right">
-                                 <button 
-                                   type="button"
-                                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeletingId(b.id); }}
-                                   className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
-                                 >
-                                    <Trash2 size={16} />
-                                 </button>
-                              </td>
-                           </motion.tr>
-                        );
-                     })}
+                     {filteredBookings.map((b) => (
+                        <motion.tr 
+                          key={b.id}
+                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}
+                          className="group hover:bg-white/[0.02] transition-colors"
+                        >
+                           <td className="px-8 py-6">
+                              <div className="font-black text-white uppercase tracking-tight">{b.name}</div>
+                              <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">{b.shoot_type}</div>
+                           </td>
+                           <td className="px-8 py-6">
+                              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{b.package_selected}</span>
+                           </td>
+                           <td className="px-8 py-6 text-white font-black text-sm">${(b.total_amount || 0).toLocaleString()}</td>
+                           <td className="px-8 py-6">
+                              <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                 b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-500'
+                              }`}>
+                                 {b.pipeline_stage || b.status}
+                              </span>
+                           </td>
+                           <td className="px-8 py-6 text-right">
+                              <button 
+                                type="button"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeletingId(b.id); }}
+                                className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
+                              >
+                                 <Trash2 size={16} />
+                              </button>
+                           </td>
+                        </motion.tr>
+                     ))}
                   </AnimatePresence>
                </tbody>
             </table>
          </div>
       </section>
 
-      {/* CUSTOM DELETE MODAL */}
+      {/* DELETE CONFIRMATION */}
       <AnimatePresence>
         {deletingId && (
           <div className="fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-xl">
              <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               className="bg-zinc-950 border border-red-500/20 p-10 w-full max-w-sm rounded-2xl text-center shadow-[0_0_50px_rgba(239,68,68,0.1)]"
+               initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+               className="bg-zinc-950 border border-red-500/20 p-10 w-full max-w-sm rounded-sm text-center"
              >
                 <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
                    <AlertTriangle size={32} />
-                </div>
+                 </div>
                 <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">Confirm Delete</h2>
-                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">This will permanently remove this record from your analytics and charts.</p>
+                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">This will permanently remove this record from your analytics ledger.</p>
                 <div className="flex gap-4">
                    <button onClick={confirmDelete} className="flex-1 py-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-500 transition-colors">Delete</button>
                    <button onClick={() => setDeletingId(null)} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-colors">Cancel</button>
