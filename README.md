@@ -118,3 +118,5 @@ Visit `http://localhost:3000/login` to access the admin dashboard.
 2. Go to [Vercel](https://vercel.com) and import the repository.
 3. In the Vercel project settings, add all the environment variables from your `.env.local`.
 4. Click **Deploy**. Vercel will build and host your Next.js application automatically.
+
+# Deployment Pulse: Thu May 14 14:17:40 EDT 2026
