@@ -317,24 +317,39 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
         {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-blue-500" /></div>)}
         <div className="flex justify-between items-start mb-6">
             <div className="cursor-pointer group/title" onClick={() => setShowDetails(true)}>
-              <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors">{booking.name}</h4>
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
-                  <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
-                    <DollarSign size={10} /> {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(booking.total_amount || 0)}
+              <h4 className="text-base font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors truncate max-w-[180px]">{booking.name}</h4>
+                <div className="flex items-center gap-3">
+                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest truncate max-w-[100px]">{booking.shoot_type || booking.package_selected}</span>
+                  <span className="text-[9px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
+                    <DollarSign size={8} /> {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(booking.total_amount || 0)}
                   </span>
-                  <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10} /> Details</span>
                 </div>
             </div>
-            {stage.id === 'lead' ? (
-              <button onClick={() => onSetStatus(booking.id, 'cancelled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">
-                Cancel Request
+            <div className="flex items-center gap-2">
+              {stage.id === 'lead' && (
+                <button 
+                  onClick={() => { onMove(booking.id, 'confirmed'); onSetStatus(booking.id, 'confirmed'); }} 
+                  className="p-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white transition-all rounded-sm group/check"
+                  title="Confirm & Move"
+                >
+                  <Check size={14} className="group-hover/check:scale-110 transition-transform" />
+                </button>
+              )}
+              <button 
+                onClick={() => onSetStatus(booking.id, 'cancelled')} 
+                className="p-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-600 hover:text-white transition-all rounded-sm group/cancel"
+                title="Cancel Project"
+              >
+                <X size={14} className="group-hover/cancel:scale-110 transition-transform" />
               </button>
-            ) : (
-              <button onClick={() => onSetStatus(booking.id, 'cancelled')} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
-                <Trash2 size={16} />
+              <button 
+                onClick={() => setShowDetails(true)} 
+                className="p-2 bg-white/5 text-zinc-500 border border-white/5 hover:bg-white/10 hover:text-white transition-all rounded-sm"
+                title="View Details"
+              >
+                <AlertCircle size={14} />
               </button>
-            )}
+            </div>
         </div>
         
         <div className="space-y-4 mb-6">
