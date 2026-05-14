@@ -304,7 +304,7 @@ export default function DashboardPage() {
             <h2 className="text-2xl font-black uppercase tracking-tight text-white">Media Library</h2>
             <Link href="/dashboard/upload" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white">Upload New &rarr;</Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
             {photos.slice(0, 9).map((photo) => (
               <div key={photo.id} className="group relative aspect-square bg-zinc-900 overflow-hidden border border-white/5 rounded-sm">
                 <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />

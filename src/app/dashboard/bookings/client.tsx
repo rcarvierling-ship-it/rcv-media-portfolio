@@ -165,8 +165,7 @@ export function BookingsAdminClient({
       <AnimatePresence mode="wait">
         {activeView === "pipeline" && (
           <motion.div key="pipeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
-            {/* TIER 1 & 2 PIPELINE - Same as before... */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-6">
               {STAGES.map((stage) => (
                 <div key={stage.id} className="flex flex-col space-y-4">
                   <div className={`flex items-center justify-between p-4 rounded-sm ${stage.bg} border border-white/5`}>
@@ -317,9 +316,9 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
         {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-blue-500" /></div>)}
         <div className="flex justify-between items-start mb-6">
             <div className="cursor-pointer group/title" onClick={() => setShowDetails(true)}>
-              <h4 className="text-base font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors truncate max-w-[180px]">{booking.name}</h4>
-                <div className="flex items-center gap-3">
-                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest truncate max-w-[100px]">{booking.shoot_type || booking.package_selected}</span>
+              <h4 className="text-base font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors">{booking.name}</h4>
+                <div className="flex items-center gap-3 flex-wrap">
+                  <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
                   <span className="text-[9px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
                     <DollarSign size={8} /> {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(booking.total_amount || 0)}
                   </span>

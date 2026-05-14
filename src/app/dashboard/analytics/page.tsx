@@ -8,13 +8,15 @@ import {
   TrendingUp, Calendar, Filter, Download,
   Briefcase, ArrowUpRight, ArrowDownRight,
   Search, BarChart3, Activity, PieChart, Info,
-  AlertTriangle, X, Clock, CheckCircle2, Camera, Edit3, Send, Loader2
+  AlertTriangle, X, Clock, CheckCircle2, Camera, Edit3, Send, Loader2,
+  Image as ImageIcon, HardDrive, Album
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 export default function AnalyticsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
+  const [photosStats, setPhotosStats] = useState({ total: 0, masters: 0, albums: 0 });
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -25,8 +27,15 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: bData } = await supabase.from("bookings").select("*").order("created_at", { ascending: false });
+      const [{ data: bData }, { count: pCount }, { count: rCount }, { count: aCount }] = await Promise.all([
+        supabase.from("bookings").select("*").order("created_at", { ascending: false }),
+        supabase.from("photos").select("*", { count: 'exact', head: true }),
+        supabase.from("photos").select("*", { count: 'exact', head: true }).not("raw_image_url", "is", null),
+        supabase.from("albums").select("*", { count: 'exact', head: true })
+      ]);
+      
       if (bData) setBookings(bData);
+      setPhotosStats({ total: pCount || 0, masters: rCount || 0, albums: aCount || 0 });
       setLoading(false);
     }
     fetchData();
@@ -128,7 +137,7 @@ export default function AnalyticsPage() {
       </header>
 
       {/* 2. LIVE PIPELINE METRICS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-6">
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block flex items-center gap-2">Gross Revenue <Info size={10} className="opacity-30" /></span>
             <div className="flex items-end gap-2">
@@ -162,6 +171,42 @@ export default function AnalyticsPage() {
             <div className="w-full h-1 bg-zinc-800 mt-6 rounded-full overflow-hidden">
                <motion.div initial={{ width: 0 }} animate={{ width: `${stats.conversionRate}%` }} className="h-full bg-white" />
             </div>
+         </motion.div>
+      </div>
+      
+      {/* 2.5 MEDIA INTELLIGENCE */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.4 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-md">
+            <div className="flex justify-between items-start mb-6">
+               <div className="p-3 bg-blue-500/10 rounded-lg text-blue-500">
+                  <ImageIcon size={20} />
+               </div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Total Assets</span>
+            </div>
+            <h4 className="text-3xl font-black text-white mb-2">{photosStats.total}</h4>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Managed frames in library</p>
+         </motion.div>
+
+         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }} className="premium-card p-8 rounded-sm border border-brand-accent/20 bg-brand-accent/5 backdrop-blur-md">
+            <div className="flex justify-between items-start mb-6">
+               <div className="p-3 bg-brand-accent/10 rounded-lg text-brand-accent">
+                  <HardDrive size={20} />
+               </div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-brand-accent">Master Collection</span>
+            </div>
+            <h4 className="text-3xl font-black text-white mb-2">{photosStats.masters}</h4>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">High-resolution uncompressed masters</p>
+         </motion.div>
+
+         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20 backdrop-blur-md">
+            <div className="flex justify-between items-start mb-6">
+               <div className="p-3 bg-purple-500/10 rounded-lg text-purple-500">
+                  <Album size={20} />
+               </div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Active Albums</span>
+            </div>
+            <h4 className="text-3xl font-black text-white mb-2">{photosStats.albums}</h4>
+            <p className="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Client galleries & collections</p>
          </motion.div>
       </div>
 
