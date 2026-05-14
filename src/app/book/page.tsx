@@ -163,6 +163,7 @@ export default function BookPage() {
               <motion.form onSubmit={handleSubmit} className="space-y-12">
                 {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-6 py-4 rounded-sm text-sm font-bold">{error}</div>}
                 
+                <input type="hidden" name="shoot_type" value={selectedPackage || ""} />
                 <input type="hidden" name="package_selected" value={selectedPackage || ""} />
                 <input type="hidden" name="event_date" value={selectedDate} />
 
@@ -179,19 +180,10 @@ export default function BookPage() {
                       <input name="email" type="email" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
                       <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Shoot Type</label>
-                      <select name="shoot_type" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50 bg-zinc-950">
-                        <option>Sports Action</option>
-                        <option>Athlete Portrait</option>
-                        <option>Team Media Day</option>
-                        <option>Lifestyle Brand</option>
-                      </select>
                     </div>
                   </div>
                 </div>
