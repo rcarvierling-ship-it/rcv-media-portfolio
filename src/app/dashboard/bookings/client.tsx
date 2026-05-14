@@ -14,17 +14,10 @@ import {
   MessageSquare, Send, X, DollarSign, 
   ExternalLink, Package, Layout, Link as LinkIcon,
   Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2,
-  ChevronRight, Camera, Edit3
+  ChevronRight, Camera, Edit3, ArrowRightLeft, LayoutGrid, List
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const STAGES = [
-  { id: 'lead', label: 'Lead', icon: Clock, color: 'text-blue-400' },
-  { id: 'confirmed', label: 'Booked', icon: CheckCircle2, color: 'text-emerald-400' },
-  { id: 'shooting', label: 'Shot', icon: Camera, color: 'text-purple-400' },
-  { id: 'editing', label: 'Editing', icon: Edit3, color: 'text-amber-400' },
-  { id: 'delivered', label: 'Delivered', icon: Send, color: 'text-zinc-400' }
-];
+import PipelineBoard from "@/components/dashboard/PipelineBoard";
 
 export function BookingsAdminClient({ 
   initialBookings, 
@@ -39,7 +32,7 @@ export function BookingsAdminClient({
   albums?: any[],
   initialInquiries?: any[]
 }) {
-  const [activeTab, setActiveTab] = useState<"bookings" | "inquiries" | "settings">("bookings");
+  const [activeTab, setActiveTab] = useState<"pipeline" | "details" | "inquiries" | "settings">("pipeline");
   const [bookings, setBookings] = useState(initialBookings);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
@@ -133,32 +126,56 @@ export function BookingsAdminClient({
 
   return (
     <div className="space-y-12">
-      {/* Tab Navigation */}
-      <div className="flex gap-4 border-b border-white/5 pb-4">
-         <button 
-           onClick={() => setActiveTab("bookings")}
-           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bookings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
-         >
-           Bookings ({bookings.length})
-         </button>
-         <button 
-           onClick={() => setActiveTab("inquiries")}
-           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'inquiries' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
-         >
-           Inquiries ({inquiries.filter(i => i.status === 'new').length} New)
-         </button>
-         <button 
-           onClick={() => setActiveTab("settings")}
-           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
-         >
-           Settings
-         </button>
+      {/* Integrated Command Center Header */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-white/5">
+        <div>
+          <h1 className="text-6xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h1>
+          <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[10px] mt-4">Unified Agency Management Suite</p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+           <button 
+             onClick={() => setActiveTab("pipeline")}
+             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'pipeline' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+           >
+             <LayoutGrid size={14} /> Pipeline
+           </button>
+           <button 
+             onClick={() => setActiveTab("details")}
+             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'details' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+           >
+             <List size={14} /> Booking Details
+           </button>
+           <button 
+             onClick={() => setActiveTab("inquiries")}
+             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'inquiries' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+           >
+             <Mail size={14} /> Inquiries ({inquiries.filter(i => i.status === 'new').length})
+           </button>
+           <button 
+             onClick={() => setActiveTab("settings")}
+             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'settings' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+           >
+             <Layout size={14} /> Settings
+           </button>
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
-        {activeTab === "bookings" && (
+        {activeTab === "pipeline" && (
           <motion.div 
-            key="bookings"
+            key="pipeline"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+             <PipelineBoard initialBookings={bookings} />
+          </motion.div>
+        )}
+
+        {activeTab === "details" && (
+          <motion.div 
+            key="details"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -182,20 +199,7 @@ export function BookingsAdminClient({
                           {booking.status}
                         </span>
                         
-                        {/* Pipeline Status Indicator */}
-                        <div className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-1 rounded-sm">
-                           {STAGES.map((s) => {
-                             const isActive = (booking.pipeline_stage || 'lead') === s.id;
-                             return (
-                               <div key={s.id} className={`w-2 h-2 rounded-full ${isActive ? s.color.replace('text-', 'bg-') : 'bg-zinc-800'}`} title={s.label} />
-                             );
-                           })}
-                           <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 ml-2">
-                             {(booking.pipeline_stage || 'lead')}
-                           </span>
-                        </div>
-
-                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest ml-auto lg:ml-0">
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
                            {new Date(booking.created_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -231,14 +235,12 @@ export function BookingsAdminClient({
 
                     <div className="flex flex-col gap-3 justify-center min-w-[200px]">
                       {booking.status === 'pending' && (
-                        <>
-                          <button 
-                            onClick={() => handleUpdateStatus(booking.id, 'confirmed')}
-                            className="w-full py-4 bg-emerald-500 text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-emerald-400 transition-colors"
-                          >
-                            Confirm Booking
-                          </button>
-                        </>
+                        <button 
+                          onClick={() => handleUpdateStatus(booking.id, 'confirmed')}
+                          className="w-full py-4 bg-emerald-500 text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-emerald-400 transition-colors"
+                        >
+                          Confirm Booking
+                        </button>
                       )}
                       
                       <button 
@@ -246,14 +248,6 @@ export function BookingsAdminClient({
                         className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                       >
                         <MessageSquare size={14} /> Send Message
-                      </button>
-
-                      {/* Rapid Link to Pipeline */}
-                      <button 
-                        onClick={() => router.push('/dashboard/pipeline')}
-                        className="w-full py-4 bg-zinc-800 text-zinc-400 font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-700 hover:text-white transition-colors flex items-center justify-center gap-2"
-                      >
-                        <ArrowRightLeft size={14} /> Manage Life-Cycle
                       </button>
                     </div>
                   </div>
@@ -327,7 +321,6 @@ export function BookingsAdminClient({
             exit={{ opacity: 0, y: -10 }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12"
           >
-            {/* Rules & Dates */}
             <div className="space-y-12">
                <div className="premium-card p-10 rounded-sm border border-white/5">
                   <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">
@@ -378,7 +371,6 @@ export function BookingsAdminClient({
                   </div>
                </div>
 
-               {/* Blackout Dates */}
                <div className="premium-card p-10 rounded-sm border border-white/5">
                   <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8">Calendar Blackout</h2>
                   <form onSubmit={handleBlockDate} className="flex gap-4 mb-8">
@@ -419,10 +411,10 @@ export function BookingsAdminClient({
         )}
       </AnimatePresence>
 
-      {/* Unified Messaging Modal */}
+      {/* Messaging Modal */}
       <AnimatePresence>
         {messagingTarget && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="absolute inset-0 bg-black/90 backdrop-blur-sm"
