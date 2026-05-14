@@ -71,10 +71,10 @@ export default function HomePage() {
              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
              className="mb-8"
            >
-             <h1 className="text-[12vw] md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-white">
+             <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-white">
                Built For
              </h1>
-             <h1 className="text-[12vw] md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">
+             <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">
                The Moment.
              </h1>
            </motion.div>
@@ -111,7 +111,7 @@ export default function HomePage() {
         </div>
 
         {/* Right Side: Stacked Photo Collage */}
-        <div className="w-full md:w-1/2 relative h-[60vh] md:h-[80vh]">
+        <div className="w-full md:w-1/2 relative h-[50vh] sm:h-[60vh] md:h-[80vh]">
            <motion.div 
              initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
              animate={{ opacity: 1, scale: 1, rotate: 0 }}

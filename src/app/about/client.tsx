@@ -35,10 +35,10 @@ export function AboutClient({ data }: { data: any }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
           >
-            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-2 text-white leading-none">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter mb-2 text-white leading-none">
               {data.titleFirst}
             </h1>
-            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-800 leading-none">
+            <h1 className="text-5xl sm:text-7xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted leading-none">
               {data.titleLast}
             </h1>
           </motion.div>
