@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   MoreVertical, Calendar, DollarSign, 
   ArrowRight, Mail, Phone, Trash2,
-  RefreshCw, Check, Clock
+  RefreshCw, Check, Clock, Loader2, Plus
 } from "lucide-react";
 import { updateBookingStage, deleteBooking } from "@/app/actions/crm";
 import { createContractFromBooking } from "@/app/actions/contracts";
