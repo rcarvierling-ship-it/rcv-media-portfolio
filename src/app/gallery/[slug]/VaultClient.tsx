@@ -121,7 +121,7 @@ export function VaultClient({ album, photos }: { album: any, photos: any[] }) {
            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
               <div>
                 <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-4 block">Client Delivery</span>
-                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-4 leading-none">
+                <h1 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-white mb-4 leading-none">
                   {album.title}
                 </h1>
                 <p className="text-zinc-500 font-light text-xl uppercase tracking-widest">{album.client_name || "Photography Collection"}</p>

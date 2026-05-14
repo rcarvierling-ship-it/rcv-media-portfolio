@@ -110,7 +110,7 @@ export default function BookPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
                 onClick={() => setSelectedPackage(pkg.name)}
-                className={`premium-card p-10 rounded-2xl border transition-all cursor-pointer group ${
+                className={`premium-card p-6 md:p-10 rounded-2xl border transition-all cursor-pointer group ${
                   selectedPackage === pkg.name 
                     ? 'border-blue-500 bg-blue-500/5 ring-1 ring-blue-500' 
                     : 'border-white/5 hover:border-white/20'

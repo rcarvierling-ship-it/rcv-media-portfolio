@@ -45,15 +45,15 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Inquiries</span>
-              <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-8 leading-[0.9]">
-                Let's <br/> <span className="text-zinc-800 italic">Connect</span>
+              <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block text-center lg:text-left">Inquiries</span>
+              <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white mb-8 leading-[0.9] text-center lg:text-left">
+                Let's <br className="hidden lg:block"/> <span className="text-zinc-800 italic">Connect</span>
               </h1>
-              <p className="text-zinc-500 font-light text-lg leading-relaxed mb-12">
+              <p className="text-zinc-500 font-light text-lg leading-relaxed mb-12 text-center lg:text-left">
                 Have a specific question, collaboration idea, or just want to say hi? Send a message and I'll get back to you personally.
               </p>
 
-              <div className="space-y-8">
+              <div className="space-y-8 max-w-sm mx-auto lg:mx-0">
                 <div className="flex items-center gap-6 group">
                    <div className="w-12 h-12 rounded-full border border-white/5 bg-white/5 flex items-center justify-center group-hover:border-blue-500/50 transition-colors">
                       <Mail className="text-zinc-500 group-hover:text-blue-500 transition-colors" size={20} />

@@ -79,7 +79,7 @@ function PortfolioContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-12 text-white"
+            className="text-4xl md:text-8xl font-black uppercase tracking-tighter mb-12 text-white"
           >
             Portfolio
           </motion.h1>

@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useState, useEffect } from "react";
+import { Menu, X } from "lucide-react";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -14,6 +15,7 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 const navItems = [
   { path: "/portfolio", label: "Portfolio" },
   { path: "/albums", label: "Albums" },
+  { path: "/contact", label: "Contact" },
   { path: "/about", label: "About" },
 ];
 
@@ -30,19 +32,25 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
     <>
       <nav 
         className={cn(
           "fixed top-0 w-full z-[200] transition-all duration-500",
-          scrolled ? "premium-glass py-4 border-b border-white/5 shadow-2xl" : "bg-transparent py-8"
+          scrolled || mobileMenuOpen ? "premium-glass py-4 border-b border-white/5 shadow-2xl" : "bg-transparent py-8"
         )}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <Link href="/" className="text-2xl font-black tracking-tighter uppercase text-white hover:text-zinc-300 transition-colors z-50">
+          <Link href="/" className="text-2xl font-black tracking-tighter uppercase text-white hover:text-zinc-300 transition-colors z-[210]">
             RCV<span className="text-zinc-500">.</span>
           </Link>
           
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10 bg-black/40 backdrop-blur-xl border border-white/10 px-8 py-3 rounded-full shadow-2xl">
             {navItems.map((item) => {
               const isActive = pathname === item.path || (item.path !== "/" && pathname.startsWith(item.path));
@@ -77,42 +85,65 @@ export function Navbar() {
             </Link>
           </div>
 
+          {/* Mobile Toggle */}
           <button 
-            className="md:hidden z-50 text-[11px] font-black uppercase tracking-[0.2em] text-white px-5 py-2.5 border border-white/20 rounded-sm premium-glass"
+            className="md:hidden z-[210] p-2 text-white transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? "Close" : "Menu"}
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Overlay */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed inset-0 z-[150] bg-zinc-950/95 backdrop-blur-2xl flex flex-col items-center justify-center pt-20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-3xl flex flex-col pt-32 px-10"
           >
-            <div className="flex flex-col items-center gap-12">
-              {navItems.map((item) => (
-                <Link
+            <div className="flex flex-col gap-8">
+              {navItems.map((item, i) => (
+                <motion.div
                   key={item.path}
-                  href={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-4xl font-black uppercase tracking-tighter text-white hover:text-zinc-500 transition-colors"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
                 >
-                  {item.label}
-                </Link>
+                  <Link
+                    href={item.path}
+                    className={cn(
+                      "text-5xl font-black uppercase tracking-tighter transition-colors",
+                      pathname === item.path ? "text-white" : "text-zinc-700 hover:text-white"
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                </motion.div>
               ))}
-              <Link 
-                href="/book"
-                onClick={() => setMobileMenuOpen(false)}
-                className="mt-8 px-12 py-5 bg-white text-black text-sm font-black uppercase tracking-[0.2em] rounded-sm"
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="pt-10 border-t border-white/5"
               >
-                Book a Shoot
-              </Link>
+                <Link 
+                  href="/book"
+                  className="w-full py-6 bg-white text-black text-center block text-sm font-black uppercase tracking-[0.3em] rounded-sm shadow-[0_0_50px_rgba(255,255,255,0.1)]"
+                >
+                  Book a Shoot
+                </Link>
+              </motion.div>
+            </div>
+
+            {/* Bottom Accent */}
+            <div className="mt-auto pb-20">
+               <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-800">
+                  RCV.Media Digital Agency
+               </p>
             </div>
           </motion.div>
         )}

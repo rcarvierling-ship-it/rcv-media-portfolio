@@ -55,10 +55,10 @@ export default function HomePage() {
       <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
 
       {/* 1. EDITORIAL SPLIT HERO */}
-      <section className="relative w-full min-h-screen pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-screen-2xl mx-auto gap-12 overflow-hidden">
+      <section className="relative w-full min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-screen-2xl mx-auto gap-12 overflow-hidden">
         
         {/* Left Side: Dramatic Typography */}
-        <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-12 md:pt-0">
+        <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-8 md:pt-0">
            {/* Vertical Label */}
            <div className="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] font-black tracking-[0.3em] uppercase text-zinc-600 hidden xl:block">
              RCV.MEDIA // SPORTS PHOTOGRAPHY
@@ -283,8 +283,8 @@ export default function HomePage() {
 
       {/* 5. STICKY SPLIT LAYOUT (EXPERIENCE) */}
       <section className="relative z-10 border-t border-white/5 bg-zinc-950">
-        <div className="max-w-screen-2xl mx-auto px-6 py-32">
-          <div className="flex flex-col lg:flex-row gap-20">
+        <div className="max-w-screen-2xl mx-auto px-6 py-20 md:py-32">
+          <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
             
             {/* Sticky Left Column */}
             <div className="lg:w-1/3 relative">

@@ -87,7 +87,7 @@ export function InteractiveCalendar({
   }, [year, month, today, minBookingDate, maxBookingDate, blockedDates, selectedDate]);
 
   return (
-    <div className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/50 backdrop-blur-xl">
+    <div className="premium-card p-4 md:p-8 rounded-2xl border border-white/5 bg-zinc-900/50 backdrop-blur-xl">
       <div className="flex justify-between items-center mb-8">
         <h3 className="text-xl font-black uppercase tracking-widest text-white">
           {monthName} <span className="text-zinc-600">{year}</span>
