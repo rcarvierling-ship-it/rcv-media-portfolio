@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { updateBookingStatus, sendMessageToClient, updateBookingPipeline, deliverGallery } from "@/app/actions/booking";
-import { MessageSquare, Send, X, DollarSign, ExternalLink, Package, Layout } from "lucide-react";
+import { MessageSquare, Send, X, DollarSign, ExternalLink, Package, Layout, Link as LinkIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function BookingsAdminClient({ 
