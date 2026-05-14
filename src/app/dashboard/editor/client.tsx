@@ -270,46 +270,48 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
 
                 <div className="flex-1 overflow-y-auto p-12">
                    <Reorder.Group 
-                     axis="x" 
+                     axis="y" 
                      values={featuredPhotos} 
                      onReorder={handleReorder}
-                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+                     className="space-y-4 max-w-3xl mx-auto"
                    >
                       {featuredPhotos.map((photo, i) => (
                         <Reorder.Item 
                           key={photo.id} 
                           value={photo}
                           whileDrag={{ 
-                            scale: 1.05, 
-                            boxShadow: "0 30px 60px rgba(0,0,0,0.6)",
+                            scale: 1.02, 
+                            boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
                             zIndex: 100 
                           }}
-                          className={`relative aspect-[16/10] bg-zinc-900 border-2 transition-all cursor-grab active:cursor-grabbing group rounded-sm overflow-hidden ${
-                            isReordering ? 'border-brand-accent shadow-[0_0_30px_var(--accent-glow)]' : 'border-white/5 hover:border-white/20 shadow-xl'
+                          className={`relative flex items-center gap-6 p-4 bg-zinc-900 border-2 transition-all cursor-grab active:cursor-grabbing group rounded-sm overflow-hidden ${
+                            isReordering ? 'border-brand-accent shadow-[0_0_20px_var(--accent-glow)]' : 'border-white/5 hover:border-white/10 shadow-xl'
                           }`}
                         >
-                           <Image src={photo.image_url} alt="Featured" fill className="object-cover pointer-events-none" />
-                           
-                           {/* Grip Indicator */}
-                           <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                              <div className="p-4 bg-black/60 backdrop-blur-md rounded-full border border-white/20 scale-90 group-hover:scale-100 transition-transform">
-                                 <GripVertical size={24} className="text-white" />
-                              </div>
+                           {/* Index Badge */}
+                           <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center font-black italic text-zinc-500 border border-white/5 shrink-0">
+                              {i+1}
                            </div>
 
-                           {/* Numerical Badge */}
-                           <div className="absolute top-6 left-6 flex items-center gap-3">
-                              <div className="w-10 h-10 bg-brand-accent text-white flex items-center justify-center font-black text-xs italic shadow-xl border border-white/20">
-                                 {i+1}
-                              </div>
-                              <div className="px-3 py-1 bg-black/80 backdrop-blur-md border border-white/10">
-                                 <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white">Position {i+1}</p>
-                              </div>
+                           {/* Preview Image */}
+                           <div className="relative h-20 aspect-[16/10] bg-black border border-white/5 shrink-0 overflow-hidden">
+                              <Image src={photo.image_url} alt="Preview" fill className="object-cover pointer-events-none" />
                            </div>
 
-                           {/* Label */}
-                           <div className="absolute bottom-6 left-6 right-6">
-                              <p className="text-[10px] font-black uppercase tracking-tighter text-white truncate drop-shadow-lg">{photo.title}</p>
+                           {/* Details */}
+                           <div className="flex-1 min-w-0">
+                              <h4 className="text-white font-black uppercase tracking-tight text-xs truncate mb-1">{photo.title || "Untitled Asset"}</h4>
+                              <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-600">{photo.category || "Featured Photo"}</p>
+                           </div>
+
+                           {/* Position Label */}
+                           <div className="hidden md:block px-4 py-2 bg-black/40 border border-white/5 rounded-sm">
+                              <span className="text-[8px] font-black uppercase tracking-[0.2em] text-zinc-500">Position 0{i+1}</span>
+                           </div>
+
+                           {/* Grip Handle */}
+                           <div className="p-4 bg-zinc-950/50 rounded-sm border border-white/5 opacity-40 group-hover:opacity-100 transition-opacity">
+                              <GripVertical size={20} className="text-white" />
                            </div>
                         </Reorder.Item>
                       ))}
