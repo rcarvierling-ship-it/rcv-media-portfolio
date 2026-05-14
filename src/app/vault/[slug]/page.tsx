@@ -7,6 +7,7 @@ import {
   Download, Share2, ShieldCheck, ArrowLeft, 
   Calendar, Camera, User, ExternalLink, Info
 } from "lucide-react";
+import { logAnalyticsEvent } from "@/app/actions/analytics";
 
 export default async function PrivateVaultPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -29,6 +30,13 @@ export default async function PrivateVaultPage({ params }: { params: Promise<{ s
   if (!album) {
     redirect("/vault");
   }
+
+  // 3. Log Analytics
+  await logAnalyticsEvent({
+    event_type: 'vault_view',
+    album_id: album.id,
+    metadata: { slug }
+  });
 
   const { data: photos } = await supabase
     .from("photos")
@@ -104,7 +112,11 @@ export default async function PrivateVaultPage({ params }: { params: Promise<{ s
                      className="object-cover transition-transform duration-700 group-hover:scale-105"
                    />
                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                      <a href={photo.image_url} download className="p-4 bg-white text-black rounded-full hover:scale-110 transition-transform">
+                      <a 
+                        href={photo.image_url} 
+                        download 
+                        className="p-4 bg-white text-black rounded-full hover:scale-110 transition-transform"
+                      >
                          <Download size={20} />
                       </a>
                       <button className="p-4 bg-zinc-900 text-white border border-white/20 rounded-full hover:scale-110 transition-transform">

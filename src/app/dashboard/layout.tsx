@@ -35,6 +35,9 @@ export default function DashboardLayout({
             <div>
               <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4 hidden md:block">Agency Ops</h2>
               <nav className="flex flex-wrap md:flex-col gap-2">
+                <Link href="/dashboard/analytics" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
+                  Visual Intelligence
+                </Link>
                 <Link href="/dashboard/pipeline" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
                   Lead Pipeline
                 </Link>

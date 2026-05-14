@@ -296,3 +296,35 @@ CREATE POLICY "Admins can manage contracts" ON public.contracts
 CREATE POLICY "Public can view specific contract" ON public.contracts
     FOR SELECT USING (true);
 
+
+-- ====================================================================
+-- 10. VISUAL INTELLIGENCE & ANALYTICS
+-- ====================================================================
+
+CREATE TABLE IF NOT EXISTS public.analytics_events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  event_type TEXT NOT NULL, -- 'vault_view', 'photo_download', 'portfolio_view'
+  album_id UUID REFERENCES public.albums(id) ON DELETE SET NULL,
+  photo_id UUID REFERENCES public.photos(id) ON DELETE SET NULL,
+  client_ip TEXT,
+  user_agent TEXT,
+  metadata JSONB DEFAULT '{}'::jsonb,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Indices for performance
+CREATE INDEX IF NOT EXISTS idx_analytics_album_id ON public.analytics_events(album_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_photo_id ON public.analytics_events(photo_id);
+CREATE INDEX IF NOT EXISTS idx_analytics_event_type ON public.analytics_events(event_type);
+
+-- Enable RLS
+ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Admins can view all analytics" ON public.analytics_events
+    FOR SELECT TO authenticated USING (true);
+
+-- Public can INSERT analytics (triggered by their actions)
+CREATE POLICY "Public can insert analytics" ON public.analytics_events
+    FOR INSERT TO anon, authenticated WITH CHECK (true);
+
