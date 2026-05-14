@@ -1,28 +1,29 @@
 import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
-import { GalleryClient } from "./client";
+import { VaultClient } from "./VaultClient";
 
 export default async function GalleryPage({ params }: { params: { slug: string } }) {
-  const { slug } = params;
   const supabase = await createClient();
-
-  // Fetch album metadata (public info only)
+  
   const { data: album } = await supabase
     .from("albums")
-    .select("id, title, description, slug, is_private, client_name, passcode")
-    .eq("slug", slug)
+    .select("*")
+    .eq("slug", params.slug)
     .single();
 
-  if (!album) {
-    notFound();
-  }
+  if (!album) return notFound();
 
-  // We fetch photos separately in the client after passcode validation
-  // to ensure data privacy for private galleries.
+  // Fetch photos for this album
+  // Note: We fetch them server-side. The VaultClient will hide them until unlocked.
+  const { data: photos } = await supabase
+    .from("photos")
+    .select("*")
+    .eq("album_id", album.id)
+    .order("sort_order", { ascending: true });
 
   return (
-    <div className="min-h-screen bg-black">
-      <GalleryClient album={album} />
+    <div className="bg-zinc-950">
+      <VaultClient album={album} photos={photos || []} />
     </div>
   );
 }
