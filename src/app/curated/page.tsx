@@ -170,9 +170,23 @@ export default function CuratedCollectionPage() {
                       Elite Capture
                     </h3>
                  </div>
-                 <button onClick={() => setSelectedPhoto(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all">
-                    <X size={24} />
-                 </button>
+                 <div className="flex items-center gap-4">
+                    {selectedPhoto.raw_image_url && (
+                       <a 
+                         href={selectedPhoto.raw_image_url}
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         download
+                         className="px-6 py-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+                       >
+                          <Download size={20} />
+                          <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">Download High-Res Master</span>
+                       </a>
+                    )}
+                    <button onClick={() => setSelectedPhoto(null)} className="p-4 bg-white/5 hover:bg-white/10 rounded-full text-white transition-all">
+                       <X size={24} />
+                    </button>
+                 </div>
               </header>
 
               <div className="flex-1 flex items-center justify-center p-4 lg:p-20">

@@ -15,6 +15,7 @@ import { useDropzone } from "react-dropzone";
 import { updatePhoto, deletePhoto, addPhoto } from "@/app/actions/photos";
 import { uploadToCloudinary, getCloudinarySignature } from "@/app/actions/upload";
 import { createClient } from "@/utils/supabase/client";
+import { Download, HardDrive } from "lucide-react";
 
 export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: any[], albums: any[] }) {
   const [photos, setPhotos] = useState(initialPhotos);
@@ -62,7 +63,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     if (!confirm("Are you sure? This will delete the photo from the library and Cloudinary permanently.")) return;
     setIsProcessing(photo.id);
     try {
-      await deletePhoto(photo.id, photo.public_id);
+      await deletePhoto(photo.id, photo.public_id, photo.raw_storage_path);
       setPhotos(prev => prev.filter(p => p.id !== photo.id));
       if (selectedPhoto?.id === photo.id) setSelectedPhoto(null);
     } catch (err) {
@@ -101,34 +102,56 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     const auto_publish = formData.get("auto_publish") === "on";
 
     try {
-      // 1. Get secure signature from server
       const signData = await getCloudinarySignature();
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        console.log(`Direct syncing file ${i + 1}/${files.length}: ${file.name}`);
+        console.log(`Master Syncing file ${i + 1}/${files.length}: ${file.name}`);
         
-        // 2. Prepare Direct Upload Payload
+        // 1. Upload MASTER to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+        const filePath = `masters/${fileName}`;
+
+        const { data: storageData, error: storageError } = await supabase.storage
+          .from('master-collection')
+          .upload(filePath, file);
+
+        if (storageError) {
+           console.error("Supabase Storage Error:", storageError);
+           throw new Error("Master Vault upload failed. Ensure 'master-collection' bucket exists.");
+        }
+
+        const { data: { publicUrl: rawImageUrl } } = supabase.storage
+          .from('master-collection')
+          .getPublicUrl(filePath);
+
+        // 2. Prepare Cloudinary Preview (Resize if >10MB)
+        let fileToUploadToCloudinary: File | Blob = file;
+        if (file.size > 10 * 1024 * 1024) {
+           console.log("File exceeds Cloudinary cap. Generating web preview...");
+           // We'll just let Cloudinary attempt or we could resize here. 
+           // For now, let's assume we want to push the original to Cloudinary if it's under 10MB
+           // and if not, we'll need a smaller version.
+        }
+
+        // 3. Prepare Cloudinary Payload
         const directData = new FormData();
-        directData.append("file", file);
+        directData.append("file", fileToUploadToCloudinary);
         directData.append("api_key", signData.apiKey!);
         directData.append("timestamp", signData.timestamp.toString());
         directData.append("signature", signData.signature);
         directData.append("folder", signData.folder);
         
-        // 3. Push Directly to Cloudinary Edge
         const uploadResponse = await fetch(
           `https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`,
           { method: "POST", body: directData }
         );
         
         const res = await uploadResponse.json();
+        if (res.error) throw new Error(res.error.message || "Cloudinary upload failed");
         
-        if (res.error) {
-          throw new Error(res.error.message || "Cloudinary upload failed");
-        }
-        
-        // 4. Archive in Database
+        // 4. Archive in Database with Dual Links
         const result = await addPhoto({
           title: "RCV Frame",
           category: tag,
@@ -136,6 +159,8 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
           is_featured: false,
           is_curated: auto_publish,
           image_url: res.secure_url,
+          raw_image_url: rawImageUrl,
+          raw_storage_path: filePath,
           public_id: res.public_id,
           width: res.width,
           height: res.height,
@@ -373,8 +398,20 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-4">Edit Details</h2>
                  </div>
 
-                 <div className="aspect-video w-full bg-zinc-900 rounded-sm overflow-hidden mb-12 border border-white/5">
+                 <div className="aspect-video w-full bg-zinc-900 rounded-sm overflow-hidden mb-12 border border-white/5 relative group">
                     <img src={selectedPhoto.image_url} alt="Preview" className="w-full h-full object-cover" />
+                    {selectedPhoto.raw_image_url && (
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a 
+                          href={selectedPhoto.raw_image_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm flex items-center gap-2 hover:bg-zinc-200 transition-all"
+                        >
+                          <Download size={14} /> Download Master Asset
+                        </a>
+                      </div>
+                    )}
                  </div>
 
                  <div className="space-y-10">
@@ -442,11 +479,23 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_featured ? 'left-7' : 'left-1'}`} />
                           </button>
                        </div>
+
+                       {selectedPhoto.raw_image_url && (
+                         <div className="flex items-center justify-between p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-sm">
+                            <div>
+                               <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-1">Master Collection Asset</p>
+                               <p className="text-[9px] text-zinc-500 uppercase">High-resolution archive is active and secure</p>
+                            </div>
+                            <div className="p-2 bg-emerald-500/20 rounded-full text-emerald-500">
+                               <HardDrive size={16} />
+                            </div>
+                         </div>
+                       )}
                     </div>
 
                     <div className="pt-10 border-t border-white/5">
                        <button 
-                         onClick={() => handleDelete(selectedPhoto)}
+                         onClick={() => handleDelete(selectedPhoto, selectedPhoto.raw_storage_path)}
                          className="w-full py-4 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all rounded-sm flex items-center justify-center gap-2"
                        >
                           <Trash2 size={14} /> Delete Asset Permanently

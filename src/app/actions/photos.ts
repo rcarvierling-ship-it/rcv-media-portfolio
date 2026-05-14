@@ -11,6 +11,8 @@ export async function addPhoto(data: {
   is_featured: boolean;
   is_curated?: boolean;
   image_url: string;
+  raw_image_url?: string;
+  raw_storage_path?: string;
   public_id: string;
   width: number;
   height: number;
@@ -29,11 +31,12 @@ export async function addPhoto(data: {
   revalidatePath("/");
   revalidatePath("/portfolio");
   revalidatePath("/dashboard");
+  revalidatePath("/curated");
   
   return { success: true, data: inserted };
 }
 
-export async function deletePhoto(id: string, publicId: string) {
+export async function deletePhoto(id: string, publicId: string, storagePath?: string) {
   const supabase = await createClient();
   const { data: user } = await supabase.auth.getUser();
   
@@ -41,21 +44,30 @@ export async function deletePhoto(id: string, publicId: string) {
     throw new Error("Unauthorized");
   }
 
-  // First delete from Cloudinary
+  // 1. Delete from Cloudinary
   try {
     await deleteFromCloudinary(publicId);
   } catch (error) {
     console.error("Failed to delete from Cloudinary:", error);
-    // Continue to delete from DB anyway to prevent orphaned DB records
   }
 
-  // Then delete from DB
+  // 2. Delete from Supabase Storage if it exists
+  if (storagePath) {
+    try {
+      await supabase.storage.from("master-collection").remove([storagePath]);
+    } catch (error) {
+      console.error("Failed to delete from Supabase Storage:", error);
+    }
+  }
+
+  // 3. Delete from DB
   const { error } = await supabase.from("photos").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
   revalidatePath("/portfolio");
   revalidatePath("/dashboard");
+  revalidatePath("/curated");
 }
 
 export async function updatePhoto(id: string, updates: any) {
