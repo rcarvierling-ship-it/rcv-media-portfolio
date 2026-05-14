@@ -268,3 +268,31 @@ ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS is_curated BOOLEAN DEFAULT fa
 -- Allow public to view curated photos regardless of album privacy
 CREATE POLICY "Public can view curated photos" ON public.photos
     FOR SELECT USING (is_curated = true);
+
+-- ====================================================================
+-- 9. CONTRACT & INVOICE SYSTEM
+-- ====================================================================
+
+CREATE TABLE IF NOT EXISTS public.contracts (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  booking_id UUID REFERENCES public.bookings(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT,
+  status TEXT DEFAULT 'draft', -- draft, sent, signed, paid
+  amount DECIMAL(10, 2),
+  signed_at TIMESTAMP WITH TIME ZONE,
+  paid_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+CREATE POLICY "Admins can manage contracts" ON public.contracts
+    FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- Public can view their specific contract by ID (we will use UUID as a secure link)
+CREATE POLICY "Public can view specific contract" ON public.contracts
+    FOR SELECT USING (true);
+

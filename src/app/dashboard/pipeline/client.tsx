@@ -8,12 +8,23 @@ import {
   RefreshCw, Check, Clock
 } from "lucide-react";
 import { updateBookingStage, deleteBooking } from "@/app/actions/crm";
+import { createContractFromBooking } from "@/app/actions/contracts";
 import { useRouter } from "next/navigation";
 
 export function PipelineClient({ initialPipeline }: { initialPipeline: any[] }) {
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [creatingContractId, setCreatingContractId] = useState<string | null>(null);
   const router = useRouter();
+
+  const handleCreateContract = async (bookingId: string) => {
+    setCreatingContractId(bookingId);
+    const res = await createContractFromBooking(bookingId);
+    if (res.success) {
+      router.push('/dashboard/contracts');
+    }
+    setCreatingContractId(null);
+  };
 
   const handleMove = async (id: string, currentStage: string) => {
     const stages = pipeline.map(s => s.id);
@@ -111,11 +122,16 @@ export function PipelineClient({ initialPipeline }: { initialPipeline: any[] }) 
                            <a href={`mailto:${item.email}`} className="p-2 bg-zinc-900 rounded-lg text-zinc-500 hover:text-white transition-colors">
                               <Mail size={12} />
                            </a>
-                           {item.phone && (
-                             <a href={`tel:${item.phone}`} className="p-2 bg-zinc-900 rounded-lg text-zinc-500 hover:text-white transition-colors">
-                                <Phone size={12} />
-                             </a>
-                           )}
+                           {stage.id === 'lead' || stage.id === 'confirmed' ? (
+                             <button 
+                               onClick={() => handleCreateContract(item.id)}
+                               disabled={creatingContractId === item.id}
+                               className="p-2 bg-brand-accent/10 border border-brand-accent/20 rounded-lg text-brand-accent hover:bg-brand-accent hover:text-white transition-all flex items-center gap-2 px-3"
+                             >
+                                {creatingContractId === item.id ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
+                                <span className="text-[8px] font-black uppercase tracking-widest">Contract</span>
+                             </button>
+                           ) : null}
                         </div>
                         
                         {stage.id !== 'delivered' && (
