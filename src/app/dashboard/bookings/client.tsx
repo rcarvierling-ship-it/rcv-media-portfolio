@@ -141,8 +141,8 @@ export function BookingsAdminClient({
   };
 
   // Filtered Views
-  const activePipelineBookings = useMemo(() => bookings.filter(b => b.status !== 'canceled' && b.status !== 'completed'), [bookings]);
-  const archivedBookings = useMemo(() => bookings.filter(b => b.status === 'canceled' || b.status === 'completed'), [bookings]);
+  const activePipelineBookings = useMemo(() => bookings.filter(b => b.status !== 'cancelled'), [bookings]);
+  const archivedBookings = useMemo(() => bookings.filter(b => b.status === 'cancelled'), [bookings]);
   const getBookingsByStage = (stageId: string) => activePipelineBookings.filter(b => (b.pipeline_stage || 'lead') === stageId);
 
   return (
