@@ -5,7 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-01-27-ac",
+  apiVersion: "2026-04-22.dahlia",
 });
 
 export async function createCheckoutSession(contractId: string, type: 'deposit' | 'final') {
