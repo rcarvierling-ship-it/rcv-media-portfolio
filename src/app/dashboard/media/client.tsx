@@ -45,7 +45,10 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: { 'image/*': [] },
-    onDrop: acceptedFiles => setFiles(prev => [...prev, ...acceptedFiles])
+    maxFiles: 20,
+    onDrop: acceptedFiles => {
+      setFiles(prev => [...prev, ...acceptedFiles].slice(0, 20));
+    }
   });
 
   const handleToggleFeatured = async (photo: any) => {
