@@ -401,3 +401,89 @@ export async function validateVaultAccess(albumId: string, inputPasscode: string
     return { success: false, error: "Internal error" };
   }
 }
+export async function submitInquiry(formData: { name: string; email: string; subject: string; message: string }) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Save to DB
+    const { data, error } = await supabase
+      .from("inquiries")
+      .insert([formData])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // 2. Send SMS Notification via Gateway
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "RCV Media <info@rcv-media.com>",
+        to: "8129141183@vtext.com", // Your phone
+        subject: `NEW INQUIRY: ${formData.name}`,
+        text: `New question from ${formData.name} (${formData.email}): ${formData.message}`,
+      });
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Inquiry submission error:", error);
+    return { success: false };
+  }
+}
+
+export async function replyToInquiry(inquiryId: string, message: string) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Get inquiry details
+    const { data: inquiry } = await supabase
+      .from("inquiries")
+      .select("*")
+      .eq("id", inquiryId)
+      .single();
+
+    if (!inquiry) throw new Error("Inquiry not found");
+
+    // 2. Send Reply Email
+    if (process.env.RESEND_API_KEY) {
+      const resend = new Resend(process.env.RESEND_API_KEY);
+      await resend.emails.send({
+        from: "RCV Media <info@rcv-media.com>",
+        to: inquiry.email,
+        replyTo: "8129141183@vtext.com", // SMS Bridge
+        subject: `RE: ${inquiry.subject || "Your Inquiry"}`,
+        text: message,
+        html: `
+          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
+            <div style="margin-bottom: 40px; text-align: center;">
+              <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin: 0;">RCV<span style="color: #52525b;">.</span>MEDIA</h1>
+            </div>
+            
+            <div style="padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 4px;">
+              <p style="font-size: 16px; line-height: 1.6; margin-bottom: 20px; color: #e4e4e7;">
+                ${message}
+              </p>
+            </div>
+
+            <div style="margin-top: 40px; text-align: center;">
+               <p style="font-size: 10px; color: #52525b; text-transform: uppercase; letter-spacing: 2px;">
+                 You can reply directly to this email to reach me via text.
+               </p>
+            </div>
+          </div>
+        `,
+      });
+    }
+
+    // 3. Update status
+    await supabase.from("inquiries").update({ status: 'replied' }).eq("id", inquiryId);
+    
+    revalidatePath("/dashboard/bookings");
+    return { success: true };
+  } catch (error) {
+    console.error("Reply to inquiry error:", error);
+    return { success: false };
+  }
+}
+

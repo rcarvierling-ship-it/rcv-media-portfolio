@@ -239,3 +239,25 @@ VALUES
 ('Tournament Coverage', '', ARRAY['Full-Day Coverage', 'Unlimited Photo Coverage', '100+ Edited Photos', 'Priority Delivery'], '#DC2626', 3),
 ('Team Media Day', '', ARRAY['2 Hours Coverage', 'Individual Player Photos', 'Team Photos', 'Social Media Ready Edits'], '#10B981', 4),
 ('Extended Coverage', '', ARRAY['4 Hours Coverage', '60+ Edited Photos', 'Multiple Locations or Games', 'Cinematic Color Grade'], '#F59E0B', 5);
+-- General Inquiries Table
+CREATE TABLE IF NOT EXISTS public.inquiries (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    subject TEXT,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'new', -- new, read, replied
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Enable RLS for inquiries
+ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can submit an inquiry" ON public.inquiries
+    FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Admins can view inquiries" ON public.inquiries
+    FOR SELECT USING (auth.role() = 'authenticated');
+
+CREATE POLICY "Admins can update inquiries" ON public.inquiries
+    FOR UPDATE USING (auth.role() = 'authenticated');

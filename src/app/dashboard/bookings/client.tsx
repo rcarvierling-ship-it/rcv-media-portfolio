@@ -3,24 +3,40 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
-import { updateBookingStatus, sendMessageToClient, updateBookingPipeline, deliverGallery } from "@/app/actions/booking";
-import { MessageSquare, Send, X, DollarSign, ExternalLink, Package, Layout, Link as LinkIcon } from "lucide-react";
+import { 
+  updateBookingStatus, 
+  sendMessageToClient, 
+  updateBookingPipeline, 
+  deliverGallery,
+  replyToInquiry 
+} from "@/app/actions/booking";
+import { 
+  MessageSquare, Send, X, DollarSign, 
+  ExternalLink, Package, Layout, Link as LinkIcon,
+  Mail, Calendar, Clock, CheckCircle2, AlertCircle
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export function BookingsAdminClient({ 
   initialBookings, 
   initialBlockedDates,
   initialSettings,
-  albums = []
+  albums = [],
+  initialInquiries = []
 }: { 
   initialBookings: any[], 
   initialBlockedDates: any[],
   initialSettings: any,
-  albums?: any[]
+  albums?: any[],
+  initialInquiries?: any[]
 }) {
+  const [activeTab, setActiveTab] = useState<"bookings" | "inquiries" | "settings">("bookings");
   const [bookings, setBookings] = useState(initialBookings);
+  const [inquiries, setInquiries] = useState(initialInquiries);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
-  const [messagingBooking, setMessagingBooking] = useState<any | null>(null);
+  
+  // Messaging Logic
+  const [messagingTarget, setMessagingTarget] = useState<{ id: string, type: 'booking' | 'inquiry', name: string } | null>(null);
   const [messageText, setMessageText] = useState("");
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   
@@ -43,43 +59,49 @@ export function BookingsAdminClient({
       setBookings(bookings.map(b => b.id === id ? { ...b, status } : b));
       router.refresh();
     } else {
-      alert("Failed to update status and send email.");
-    }
-  };
-
-  const handleUpdatePipeline = async (id: string, updates: any) => {
-    const result = await updateBookingPipeline(id, updates);
-    if (result.success) {
-      setBookings(bookings.map(b => b.id === id ? { ...b, ...updates } : b));
-      router.refresh();
-    }
-  };
-
-  const handleDeliver = async (bookingId: string) => {
-    if (!confirm("Are you sure you want to deliver this gallery? This will send the vault link and passcode to the client via email.")) return;
-    const result = await deliverGallery(bookingId);
-    if (result.success) {
-      alert("Gallery delivered and client notified!");
-      router.refresh();
-    } else {
-      alert("Failed to deliver gallery. Make sure an album is linked.");
+      alert("Failed to update status.");
     }
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!messagingBooking || !messageText) return;
+    if (!messagingTarget || !messageText) return;
     
     setIsSendingMessage(true);
-    const result = await sendMessageToClient(messagingBooking.id, messageText);
+    let result;
+    if (messagingTarget.type === 'booking') {
+      result = await sendMessageToClient(messagingTarget.id, messageText);
+    } else {
+      result = await replyToInquiry(messagingTarget.id, messageText);
+    }
+
     if (result.success) {
-      setMessagingBooking(null);
+      if (messagingTarget.type === 'inquiry') {
+        setInquiries(inquiries.map(i => i.id === messagingTarget.id ? { ...i, status: 'replied' } : i));
+      }
+      setMessagingTarget(null);
       setMessageText("");
       alert("Message sent successfully!");
     } else {
       alert("Failed to send message.");
     }
     setIsSendingMessage(false);
+  };
+
+  const handleSaveSettings = async () => {
+    setIsSavingSettings(true);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({
+        booking_min_advance_days: minDays,
+        booking_max_advance_days: maxDays,
+        booking_is_active: isActive
+      })
+      .eq("id", initialSettings?.id);
+    
+    if (!error) alert("Settings updated!");
+    setIsSavingSettings(false);
+    router.refresh();
   };
 
   const handleBlockDate = async (e: React.FormEvent) => {
@@ -100,280 +122,332 @@ export function BookingsAdminClient({
     setIsBlocking(false);
   };
 
-  const unblockDate = async (id: string) => {
-    const { error } = await supabase.from("blocked_dates").delete().eq("id", id);
-    if (!error) {
-      setBlockedDates(blockedDates.filter(d => d.id !== id));
-      router.refresh();
-    }
-  };
-
-  const saveSettings = async () => {
-    setIsSavingSettings(true);
-    const { data: existing } = await supabase.from("site_settings").select("id").limit(1).single();
-    if (existing) {
-      await supabase.from("site_settings").update({
-        booking_min_advance_days: minDays,
-        booking_max_advance_days: maxDays,
-        booking_is_active: isActive
-      }).eq("id", existing.id);
-    }
-    setIsSavingSettings(false);
-    router.refresh();
-  };
-
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-3 gap-12">
-      
-      {/* Left Col: Incoming Bookings */}
-      <div className="xl:col-span-2 space-y-8">
-        <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500 flex items-center gap-4">
-          Booking Requests
-        </h2>
-        
-        {bookings.length === 0 ? (
-          <div className="p-12 text-center border border-dashed border-zinc-800 rounded-sm text-zinc-600">
-            No booking requests yet.
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {bookings.map((booking) => (
-              <div key={booking.id} className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-zinc-800">
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-2xl font-black uppercase tracking-tight text-white">{booking.name}</h3>
-                      <span className={`px-2 py-1 text-[10px] font-black uppercase tracking-widest rounded-sm ${
-                        booking.status === 'confirmed' ? 'bg-emerald-500/20 text-emerald-400' :
-                        booking.status === 'cancelled' ? 'bg-red-500/20 text-red-400' :
-                        'bg-blue-500/20 text-blue-400'
-                      }`}>
-                        {booking.status}
-                      </span>
-                      {booking.pipeline_stage && booking.pipeline_stage !== 'lead' && (
-                        <span className="px-2 py-1 text-[10px] font-black uppercase tracking-widest bg-zinc-800 text-zinc-400 rounded-sm">
-                           Stage: {booking.pipeline_stage}
+    <div className="space-y-12">
+      {/* Tab Navigation */}
+      <div className="flex gap-4 border-b border-white/5 pb-4">
+         <button 
+           onClick={() => setActiveTab("bookings")}
+           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'bookings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+         >
+           Bookings ({bookings.length})
+         </button>
+         <button 
+           onClick={() => setActiveTab("inquiries")}
+           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'inquiries' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+         >
+           Inquiries ({inquiries.filter(i => i.status === 'new').length} New)
+         </button>
+         <button 
+           onClick={() => setActiveTab("settings")}
+           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'settings' ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+         >
+           Settings
+         </button>
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeTab === "bookings" && (
+          <motion.div 
+            key="bookings"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="grid grid-cols-1 gap-6"
+          >
+            {bookings.length === 0 ? (
+              <div className="py-20 text-center border border-dashed border-zinc-800 rounded-sm">
+                <p className="text-zinc-600 uppercase tracking-widest text-xs font-black">No bookings found</p>
+              </div>
+            ) : (
+              bookings.map((booking) => (
+                <div key={booking.id} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20">
+                  <div className="flex flex-col lg:flex-row justify-between gap-8">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                          booking.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                          booking.status === 'canceled' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                          'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                        }`}>
+                          {booking.status}
                         </span>
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                           {new Date(booking.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">{booking.name}</h3>
+                      <p className="text-zinc-400 font-medium mb-6 flex items-center gap-2">
+                        <Mail size={14} className="text-zinc-600" /> {booking.email}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-6 border-t border-white/5">
+                         <div>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1">Session Date</span>
+                            <span className="text-white font-bold flex items-center gap-2"><Calendar size={14} /> {booking.session_date}</span>
+                         </div>
+                         <div>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1">Session Type</span>
+                            <span className="text-white font-bold uppercase">{booking.session_type}</span>
+                         </div>
+                         <div>
+                            <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1">Total Amount</span>
+                            <span className="text-white font-bold text-lg flex items-center gap-1">
+                               <DollarSign size={16} className="text-emerald-500" /> 
+                               <input 
+                                 type="number" 
+                                 className="bg-transparent w-24 outline-none border-b border-transparent focus:border-emerald-500/50"
+                                 defaultValue={booking.total_amount || 0}
+                                 onBlur={(e) => updateBookingPipeline(booking.id, { total_amount: parseFloat(e.target.value) })}
+                               />
+                            </span>
+                         </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3 justify-center min-w-[200px]">
+                      {booking.status === 'pending' && (
+                        <>
+                          <button 
+                            onClick={() => handleUpdateStatus(booking.id, 'confirmed')}
+                            className="w-full py-4 bg-emerald-500 text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-emerald-400 transition-colors"
+                          >
+                            Confirm Booking
+                          </button>
+                          <button 
+                            onClick={() => handleUpdateStatus(booking.id, 'canceled')}
+                            className="w-full py-4 border border-red-500/50 text-red-500 font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-red-500 hover:text-white transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </>
                       )}
+                      
+                      <button 
+                        onClick={() => setMessagingTarget({ id: booking.id, type: 'booking', name: booking.name })}
+                        className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <MessageSquare size={14} /> Send Message
+                      </button>
                     </div>
-                    <div className="flex flex-wrap gap-4 text-sm text-zinc-400">
-                      <a href={`mailto:${booking.email}`} className="hover:text-white transition-colors">{booking.email}</a>
-                      {booking.phone && <span>{booking.phone}</span>}
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => setMessagingBooking(booking)}
-                      className="p-2 bg-zinc-800 text-zinc-400 hover:text-white transition-colors rounded-sm flex items-center gap-2 px-3"
-                    >
-                      <MessageSquare size={14} /> <span className="text-[10px] font-bold uppercase tracking-widest">Message</span>
-                    </button>
-                    {booking.status === 'pending' && (
-                      <>
-                        <button onClick={() => handleUpdateStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
-                          Confirm
-                        </button>
-                        <button onClick={() => handleUpdateStatus(booking.id, 'cancelled')} className="px-4 py-2 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white">
-                          Cancel
-                        </button>
-                      </>
-                    )}
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Package</span>
-                    <span className="text-white font-medium">{booking.package_selected || "N/A"}</span>
+              ))
+            )}
+          </motion.div>
+        )}
+
+        {activeTab === "inquiries" && (
+          <motion.div 
+            key="inquiries"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="grid grid-cols-1 gap-6"
+          >
+            {inquiries.length === 0 ? (
+              <div className="py-20 text-center border border-dashed border-zinc-800 rounded-sm">
+                <p className="text-zinc-600 uppercase tracking-widest text-xs font-black">No inquiries found</p>
+              </div>
+            ) : (
+              inquiries.map((inquiry) => (
+                <div key={inquiry.id} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20">
+                  <div className="flex flex-col lg:flex-row justify-between gap-8">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-4">
+                        <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                          inquiry.status === 'replied' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                          'bg-blue-500/10 text-blue-500 border border-blue-500/20'
+                        }`}>
+                          {inquiry.status}
+                        </span>
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                           {new Date(inquiry.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      
+                      <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">{inquiry.name}</h3>
+                      <p className="text-blue-500 font-bold text-xs uppercase tracking-widest mb-4">{inquiry.subject}</p>
+                      
+                      <div className="bg-black/40 p-6 rounded-sm border border-white/5 mb-6">
+                        <p className="text-zinc-300 italic line-clamp-3">"{inquiry.message}"</p>
+                      </div>
+
+                      <p className="text-zinc-500 font-medium flex items-center gap-2 text-xs">
+                        <Mail size={12} className="text-zinc-700" /> {inquiry.email}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col gap-3 justify-center min-w-[200px]">
+                      <button 
+                        onClick={() => setMessagingTarget({ id: inquiry.id, type: 'inquiry', name: inquiry.name })}
+                        className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Send size={14} /> Reply to Inquiry
+                      </button>
+                    </div>
                   </div>
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Date & Time</span>
-                    <span className="text-white font-medium">{booking.event_date}</span>
-                  </div>
-                  <div>
-                     <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Pipeline Stage</span>
-                     <select 
-                       value={booking.pipeline_stage || 'lead'}
-                       onChange={(e) => handleUpdatePipeline(booking.id, { pipeline_stage: e.target.value })}
-                       className="bg-transparent text-white font-medium outline-none focus:text-blue-400"
-                     >
-                       <option value="lead" className="bg-black">Lead</option>
-                       <option value="confirmed" className="bg-black">Confirmed</option>
-                       <option value="shooting" className="bg-black">Shooting</option>
-                       <option value="editing" className="bg-black">Editing</option>
-                       <option value="delivered" className="bg-black">Delivered</option>
-                     </select>
-                  </div>
-                  <div>
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-1">Payment</span>
-                    <div className="flex items-center gap-2">
-                       <input 
-                         type="number"
-                         value={booking.total_amount || 0}
-                         onChange={(e) => handleUpdatePipeline(booking.id, { total_amount: parseFloat(e.target.value) })}
-                         className="bg-transparent text-white font-medium outline-none w-16 border-b border-zinc-800 focus:border-blue-500"
-                       />
+                </div>
+              ))
+            )}
+          </motion.div>
+        )}
+
+        {activeTab === "settings" && (
+          <motion.div 
+            key="settings"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+          >
+            {/* Rules & Dates */}
+            <div className="space-y-12">
+               <div className="premium-card p-10 rounded-sm border border-white/5">
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">
+                    <Layout size={20} className="text-blue-500" /> Booking Rules
+                  </h2>
+                  <div className="space-y-8">
+                    <div className="flex items-center justify-between">
+                       <div>
+                          <p className="text-white font-bold uppercase tracking-widest text-xs">Booking Status</p>
+                          <p className="text-zinc-500 text-[10px] uppercase font-medium">Turn on/off all new inquiries</p>
+                       </div>
                        <button 
-                         onClick={() => handleUpdatePipeline(booking.id, { payment_status: booking.payment_status === 'paid' ? 'pending' : 'paid' })}
-                         className={`text-[9px] font-black px-2 py-0.5 rounded-sm ${booking.payment_status === 'paid' ? 'bg-emerald-500 text-black' : 'bg-zinc-800 text-zinc-500'}`}
+                         onClick={() => setIsActive(!isActive)}
+                         className={`w-14 h-8 rounded-full relative transition-colors ${isActive ? 'bg-blue-600' : 'bg-zinc-800'}`}
                        >
-                         {booking.payment_status === 'paid' ? 'PAID' : 'PENDING'}
+                         <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${isActive ? 'left-7' : 'left-1'}`} />
                        </button>
                     </div>
-                  </div>
-                </div>
 
-                {/* Pipeline Actions: Linking & Delivery */}
-                <div className="p-6 bg-black/40 border border-white/5 rounded-lg flex flex-col md:flex-row justify-between items-center gap-6">
-                   <div className="w-full md:w-auto">
-                      <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2 flex items-center gap-2">
-                        <LinkIcon size={12} /> Associate Private Vault
-                      </span>
-                      <select 
-                        value={booking.linked_album_id || ""}
-                        onChange={(e) => handleUpdatePipeline(booking.id, { linked_album_id: e.target.value || null })}
-                        className="w-full md:w-64 bg-zinc-900 border border-white/10 px-4 py-2 text-sm text-white outline-none rounded-sm"
-                      >
-                        <option value="">No Album Linked</option>
-                        {albums.map(album => (
-                          <option key={album.id} value={album.id}>{album.title} {album.is_private ? '(Private)' : ''}</option>
-                        ))}
-                      </select>
-                   </div>
+                    <div className="grid grid-cols-2 gap-6">
+                       <div>
+                          <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-2">Min Advance (Days)</label>
+                          <input 
+                            type="number" 
+                            value={minDays} 
+                            onChange={(e) => setMinDays(parseInt(e.target.value))}
+                            className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                          />
+                       </div>
+                       <div>
+                          <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-2">Max Horizon (Days)</label>
+                          <input 
+                            type="number" 
+                            value={maxDays} 
+                            onChange={(e) => setMaxDays(parseInt(e.target.value))}
+                            className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                          />
+                       </div>
+                    </div>
 
-                   <button 
-                     disabled={!booking.linked_album_id || booking.pipeline_stage === 'delivered'}
-                     onClick={() => handleDeliver(booking.id)}
-                     className="w-full md:w-auto px-10 py-4 bg-emerald-600 text-white font-black uppercase tracking-widest text-xs hover:bg-emerald-500 disabled:opacity-20 transition-all rounded-sm flex items-center justify-center gap-3"
-                   >
-                     {booking.pipeline_stage === 'delivered' ? 'Photos Delivered' : 'Deliver Gallery'}
-                     <Send size={14} />
-                   </button>
-                </div>
-                
-                {booking.message && (
-                  <div className="mt-8">
-                    <span className="block text-[10px] font-bold uppercase tracking-widest text-zinc-600 mb-2">Message from Client</span>
-                    <p className="text-zinc-400 font-light leading-relaxed border-l-2 border-zinc-800 pl-4 italic">"{booking.message}"</p>
+                    <button 
+                      onClick={handleSaveSettings}
+                      disabled={isSavingSettings}
+                      className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-colors"
+                    >
+                      {isSavingSettings ? "Saving..." : "Save Configuration"}
+                    </button>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+               </div>
+
+               {/* Blackout Dates */}
+               <div className="premium-card p-10 rounded-sm border border-white/5">
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8">Calendar Blackout</h2>
+                  <form onSubmit={handleBlockDate} className="flex gap-4 mb-8">
+                     <input 
+                       required
+                       type="date" 
+                       value={newBlockDate} 
+                       onChange={(e) => setNewBlockDate(e.target.value)}
+                       className="flex-1 bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white text-xs"
+                     />
+                     <button 
+                       disabled={isBlocking}
+                       className="px-6 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-200"
+                     >
+                       Block
+                     </button>
+                  </form>
+
+                  <div className="space-y-3">
+                     {blockedDates.map((date) => (
+                       <div key={date.id} className="flex justify-between items-center p-4 bg-black/40 rounded-sm border border-white/5">
+                          <span className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">{new Date(date.date).toLocaleDateString()}</span>
+                          <button 
+                            onClick={async () => {
+                               await supabase.from("blocked_dates").delete().eq("id", date.id);
+                               setBlockedDates(blockedDates.filter(d => d.id !== date.id));
+                            }}
+                            className="text-zinc-600 hover:text-red-500 transition-colors"
+                          >
+                             <X size={14} />
+                          </button>
+                       </div>
+                     ))}
+                  </div>
+               </div>
+            </div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
 
-      {/* Right Col: Settings & Calendar */}
-      <div className="xl:col-span-1 space-y-8">
-        
-        {/* Statistics Card */}
-        <div className="bg-blue-600 p-8 rounded-sm text-white shadow-2xl shadow-blue-500/20">
-           <Layout className="mb-4 opacity-50" />
-           <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-1">Pipeline Snapshot</h3>
-           <p className="text-4xl font-black mb-4">
-             ${bookings.reduce((acc, b) => acc + (Number(b.total_amount) || 0), 0).toLocaleString()}
-           </p>
-           <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/20">
-              <div>
-                 <span className="block text-[9px] font-bold uppercase tracking-widest opacity-60">Active Shoots</span>
-                 <span className="text-xl font-bold">{bookings.filter(b => b.status === 'confirmed').length}</span>
-              </div>
-              <div>
-                 <span className="block text-[9px] font-bold uppercase tracking-widest opacity-60">Total Revenue</span>
-                 <span className="text-xl font-bold">${bookings.filter(b => b.payment_status === 'paid').reduce((acc, b) => acc + (Number(b.total_amount) || 0), 0).toLocaleString()}</span>
-              </div>
-           </div>
-        </div>
-
-        {/* Settings Panel */}
-        <div>
-          <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500 mb-4">Configuration</h2>
-          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-white mb-1">Accepting Bookings</h3>
-                <p className="text-xs text-zinc-500">Toggle public form</p>
-              </div>
-              <button onClick={() => setIsActive(!isActive)} className={`w-12 h-6 rounded-full relative transition-colors ${isActive ? 'bg-blue-600' : 'bg-zinc-700'}`}>
-                <div className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all ${isActive ? 'right-1' : 'left-1'}`} />
-              </button>
-            </div>
-            <div className="space-y-2 pt-4 border-t border-zinc-800">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Min Advance Notice (Days)</label>
-              <input type="number" value={minDays} onChange={e => setMinDays(parseInt(e.target.value))} className="w-full bg-zinc-950 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500 text-sm" />
-            </div>
-            <div className="space-y-2">
-              <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-500">Max Advance Notice (Days)</label>
-              <input type="number" value={maxDays} onChange={e => setMaxDays(parseInt(e.target.value))} className="w-full bg-zinc-950 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500 text-sm" />
-            </div>
-            <button onClick={saveSettings} disabled={isSavingSettings} className="w-full px-4 py-3 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200 disabled:opacity-50">
-              {isSavingSettings ? "Saving..." : "Save Configuration"}
-            </button>
-          </div>
-        </div>
-
-        {/* Blocked Dates */}
-        <div>
-          <h2 className="text-xl font-bold uppercase tracking-widest text-zinc-500 mb-4">Blocked Dates</h2>
-          <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm">
-            <form onSubmit={handleBlockDate} className="space-y-4 mb-8">
-              <input type="date" required value={newBlockDate} onChange={e => setNewBlockDate(e.target.value)} min={new Date().toISOString().split('T')[0]} className="w-full bg-zinc-950 border border-zinc-800 px-4 py-3 text-white outline-none text-sm color-scheme-dark" style={{ colorScheme: 'dark' }} />
-              <input type="text" value={newBlockReason} onChange={e => setNewBlockReason(e.target.value)} placeholder="Reason" className="w-full bg-zinc-950 border border-zinc-800 px-4 py-3 text-white outline-none text-sm" />
-              <button type="submit" disabled={isBlocking} className="w-full px-4 py-3 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 disabled:opacity-50">Block Date</button>
-            </form>
-            <div className="space-y-2">
-              {blockedDates.map(bd => (
-                <div key={bd.id} className="flex justify-between items-center bg-zinc-950 p-4 border border-zinc-800">
-                  <span className="text-white text-xs">{bd.date}</span>
-                  <button onClick={() => unblockDate(bd.id)} className="text-zinc-600 hover:text-red-400">×</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Messaging Modal */}
+      {/* Unified Messaging Modal */}
       <AnimatePresence>
-        {messagingBooking && (
-          <div className="fixed inset-0 z-[500] bg-black/90 flex items-center justify-center p-4 backdrop-blur-xl">
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.95 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.95 }}
-               className="bg-zinc-950 border border-white/10 p-10 w-full max-w-lg rounded-2xl"
-             >
-                <div className="flex justify-between items-center mb-8">
-                   <div>
-                     <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Message Client</h2>
-                     <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-1">To: {messagingBooking.name} ({messagingBooking.email})</p>
-                   </div>
-                   <button onClick={() => setMessagingBooking(null)} className="text-zinc-600 hover:text-white transition-colors">
-                      <X size={24} />
-                   </button>
-                </div>
+        {messagingTarget && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/90 backdrop-blur-sm"
+              onClick={() => setMessagingTarget(null)}
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-xl bg-zinc-900 border border-white/10 p-10 rounded-sm shadow-2xl"
+            >
+              <button 
+                onClick={() => setMessagingTarget(null)}
+                className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"
+              >
+                <X size={24} />
+              </button>
 
-                <form onSubmit={handleSendMessage} className="space-y-6">
-                   <textarea 
-                     required
-                     value={messageText}
-                     onChange={(e) => setMessageText(e.target.value)}
-                     placeholder="Type your message here..."
-                     className="w-full bg-zinc-900 border border-white/5 p-6 text-white text-sm outline-none focus:border-blue-500/50 rounded-sm min-h-[200px] resize-none"
-                   />
-                   <button 
-                     type="submit" 
-                     disabled={isSendingMessage}
-                     className="w-full py-4 bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-colors flex items-center justify-center gap-3 disabled:opacity-50"
-                   >
-                     {isSendingMessage ? "Sending..." : "Dispatch Message"} <Send size={14} />
-                   </button>
-                </form>
-                <p className="mt-6 text-[9px] text-zinc-600 font-bold uppercase tracking-widest text-center">
-                  Replies will be sent to your phone: 8129141183
+              <div className="mb-8">
+                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] mb-2 block">
+                  Communication Portal
+                </span>
+                <h3 className="text-3xl font-black uppercase tracking-tighter text-white">
+                  Message {messagingTarget.name}
+                </h3>
+              </div>
+
+              <form onSubmit={handleSendMessage} className="space-y-6">
+                <textarea 
+                  required
+                  autoFocus
+                  rows={8}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  className="w-full bg-black/50 border border-white/10 rounded-sm p-6 text-white text-lg outline-none focus:border-blue-500/50 transition-all resize-none"
+                  placeholder="Type your message here..."
+                />
+                
+                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 text-center">
+                  This will be sent via Email. Replies will arrive on your phone via SMS.
                 </p>
-             </motion.div>
+
+                <button 
+                  disabled={isSendingMessage}
+                  className="w-full py-6 bg-white text-black font-black uppercase tracking-[0.3em] text-sm hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                  {isSendingMessage ? <Loader2 className="animate-spin" /> : <><Send size={18} /> Send Personal Message</>}
+                </button>
+              </form>
+            </motion.div>
           </div>
         )}
       </AnimatePresence>
