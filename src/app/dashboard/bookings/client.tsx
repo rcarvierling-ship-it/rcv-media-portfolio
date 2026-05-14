@@ -78,7 +78,7 @@ export function BookingsAdminClient({
     const result = await updateBookingPipeline(bookingId, { pipeline_stage: nextStage, ...statusUpdate });
     if (!result.success) {
       setBookings(prevBookings);
-      alert("System sync failed.");
+      alert(`System sync failed: ${result.error || 'Unknown Error'}`);
     } else router.refresh();
     setIsProcessing(null);
   };
@@ -89,6 +89,8 @@ export function BookingsAdminClient({
     if (result.success) {
       setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, linked_album_id: albumId } : b));
       router.refresh();
+    } else {
+      alert(`System sync failed: ${result.error || 'Unknown Error'}`);
     }
     setIsProcessing(null);
   };
@@ -101,7 +103,7 @@ export function BookingsAdminClient({
     const result = await updateBookingPipeline(id, { status, pipeline_stage });
     if (!result.success) {
       setBookings(prevBookings);
-      alert("Status sync failed.");
+      alert(`System sync failed: ${result.error || 'Unknown Error'}`);
     } else router.refresh();
     setIsProcessing(null);
   };

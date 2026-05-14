@@ -160,13 +160,16 @@ export async function updateBookingPipeline(id: string, updates: any) {
       .update(updates)
       .eq("id", id);
       
-    if (error) throw error;
+    if (error) {
+      console.error("SUPABASE ERROR in updateBookingPipeline:", error.message, error.details, error.hint);
+      throw error;
+    }
     revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
     return { success: true };
-  } catch (error) {
-    console.error("Update pipeline error:", error);
-    return { success: false };
+  } catch (error: any) {
+    console.error("Update pipeline CRITICAL FAILURE:", error);
+    return { success: false, error: error.message };
   }
 }
 
