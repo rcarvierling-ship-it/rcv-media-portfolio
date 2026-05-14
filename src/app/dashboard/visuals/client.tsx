@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 
-export function AnalyticsClient({ stats }: { stats: any }) {
+export function VisualsClient({ stats }: { stats: any }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
        

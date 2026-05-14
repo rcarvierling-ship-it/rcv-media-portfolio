@@ -11,7 +11,8 @@ import {
   replyToInquiry,
   updatePricingPackage,
   updateSiteIdentity,
-  togglePhotoCurated
+  togglePhotoCurated,
+  acceptInquiryAsBooking
 } from "@/app/actions/booking";
 import { 
   MessageSquare, Send, X, DollarSign, 
@@ -303,7 +304,104 @@ export function BookingsAdminClient({
           </motion.div>
         )}
         
-        {/* Inbox & Archive views... */}
+        {activeView === "inquiries" && (
+          <motion.div key="inquiries" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+            <div className="grid grid-cols-1 gap-4">
+              {inquiries.filter(i => i.status === 'new').length === 0 ? (
+                <div className="text-center py-20 bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+                  <Mail className="mx-auto text-zinc-800 mb-4" size={40} />
+                  <p className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Inbox is clear. Zero backlog.</p>
+                </div>
+              ) : (
+                inquiries.filter(i => i.status === 'new').map((inquiry) => (
+                  <div key={inquiry.id} className="premium-card p-8 border border-white/5 bg-zinc-900/20 rounded-sm flex flex-col md:flex-row justify-between gap-8 group hover:border-brand-accent/20 transition-all">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-4">
+                        <span className="px-3 py-1 bg-brand-accent/10 text-brand-accent text-[9px] font-black uppercase tracking-widest rounded-full border border-brand-accent/20">New Inquiry</span>
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">{new Date(inquiry.created_at).toLocaleDateString()}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-1">{inquiry.name}</h3>
+                        <p className="text-zinc-500 text-[11px] font-black uppercase tracking-widest mb-4">{inquiry.email} • {inquiry.subject}</p>
+                        <div className="bg-black/40 p-6 rounded-sm border border-white/5 relative">
+                          <Quote size={16} className="absolute -top-3 -left-2 text-zinc-800" />
+                          <p className="text-zinc-400 text-sm italic leading-relaxed">"{inquiry.message}"</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-row md:flex-col gap-3 justify-center">
+                      <button 
+                        onClick={async () => {
+                          setIsProcessing(inquiry.id);
+                          const res = await acceptInquiryAsBooking(inquiry.id);
+                          if (res.success) {
+                            setInquiries(prev => prev.map(i => i.id === inquiry.id ? { ...i, status: 'accepted' } : i));
+                            alert("Lead Promoted to Pipeline!");
+                            router.refresh();
+                          }
+                          setIsProcessing(null);
+                        }}
+                        disabled={isProcessing === inquiry.id}
+                        className="px-8 py-4 bg-brand-accent text-white font-black uppercase text-[10px] tracking-widest hover:bg-brand-accent/90 transition-all rounded-sm flex items-center justify-center gap-2"
+                      >
+                        {isProcessing === inquiry.id ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle size={14} />} Confirm Lead
+                      </button>
+                      <button 
+                        onClick={async () => {
+                          const { error } = await supabase.from("inquiries").update({ status: 'archived' }).eq("id", inquiry.id);
+                          if (!error) {
+                            setInquiries(prev => prev.map(i => i.id === inquiry.id ? { ...i, status: 'archived' } : i));
+                            router.refresh();
+                          }
+                        }}
+                        className="px-8 py-4 bg-white/5 text-zinc-500 font-black uppercase text-[10px] tracking-widest border border-white/5 hover:bg-white/10 hover:text-white transition-all rounded-sm"
+                      >
+                        Archive
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </motion.div>
+        )}
+
+        {activeView === "archive" && (
+          <motion.div key="archive" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
+            <div className="grid grid-cols-1 gap-4">
+              {archivedBookings.length === 0 && inquiries.filter(i => i.status === 'archived').length === 0 ? (
+                <div className="text-center py-20 bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+                  <Archive className="mx-auto text-zinc-800 mb-4" size={40} />
+                  <p className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Archive is empty.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-6">Cancelled Projects</h3>
+                   {archivedBookings.map((booking) => (
+                      <div key={booking.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex justify-between items-center opacity-60 grayscale hover:grayscale-0 transition-all">
+                        <div>
+                          <h4 className="text-lg font-black uppercase tracking-tight text-white">{booking.name}</h4>
+                          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{booking.shoot_type || booking.package_selected} • {booking.event_date}</p>
+                        </div>
+                        <button onClick={() => handleSetStatus(booking.id, 'confirmed')} className="px-6 py-2 border border-white/5 text-zinc-500 hover:text-white text-[9px] font-black uppercase tracking-widest">Restore</button>
+                      </div>
+                   ))}
+
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-600 mt-12 mb-6">Archived Inquiries</h3>
+                   {inquiries.filter(i => i.status === 'archived').map((inquiry) => (
+                      <div key={inquiry.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex justify-between items-center opacity-60 grayscale hover:grayscale-0 transition-all">
+                        <div>
+                          <h4 className="text-lg font-black uppercase tracking-tight text-white">{inquiry.name}</h4>
+                          <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{inquiry.subject} • {new Date(inquiry.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <button onClick={async () => { await supabase.from("inquiries").update({ status: 'new' }).eq("id", inquiry.id); router.refresh(); }} className="px-6 py-2 border border-white/5 text-zinc-500 hover:text-white text-[9px] font-black uppercase tracking-widest">Restore</button>
+                      </div>
+                   ))}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

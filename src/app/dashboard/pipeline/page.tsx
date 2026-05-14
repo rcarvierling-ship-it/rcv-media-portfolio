@@ -10,11 +10,11 @@ import {
 } from "lucide-react";
 
 const STAGES = [
-  { id: 'lead', label: 'Inquiry', icon: Inbox, color: 'text-zinc-500', bg: 'bg-zinc-500/10' },
-  { id: 'confirmed', label: 'Booking', icon: CheckCircle2, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  { id: 'shooting', label: 'Shoot Day', icon: Camera, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-  { id: 'editing', label: 'In Edit', icon: Scissors, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-  { id: 'delivered', label: 'Delivered', icon: ShieldCheck, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+  { id: 'lead', label: 'Inquiry', color: 'text-zinc-500', bg: 'bg-zinc-500/10' },
+  { id: 'confirmed', label: 'Booking', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+  { id: 'shooting', label: 'Shoot Day', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  { id: 'editing', label: 'In Edit', color: 'text-purple-500', bg: 'bg-purple-500/10' },
+  { id: 'delivered', label: 'Delivered', color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
 ];
 
 export default async function PipelinePage() {

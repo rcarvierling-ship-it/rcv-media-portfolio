@@ -5,11 +5,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { 
   MoreVertical, Calendar, DollarSign, 
   ArrowRight, Mail, Phone, Trash2,
-  RefreshCw, Check, Clock, Loader2, Plus
+  RefreshCw, Check, Clock, Loader2, Plus,
+  Inbox, CheckCircle2, Camera, Scissors, ShieldCheck
 } from "lucide-react";
 import { updateBookingStage, deleteBooking } from "@/app/actions/crm";
 import { createContractFromBooking } from "@/app/actions/contracts";
 import { useRouter } from "next/navigation";
+
+const STAGE_ICONS: Record<string, any> = {
+  lead: Inbox,
+  confirmed: CheckCircle2,
+  shooting: Camera,
+  editing: Scissors,
+  delivered: ShieldCheck,
+};
 
 export function PipelineClient({ initialPipeline }: { initialPipeline: any[] }) {
   const [pipeline, setPipeline] = useState(initialPipeline);
@@ -72,7 +81,10 @@ export function PipelineClient({ initialPipeline }: { initialPipeline: any[] }) 
           <div className="flex items-center justify-between mb-6 px-2">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${stage.bg}`}>
-                <stage.icon size={16} className={stage.color} />
+                {(() => {
+                  const Icon = STAGE_ICONS[stage.id] || Clock;
+                  return <Icon size={16} className={stage.color} />;
+                })()}
               </div>
               <h3 className="text-sm font-black uppercase tracking-widest text-white">{stage.label}</h3>
               <span className="text-[10px] font-bold text-zinc-600 bg-zinc-900 px-2 py-0.5 rounded-full">

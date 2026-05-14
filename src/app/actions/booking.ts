@@ -41,6 +41,7 @@ export async function submitBooking(formData: FormData) {
           location,
           message,
           total_amount: total_amount || 0,
+          pipeline_stage: 'lead'
         },
       ]);
 
@@ -134,6 +135,7 @@ export async function deleteBooking(id: string) {
     if (error) throw error;
     revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
+    revalidatePath("/dashboard/visuals");
     return { success: true };
   } catch (error) {
     console.error("Delete booking error:", error);
@@ -168,6 +170,7 @@ export async function updateBookingPipeline(id: string, updates: any) {
     }
     revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
+    revalidatePath("/dashboard/visuals");
     return { success: true };
   } catch (error: any) {
     console.error("Update pipeline CRITICAL FAILURE:", error);
@@ -474,6 +477,44 @@ export async function togglePhotoCurated(photoId: string, isCurated: boolean) {
     return { success: true };
   } catch (error) {
     console.error("Toggle curated error:", error);
+    return { success: false };
+  }
+}
+export async function acceptInquiryAsBooking(inquiryId: string) {
+  try {
+    const supabase = await createClient();
+    
+    // 1. Get inquiry details
+    const { data: inquiry } = await supabase
+      .from("inquiries")
+      .select("*")
+      .eq("id", inquiryId)
+      .single();
+
+    if (!inquiry) throw new Error("Inquiry not found");
+
+    // 2. Create Booking
+    const { error: bookingError } = await supabase
+      .from("bookings")
+      .insert([{
+        name: inquiry.name,
+        email: inquiry.email,
+        shoot_type: inquiry.subject || "General Inquiry",
+        message: inquiry.message,
+        pipeline_stage: 'lead',
+        status: 'pending'
+      }]);
+
+    if (bookingError) throw bookingError;
+
+    // 3. Mark inquiry as 'accepted'
+    await supabase.from("inquiries").update({ status: 'accepted' }).eq("id", inquiryId);
+    
+    revalidatePath("/dashboard/bookings");
+    revalidatePath("/dashboard/pipeline");
+    return { success: true };
+  } catch (error) {
+    console.error("Accept inquiry error:", error);
     return { success: false };
   }
 }
