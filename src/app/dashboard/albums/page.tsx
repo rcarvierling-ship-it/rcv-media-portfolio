@@ -141,50 +141,66 @@ export default function AlbumManager() {
                   </div>
                </div>
 
-               <div className="flex items-center gap-6 mb-8 text-[10px] font-black uppercase tracking-widest text-zinc-500">
-                  <div className="flex items-center gap-2">
-                     <ImageIcon size={12} /> {album.photos?.[0]?.count || 0} Photos
-                  </div>
-                  {album.passcode && (
-                    <button 
-                      onClick={() => handleCopy(album.passcode, album.id)}
-                      className="flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors group/code"
-                    >
-                       <ShieldCheck size={12} /> 
-                       <span className="font-mono tracking-widest">{album.passcode}</span>
-                       {copiedId === album.id ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} className="opacity-0 group-hover/code:opacity-100 transition-opacity" />}
-                    </button>
-                  )}
-               </div>
+                <div className="space-y-4 mb-8 pt-6 border-t border-white/5">
+                   <div className="flex flex-col gap-2">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Vault Location</span>
+                      <div className="flex items-center justify-between p-3 bg-black/40 rounded-sm border border-white/5 group/url">
+                         <span className="text-[10px] font-mono text-zinc-400 truncate max-w-[200px]">
+                           {album.is_private ? `/gallery/${album.slug}` : `/albums/${album.slug}`}
+                         </span>
+                         <button 
+                           onClick={() => handleCopy(`${window.location.origin}${album.is_private ? '/gallery/' : '/albums/'}${album.slug}`, album.id + '_url')}
+                           className="text-blue-500 hover:text-white transition-colors"
+                         >
+                            {copiedId === album.id + '_url' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                         </button>
+                      </div>
+                   </div>
 
-               {album.is_private && (
-                 <div className="grid grid-cols-2 gap-4 mb-8 pt-6 border-t border-white/5">
-                    <div>
-                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Vault Views</span>
-                       <span className="text-sm font-black text-emerald-400">{album.vault_views || 0}</span>
-                    </div>
-                    <div>
-                       <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Failed Attempts</span>
-                       <span className="text-sm font-black text-red-400">{album.failed_attempts || 0}</span>
-                    </div>
-                 </div>
-               )}
+                   {album.is_private && album.passcode && (
+                     <div className="flex flex-col gap-2">
+                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Access Passcode</span>
+                        <div className="flex items-center justify-between p-3 bg-blue-600/5 rounded-sm border border-blue-600/20 group/pass">
+                           <span className="text-[10px] font-mono font-black tracking-widest text-blue-400">{album.passcode}</span>
+                           <button 
+                             onClick={() => handleCopy(album.passcode, album.id + '_pass')}
+                             className="text-blue-400 hover:text-white transition-colors"
+                           >
+                              {copiedId === album.id + '_pass' ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+                           </button>
+                        </div>
+                     </div>
+                   )}
+                </div>
 
-               <div className="grid grid-cols-2 gap-3">
-                  <Link 
-                    href={`/dashboard/albums/${album.id}`}
-                    className="flex-1 py-3 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-zinc-700 transition-colors rounded-sm"
-                  >
-                    Manage Media
-                  </Link>
-                  <Link 
-                    href={`/gallery/${album.slug}`}
-                    target="_blank"
-                    className="flex-1 py-3 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-white/5 transition-colors rounded-sm flex items-center justify-center gap-2"
-                  >
-                    View <ExternalLink size={10} />
-                  </Link>
-               </div>
+                <div className="grid grid-cols-2 gap-4 mb-8">
+                   <div>
+                      <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Engagement</span>
+                      <span className="text-sm font-black text-emerald-400">{album.vault_views || 0} Views</span>
+                   </div>
+                   <div>
+                      <span className="block text-[9px] font-bold text-zinc-600 uppercase tracking-widest mb-1">Sync Status</span>
+                      <span className="text-[10px] font-black text-white uppercase tracking-widest flex items-center gap-2">
+                         <ImageIcon size={10} /> {album.photos?.[0]?.count || 0} Assets
+                      </span>
+                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                   <Link 
+                     href={`/dashboard/albums/${album.id}`}
+                     className="flex-1 py-3 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-zinc-700 transition-colors rounded-sm"
+                   >
+                     Manage Media
+                   </Link>
+                   <Link 
+                     href={album.is_private ? `/gallery/${album.slug}` : `/albums/${album.slug}`}
+                     target="_blank"
+                     className="flex-1 py-3 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-blue-500 transition-all rounded-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                   >
+                     View Live <ExternalLink size={10} />
+                   </Link>
+                </div>
             </div>
           </div>
         ))}

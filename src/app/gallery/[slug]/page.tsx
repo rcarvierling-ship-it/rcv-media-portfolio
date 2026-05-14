@@ -2,13 +2,14 @@ import { createClient } from "@/utils/supabase/server";
 import { notFound } from "next/navigation";
 import { VaultClient } from "./VaultClient";
 
-export default async function GalleryPage({ params }: { params: { slug: string } }) {
+export default async function GalleryPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
   const supabase = await createClient();
   
   const { data: album } = await supabase
     .from("albums")
     .select("*")
-    .eq("slug", params.slug)
+    .eq("slug", slug)
     .single();
 
   if (!album) return notFound();
