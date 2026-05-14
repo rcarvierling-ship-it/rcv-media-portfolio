@@ -57,9 +57,8 @@ export default function AnalyticsPage() {
     const activePipeline = bookings.filter(b => (b.pipeline_stage !== 'lead' && b.pipeline_stage !== 'delivered') && b.status !== 'canceled');
     const delivered = bookings.filter(b => b.pipeline_stage === 'delivered');
     
-    let grossRevenue = 0; // Confirmed + Shot + Edited + Delivered
-    let projectedRevenue = 0; // Leads
-    let activePipelineValue = 0; // Everything currently in progress
+    let realizedRevenue = 0; // Delivered + Paid
+    let projectedPipeline = 0; // Lead + Confirmed + Shooting + Editing
     
     const revenueByMonth: Record<string, number> = {};
     const revenueByType: Record<string, number> = {};
@@ -73,15 +72,14 @@ export default function AnalyticsPage() {
       
       countByStage[stage] = (countByStage[stage] || 0) + 1;
 
-      if (stage === 'lead') {
-        projectedRevenue += val;
-      } else {
-        grossRevenue += val;
-        if (stage !== 'delivered') activePipelineValue += val;
+      if (['delivered', 'paid'].includes(stage)) {
+        realizedRevenue += val;
         
         const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
         revenueByMonth[month] = (revenueByMonth[month] || 0) + val;
         revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + val;
+      } else {
+        projectedPipeline += val;
       }
     });
 
@@ -94,9 +92,9 @@ export default function AnalyticsPage() {
     }
 
     return {
-      grossRevenue,
-      projectedRevenue,
-      activePipelineValue,
+      grossRevenue: realizedRevenue,
+      projectedRevenue: projectedPipeline,
+      activePipelineValue: projectedPipeline - (bookings.filter(b => b.pipeline_stage === 'lead').reduce((acc, curr) => acc + (curr.total_amount || 0), 0)),
       totalProjects: bookings.filter(b => b.status !== 'canceled').length,
       conversionRate: bookings.length > 0 ? Math.round((bookings.filter(b => b.status === 'confirmed').length / bookings.length) * 100) : 0,
       revenueByMonth: last6Months,
@@ -139,29 +137,29 @@ export default function AnalyticsPage() {
       {/* 2. LIVE PIPELINE METRICS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-6">
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block flex items-center gap-2">Gross Revenue <Info size={10} className="opacity-30" /></span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block flex items-center gap-2">Realized Revenue <Info size={10} className="opacity-30" /></span>
             <div className="flex items-end gap-2">
                <h3 className="text-4xl font-black tracking-tighter text-white">${stats.grossRevenue.toLocaleString()}</h3>
                <TrendingUp className="text-emerald-500 mb-2" size={18} />
             </div>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
-               Total across all stages
+               Delivered & Paid Projects
             </div>
          </motion.div>
 
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Projected Pipeline</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Total Pipeline</span>
             <h3 className="text-4xl font-black tracking-tighter text-blue-500">${stats.projectedRevenue.toLocaleString()}</h3>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-zinc-600">
-               Value of current Leads
+               Inquiries to Editing
             </div>
          </motion.div>
 
          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/40 backdrop-blur-xl">
-            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">Active Workload</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4 block">In Fulfillment</span>
             <h3 className="text-4xl font-black tracking-tighter text-white">${stats.activePipelineValue.toLocaleString()}</h3>
             <div className="mt-4 pt-4 border-t border-white/5 text-[9px] font-bold uppercase tracking-widest text-emerald-500">
-               In fulfillment cycle
+               Confirmed projects
             </div>
          </motion.div>
 

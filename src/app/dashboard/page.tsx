@@ -76,27 +76,30 @@ export default function DashboardPage() {
 
   const analytics = useMemo(() => {
     const totalLeads = bookings.length;
-    const activeBookings = bookings.filter(b => 
-      b.status !== "cancelled" && 
-      b.pipeline_stage !== "lead"
-    );
-    const confirmed = bookings.filter(b => b.status === "confirmed");
-    const pending = bookings.filter(b => b.status === "pending");
+    const realizedProjects = bookings.filter(b => b.status !== "cancelled" && ['delivered', 'paid'].includes(b.pipeline_stage));
+    const pipelineProjects = bookings.filter(b => b.status !== "cancelled" && !['delivered', 'paid'].includes(b.pipeline_stage));
     
-    let totalRevenue = 0;
+    let realizedRevenue = 0;
+    let projectedPipelineValue = 0;
+    
     const revenueByMonth: Record<string, number> = {};
     const revenueByType: Record<string, number> = {};
 
-    activeBookings.forEach(b => {
-      const priceNum = Number(b.total_amount) || 0;
-      totalRevenue += priceNum;
+    realizedProjects.forEach(b => {
+      const val = Number(b.total_amount) || 0;
+      realizedRevenue += val;
       const month = new Date(b.created_at).toLocaleString('default', { month: 'short' });
-      revenueByMonth[month] = (revenueByMonth[month] || 0) + priceNum;
-      revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + priceNum;
+      revenueByMonth[month] = (revenueByMonth[month] || 0) + val;
+      revenueByType[b.shoot_type] = (revenueByType[b.shoot_type] || 0) + val;
+    });
+
+    pipelineProjects.forEach(b => {
+      projectedPipelineValue += (Number(b.total_amount) || 0);
     });
 
     const typeStats: Record<string, number> = {};
     bookings.forEach(b => {
+      if (b.status === 'cancelled') return;
       typeStats[b.shoot_type] = (typeStats[b.shoot_type] || 0) + 1;
     });
     const topTypes = Object.entries(typeStats).sort((a, b) => b[1] - a[1]);
@@ -114,14 +117,15 @@ export default function DashboardPage() {
 
     return {
       totalLeads,
-      confirmedCount: activeBookings.length,
-      pendingCount: pending.length,
-      totalRevenue,
+      realizedCount: realizedProjects.length,
+      pipelineCount: pipelineProjects.length,
+      realizedRevenue,
+      projectedPipelineValue,
       revenueByMonth,
       revenueByType,
       topTypes,
       dailyStats: Object.entries(days),
-      conversionRate: totalLeads > 0 ? Math.round((activeBookings.length / totalLeads) * 100) : 0
+      conversionRate: totalLeads > 0 ? Math.round((realizedProjects.length / totalLeads) * 100) : 0
     };
   }, [bookings]);
 
@@ -174,23 +178,23 @@ export default function DashboardPage() {
           <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("revenue")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden">
             <div className="absolute -right-4 -top-4 text-white opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={100} /></div>
             <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Confirmed Revenue</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Realized Revenue</span>
               <Info size={12} className="text-zinc-700" />
             </div>
             <div className="flex items-end gap-2">
-              <h3 className="text-4xl font-black tracking-tighter text-white">${analytics.totalRevenue.toLocaleString()}</h3>
+              <h3 className="text-4xl font-black tracking-tighter text-white">${analytics.realizedRevenue.toLocaleString()}</h3>
               <TrendingUp size={20} className="text-emerald-500 mb-2" />
             </div>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("momentum")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
+          <motion.div whileHover={{ scale: 1.02 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden">
             <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Weekly Momentum</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Pipeline Value</span>
               <Activity size={12} className="text-zinc-700" />
             </div>
             <div className="flex items-center gap-3">
-              <h3 className="text-4xl font-black tracking-tighter text-white">+{analytics.dailyStats.reduce((acc, curr) => acc + curr[1], 0)}</h3>
-              <span className="text-[10px] font-black uppercase text-emerald-500">New Leads</span>
+              <h3 className="text-4xl font-black tracking-tighter text-blue-500">${analytics.projectedPipelineValue.toLocaleString()}</h3>
+              <span className="text-[10px] font-black uppercase text-blue-500">Active</span>
             </div>
           </motion.div>
 
@@ -237,7 +241,7 @@ export default function DashboardPage() {
                 </div>
                 <div className="p-6 bg-black rounded-2xl border border-white/5">
                   <span className="text-2xl font-black text-white">
-                    {selectedMetric === "revenue" ? `$${analytics.totalRevenue.toLocaleString()}` : selectedMetric === "momentum" ? `${analytics.totalLeads} Total` : selectedMetric === "conversion" ? `${analytics.conversionRate}%` : analytics.topTypes[0]?.[0]}
+                    {selectedMetric === "revenue" ? `$${analytics.realizedRevenue.toLocaleString()}` : selectedMetric === "momentum" ? `${analytics.totalLeads} Total` : selectedMetric === "conversion" ? `${analytics.conversionRate}%` : analytics.topTypes[0]?.[0]}
                   </span>
                 </div>
               </div>
@@ -247,7 +251,7 @@ export default function DashboardPage() {
                       {Object.entries(analytics.revenueByMonth).map(([month, amount]) => (
                         <div key={month} className="flex-1 flex flex-col items-center gap-4 group">
                            <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div initial={{ height: 0 }} animate={{ height: `${(amount / analytics.totalRevenue) * 100}%` }} className="w-full bg-blue-600 rounded-t-sm group-hover:bg-blue-500 transition-colors" />
+                              <motion.div initial={{ height: 0 }} animate={{ height: analytics.realizedRevenue > 0 ? `${(amount / analytics.realizedRevenue) * 100}%` : '4px' }} className="w-full bg-blue-600 rounded-t-sm group-hover:bg-blue-500 transition-colors" />
                            </div>
                            <span className="text-[10px] font-black uppercase text-zinc-500">{month}</span>
                         </div>
@@ -273,7 +277,7 @@ export default function DashboardPage() {
                          <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: '100%' }} className="h-full bg-zinc-700" /></div>
                       </div>
                       <div className="space-y-4">
-                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-500"><span>Confirmed Bookings</span><span>{analytics.confirmedCount}</span></div>
+                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-emerald-500"><span>Realized Bookings</span><span>{analytics.realizedCount}</span></div>
                          <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.4)]" /></div>
                       </div>
                    </div>
