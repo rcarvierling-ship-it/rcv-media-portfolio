@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
+import { updateBookingStatus } from "@/app/actions/booking";
 
 export function BookingsAdminClient({ 
   initialBookings, 
@@ -29,11 +30,13 @@ export function BookingsAdminClient({
   const supabase = createClient();
   const router = useRouter();
 
-  const updateBookingStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("bookings").update({ status }).eq("id", id);
-    if (!error) {
+  const handleUpdateStatus = async (id: string, status: string) => {
+    const result = await updateBookingStatus(id, status);
+    if (result.success) {
       setBookings(bookings.map(b => b.id === id ? { ...b, status } : b));
       router.refresh();
+    } else {
+      alert("Failed to update status and send email.");
     }
   };
 
@@ -112,12 +115,12 @@ export function BookingsAdminClient({
                   
                   <div className="flex gap-2">
                     {booking.status !== 'confirmed' && (
-                      <button onClick={() => updateBookingStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
+                      <button onClick={() => handleUpdateStatus(booking.id, 'confirmed')} className="px-4 py-2 bg-white text-black text-xs font-bold uppercase tracking-widest hover:bg-zinc-200">
                         Confirm
                       </button>
                     )}
                     {booking.status !== 'cancelled' && (
-                      <button onClick={() => updateBookingStatus(booking.id, 'cancelled')} className="px-4 py-2 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white">
+                      <button onClick={() => handleUpdateStatus(booking.id, 'cancelled')} className="px-4 py-2 border border-zinc-700 text-zinc-400 text-xs font-bold uppercase tracking-widest hover:bg-zinc-800 hover:text-white">
                         Cancel
                       </button>
                     )}
