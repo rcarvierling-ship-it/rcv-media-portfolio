@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { 
@@ -36,6 +36,7 @@ export function BookingsAdminClient({
   const [bookings, setBookings] = useState(initialBookings);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
+  const [movingId, setMovingId] = useState<string | null>(null);
   
   // Messaging Logic
   const [messagingTarget, setMessagingTarget] = useState<{ id: string, type: 'booking' | 'inquiry', name: string } | null>(null);
@@ -55,10 +56,21 @@ export function BookingsAdminClient({
   const supabase = createClient();
   const router = useRouter();
 
+  // Unified Handler for Pipeline Movement
+  const handleMovePipelineStage = useCallback(async (bookingId: string, nextStage: string) => {
+    setMovingId(bookingId);
+    const result = await updateBookingPipeline(bookingId, { pipeline_stage: nextStage });
+    if (result.success) {
+      setBookings(prev => prev.map(b => b.id === bookingId ? { ...b, pipeline_stage: nextStage } : b));
+      router.refresh();
+    }
+    setMovingId(null);
+  }, [router]);
+
   const handleUpdateStatus = async (id: string, status: string) => {
     const result = await updateBookingStatus(id, status);
     if (result.success) {
-      setBookings(bookings.map(b => b.id === id ? { ...b, status } : b));
+      setBookings(prev => prev.map(b => b.id === id ? { ...b, status } : b));
       router.refresh();
     } else {
       alert("Failed to update status.");
@@ -79,7 +91,7 @@ export function BookingsAdminClient({
 
     if (result.success) {
       if (messagingTarget.type === 'inquiry') {
-        setInquiries(inquiries.map(i => i.id === messagingTarget.id ? { ...i, status: 'replied' } : i));
+        setInquiries(prev => prev.map(i => i.id === messagingTarget.id ? { ...i, status: 'replied' } : i));
       }
       setMessagingTarget(null);
       setMessageText("");
@@ -116,7 +128,7 @@ export function BookingsAdminClient({
     ]).select().single();
     
     if (!error && data) {
-      setBlockedDates([...blockedDates, data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+      setBlockedDates(prev => [...prev, data].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
       setNewBlockDate("");
       setNewBlockReason("");
       router.refresh();
@@ -129,32 +141,32 @@ export function BookingsAdminClient({
       {/* Integrated Command Center Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-white/5">
         <div>
-          <h1 className="text-6xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h1>
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h1>
           <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[10px] mt-4">Unified Agency Management Suite</p>
         </div>
 
         <div className="flex flex-wrap gap-2">
            <button 
              onClick={() => setActiveTab("pipeline")}
-             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'pipeline' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'pipeline' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
              <LayoutGrid size={14} /> Pipeline
            </button>
            <button 
              onClick={() => setActiveTab("details")}
-             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'details' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'details' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
-             <List size={14} /> Booking Details
+             <List size={14} /> Bookings
            </button>
            <button 
              onClick={() => setActiveTab("inquiries")}
-             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'inquiries' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'inquiries' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
              <Mail size={14} /> Inquiries ({inquiries.filter(i => i.status === 'new').length})
            </button>
            <button 
              onClick={() => setActiveTab("settings")}
-             className={`flex items-center gap-2 px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'settings' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'settings' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
              <Layout size={14} /> Settings
            </button>
@@ -169,7 +181,11 @@ export function BookingsAdminClient({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
           >
-             <PipelineBoard initialBookings={bookings} />
+             <PipelineBoard 
+               bookings={bookings} 
+               onMoveStage={handleMovePipelineStage}
+               movingId={movingId}
+             />
           </motion.div>
         )}
 
@@ -187,10 +203,10 @@ export function BookingsAdminClient({
               </div>
             ) : (
               bookings.map((booking) => (
-                <div key={booking.id} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20">
+                <div key={booking.id} className="premium-card p-6 md:p-8 rounded-sm border border-white/5 bg-zinc-900/20">
                   <div className="flex flex-col lg:flex-row justify-between gap-8">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-4">
+                      <div className="flex flex-wrap items-center gap-3 mb-4">
                         <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${
                           booking.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
                           booking.status === 'canceled' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
@@ -199,7 +215,11 @@ export function BookingsAdminClient({
                           {booking.status}
                         </span>
                         
-                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                        <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-zinc-400">
+                           {booking.pipeline_stage || 'lead'}
+                        </span>
+
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest ml-auto lg:ml-0">
                            {new Date(booking.created_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -271,7 +291,7 @@ export function BookingsAdminClient({
               </div>
             ) : (
               inquiries.map((inquiry) => (
-                <div key={inquiry.id} className="premium-card p-8 rounded-sm border border-white/5 bg-zinc-900/20">
+                <div key={inquiry.id} className="premium-card p-6 md:p-8 rounded-sm border border-white/5 bg-zinc-900/20">
                   <div className="flex flex-col lg:flex-row justify-between gap-8">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-4">
@@ -396,7 +416,7 @@ export function BookingsAdminClient({
                           <button 
                             onClick={async () => {
                                await supabase.from("blocked_dates").delete().eq("id", date.id);
-                               setBlockedDates(blockedDates.filter(d => d.id !== date.id));
+                               setBlockedDates(prev => prev.filter(d => d.id !== date.id));
                             }}
                             className="text-zinc-600 hover:text-red-500 transition-colors"
                           >
