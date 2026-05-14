@@ -47,8 +47,7 @@ export async function submitBooking(formData: FormData) {
     try {
       if (process.env.RESEND_API_KEY) {
         const adminEmail = "rcar.vierling@gmail.com";
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+        const siteUrl = "https://rcv-media.com";
 
         const { data, error: emailError } = await resend.emails.send({
           from: "RCV Media <bookings@rcv-media.com>",
@@ -236,8 +235,7 @@ export async function deliverGallery(bookingId: string) {
     // 2. Send Delivery Email
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
-                      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
+      const siteUrl = "https://rcv-media.com";
 
       const vaultLink = `${siteUrl}/gallery/${booking.albums.slug}`;
 
