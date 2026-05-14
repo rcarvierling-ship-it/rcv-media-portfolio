@@ -129,10 +129,30 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         // 2. Prepare Cloudinary Preview (Resize if >10MB)
         let fileToUploadToCloudinary: File | Blob = file;
         if (file.size > 10 * 1024 * 1024) {
-           console.log("File exceeds Cloudinary cap. Generating web preview...");
-           // We'll just let Cloudinary attempt or we could resize here. 
-           // For now, let's assume we want to push the original to Cloudinary if it's under 10MB
-           // and if not, we'll need a smaller version.
+           console.log("Generating web preview for Cloudinary...");
+           // Use canvas to resize
+           const img = document.createElement('img');
+           img.src = URL.createObjectURL(file);
+           await new Promise(resolve => img.onload = resolve);
+           
+           const canvas = document.createElement('canvas');
+           const ctx = canvas.getContext('2d');
+           const MAX_WIDTH = 2500;
+           let width = img.width;
+           let height = img.height;
+
+           if (width > MAX_WIDTH) {
+             height *= MAX_WIDTH / width;
+             width = MAX_WIDTH;
+           }
+           
+           canvas.width = width;
+           canvas.height = height;
+           ctx?.drawImage(img, 0, 0, width, height);
+           
+           fileToUploadToCloudinary = await new Promise(resolve => 
+             canvas.toBlob(blob => resolve(blob!), 'image/jpeg', 0.8)
+           ) as Blob;
         }
 
         // 3. Prepare Cloudinary Payload
@@ -231,13 +251,13 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                       {files.length > 0 && (
                         <div className="mt-6 flex flex-wrap gap-2">
                            {files.map((f, i) => {
-                             const isTooLarge = f.size > 10 * 1024 * 1024;
+                             const isTooLarge = f.size > 50 * 1024 * 1024;
                              return (
-                               <div key={i} className={`px-3 py-1 bg-zinc-800 text-[8px] font-black uppercase border rounded-full flex items-center gap-2 ${
-                                 isTooLarge ? 'border-red-500/50 text-red-500' : 'border-white/5 text-zinc-400'
+                               <div key={i} className={`px-3 py-1 bg-zinc-900/50 text-[8px] font-black uppercase border rounded-full flex items-center gap-2 ${
+                                 isTooLarge ? 'border-red-500/50 text-red-500' : 'border-emerald-500/20 text-zinc-400'
                                }`}>
                                   {f.name} ({(f.size / (1024 * 1024)).toFixed(1)}MB) 
-                                  {isTooLarge && <span className="text-red-500 font-bold">[TOO LARGE]</span>}
+                                  {isTooLarge && <span className="text-red-500 font-bold">[EXCEEDS 50MB CAP]</span>}
                                   <X size={10} className="cursor-pointer hover:text-white" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} />
                                </div>
                              );
