@@ -3,9 +3,15 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-04-22.dahlia",
-});
+export const dynamic = 'force-dynamic';
+
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new Stripe(key, {
+    apiVersion: "2026-04-22.dahlia",
+  });
+};
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -14,6 +20,12 @@ export async function POST(req: Request) {
   const sig = (await headers()).get("stripe-signature") as string;
 
   let event: Stripe.Event;
+
+  const stripe = getStripe();
+  if (!stripe) {
+    console.error("Stripe key missing");
+    return NextResponse.json({ error: "Configuration missing" }, { status: 500 });
+  }
 
   try {
     event = stripe.webhooks.constructEvent(body, sig, endpointSecret!);

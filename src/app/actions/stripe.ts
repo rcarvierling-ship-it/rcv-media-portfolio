@@ -4,9 +4,13 @@ import Stripe from "stripe";
 import { createClient } from "@/utils/supabase/server";
 import { headers } from "next/headers";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-04-22.dahlia",
-});
+const getStripe = () => {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) return null;
+  return new Stripe(key, {
+    apiVersion: "2026-04-22.dahlia",
+  });
+};
 
 export async function createCheckoutSession(contractId: string, type: 'deposit' | 'final') {
   try {
@@ -28,6 +32,9 @@ export async function createCheckoutSession(contractId: string, type: 'deposit' 
     const host = (await headers()).get("host");
     const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
     const baseUrl = `${protocol}://${host}`;
+
+    const stripe = getStripe();
+    if (!stripe) throw new Error("Stripe configuration is missing on the server.");
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
