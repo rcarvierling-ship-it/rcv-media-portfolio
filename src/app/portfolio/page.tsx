@@ -35,6 +35,7 @@ function PortfolioContent() {
             is_private
           )
         `)
+        .eq("is_curated", true)
         .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
 

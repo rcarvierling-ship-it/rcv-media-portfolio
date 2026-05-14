@@ -9,6 +9,7 @@ export async function addPhoto(data: {
   category: string;
   album_id?: string | null;
   is_featured: boolean;
+  is_curated?: boolean;
   image_url: string;
   public_id: string;
   width: number;

@@ -80,6 +80,13 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     setIsProcessing(null);
   };
 
+  const handleToggleCurated = async (photo: any) => {
+    setIsProcessing(photo.id);
+    await updatePhoto(photo.id, { is_curated: !photo.is_curated });
+    setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_curated: !p.is_curated } : p));
+    setIsProcessing(null);
+  };
+
   const handleBatchUpload = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (files.length === 0) return;
@@ -88,6 +95,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     const formData = new FormData(e.currentTarget);
     const tag = formData.get("category") as string;
     const album_id = formData.get("album_id") as string;
+    const auto_publish = formData.get("auto_publish") === "on";
 
     try {
       const uploadData = new FormData();
@@ -103,6 +111,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
           category: tag,
           album_id: album_id || null,
           is_featured: false,
+          is_curated: auto_publish,
           image_url: res.url,
           public_id: res.public_id,
           width: res.width,
@@ -206,6 +215,11 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                          </select>
                       </div>
 
+                      <div className="flex items-center gap-3 p-4 bg-black/40 border border-white/5 rounded-sm">
+                         <input type="checkbox" name="auto_publish" id="auto_publish" className="w-4 h-4 accent-blue-600" />
+                         <label htmlFor="auto_publish" className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Publish Instantly to Website</label>
+                      </div>
+
                       <div className="pt-6">
                          <button 
                            disabled={files.length === 0 || uploadLoading}
@@ -260,6 +274,24 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
            >
               <img src={photo.image_url} alt={photo.title} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-700" />
               
+              {/* Curation Badges */}
+              <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
+                 {photo.is_curated ? (
+                   <div className="bg-emerald-500 text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
+                      <Check size={8} /> Live
+                   </div>
+                 ) : (
+                   <div className="bg-zinc-800/80 backdrop-blur-md text-zinc-400 px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1">
+                      <X size={8} /> Hidden
+                   </div>
+                 )}
+                 {photo.is_featured && (
+                   <div className="bg-blue-500 text-white px-2 py-0.5 rounded-[2px] text-[7px] font-black uppercase tracking-widest flex items-center gap-1 shadow-lg shadow-black/40">
+                      <Star size={8} fill="currentColor" /> Featured
+                   </div>
+                 )}
+              </div>
+
               {/* Overlay Controls */}
               <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-4">
                  <div className="flex justify-between items-start">
@@ -354,17 +386,32 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                        </div>
                     </div>
 
-                    <div className="flex items-center justify-between p-6 bg-zinc-900/50 border border-white/5 rounded-sm">
-                       <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-white mb-1">Feature on Homepage</p>
-                          <p className="text-[9px] text-zinc-500 uppercase">Surface this asset in "The Edit" carousel</p>
+                    <div className="space-y-4">
+                       <div className="flex items-center justify-between p-6 bg-zinc-900/50 border border-white/5 rounded-sm">
+                          <div>
+                             <p className="text-[10px] font-black uppercase tracking-widest text-white mb-1">Public Portfolio</p>
+                             <p className="text-[9px] text-zinc-500 uppercase">Surface this asset on your public website</p>
+                          </div>
+                          <button 
+                            onClick={() => handleToggleCurated(selectedPhoto)}
+                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_curated ? 'bg-emerald-600' : 'bg-zinc-800'}`}
+                          >
+                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_curated ? 'left-7' : 'left-1'}`} />
+                          </button>
                        </div>
-                       <button 
-                         onClick={() => handleToggleFeatured(selectedPhoto)}
-                         className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_featured ? 'bg-blue-600' : 'bg-zinc-800'}`}
-                       >
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_featured ? 'left-7' : 'left-1'}`} />
-                       </button>
+
+                       <div className="flex items-center justify-between p-6 bg-zinc-900/50 border border-white/5 rounded-sm">
+                          <div>
+                             <p className="text-[10px] font-black uppercase tracking-widest text-white mb-1">Feature on Homepage</p>
+                             <p className="text-[9px] text-zinc-500 uppercase">Surface this asset in "The Edit" carousel</p>
+                          </div>
+                          <button 
+                            onClick={() => handleToggleFeatured(selectedPhoto)}
+                            className={`w-12 h-6 rounded-full relative transition-all ${selectedPhoto.is_featured ? 'bg-blue-600' : 'bg-zinc-800'}`}
+                          >
+                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${selectedPhoto.is_featured ? 'left-7' : 'left-1'}`} />
+                          </button>
+                       </div>
                     </div>
 
                     <div className="pt-10 border-t border-white/5">

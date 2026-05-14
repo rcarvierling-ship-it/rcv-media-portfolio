@@ -34,6 +34,7 @@ export default function HomePage() {
           )
         `)
         .eq("is_featured", true)
+        .eq("is_curated", true)
         .order("created_at", { ascending: false });
         
       if (photosData) {
