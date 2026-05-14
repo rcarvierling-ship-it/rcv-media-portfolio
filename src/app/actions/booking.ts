@@ -277,7 +277,7 @@ export async function updateBookingPipeline(id: string, updates: any) {
       
     if (error) throw error;
     revalidatePath("/dashboard/bookings");
-    revalidatePath("/dashboard/pipeline");
+    revalidatePath("/dashboard/bookings");
     return { success: true };
   } catch (error) {
     console.error("Update pipeline error:", error);
@@ -345,7 +345,7 @@ export async function deliverGallery(bookingId: string) {
     await supabase.from("bookings").update({ pipeline_stage: 'delivered' }).eq("id", bookingId);
     
     revalidatePath("/dashboard/bookings");
-    revalidatePath("/dashboard/pipeline");
+    revalidatePath("/dashboard/bookings");
     return { success: true };
   } catch (error) {
     console.error("Gallery delivery error:", error);
