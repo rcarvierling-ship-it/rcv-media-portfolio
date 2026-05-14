@@ -5,7 +5,8 @@ import { createClient } from "@/utils/supabase/client";
 import { 
   FolderPlus, Lock, Unlock, Settings2, 
   Trash2, ExternalLink, ChevronRight,
-  User, ShieldCheck, Image as ImageIcon
+  User, ShieldCheck, Image as ImageIcon,
+  RefreshCw, Copy, Check
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ export default function AlbumManager() {
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<any | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   
   const supabase = createClient();
   const router = useRouter();
@@ -32,6 +34,21 @@ export default function AlbumManager() {
     if (data) setAlbums(data);
     setLoading(false);
   }
+
+  const generatePasscode = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let result = "RCV-";
+    for (let i = 0; i < 4; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,9 +146,14 @@ export default function AlbumManager() {
                      <ImageIcon size={12} /> {album.photos?.[0]?.count || 0} Photos
                   </div>
                   {album.passcode && (
-                    <div className="flex items-center gap-2 text-blue-500">
-                       <ShieldCheck size={12} /> {album.passcode}
-                    </div>
+                    <button 
+                      onClick={() => handleCopy(album.passcode, album.id)}
+                      className="flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors group/code"
+                    >
+                       <ShieldCheck size={12} /> 
+                       <span className="font-mono tracking-widest">{album.passcode}</span>
+                       {copiedId === album.id ? <Check size={10} className="text-emerald-500" /> : <Copy size={10} className="opacity-0 group-hover/code:opacity-100 transition-opacity" />}
+                    </button>
                   )}
                </div>
 
@@ -157,61 +179,106 @@ export default function AlbumManager() {
 
       <AnimatePresence>
         {(isCreating || editingAlbum) && (
-          <div className="fixed inset-0 bg-black/90 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-zinc-950 border border-white/10 p-10 w-full max-w-xl rounded-2xl"
-            >
-               <h2 className="text-3xl font-black uppercase tracking-tighter text-white mb-8">
-                 {editingAlbum ? "Modify Vault" : "Create New Vault"}
-               </h2>
-               
-               <form onSubmit={handleSave} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Album Title</label>
-                       <input name="title" defaultValue={editingAlbum?.title} required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">URL Slug</label>
-                       <input name="slug" defaultValue={editingAlbum?.slug} placeholder="athlete-name-event" required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Client Name</label>
-                     <input name="client_name" defaultValue={editingAlbum?.client_name} placeholder="e.g. LeBron James" className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
-                  </div>
-
-                  <div className="p-6 bg-zinc-900/50 rounded-xl border border-white/5 space-y-6">
-                    <div className="flex items-center justify-between">
-                       <div>
-                          <h4 className="text-xs font-black uppercase tracking-widest text-white">Privacy Lock</h4>
-                          <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Require a passcode to view this gallery</p>
-                       </div>
-                       <input type="checkbox" name="is_private" defaultChecked={editingAlbum?.is_private} className="w-6 h-6 accent-blue-600" />
-                    </div>
-                    <div className="space-y-2">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Passcode</label>
-                       <input name="passcode" defaultValue={editingAlbum?.passcode} placeholder="SECRET123" className="w-full bg-black border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm font-mono tracking-widest" />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                     <button type="submit" className="flex-1 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200">
-                        {editingAlbum ? "Save Changes" : "Establish Vault"}
-                     </button>
-                     <button type="button" onClick={() => { setIsCreating(false); setEditingAlbum(null); }} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800">
-                        Cancel
-                     </button>
-                  </div>
-               </form>
-            </motion.div>
-          </div>
+          <AlbumModal 
+            album={editingAlbum} 
+            onClose={() => { setIsCreating(false); setEditingAlbum(null); }}
+            onSave={handleSave}
+            generatePasscode={generatePasscode}
+          />
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
+  const [passcode, setPasscode] = useState(album?.passcode || "");
+  const [isPrivate, setIsPrivate] = useState(album?.is_private || false);
+
+  const togglePrivacy = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsPrivate(checked);
+    if (checked && !passcode) {
+      setPasscode(generatePasscode());
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/90 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="bg-zinc-950 border border-white/10 p-10 w-full max-w-xl rounded-2xl"
+      >
+         <h2 className="text-3xl font-black uppercase tracking-tighter text-white mb-8">
+           {album ? "Modify Vault" : "Create New Vault"}
+         </h2>
+         
+         <form onSubmit={onSave} className="space-y-6">
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Album Title</label>
+                 <input name="title" defaultValue={album?.title} required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+              </div>
+              <div className="space-y-2">
+                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">URL Slug</label>
+                 <input name="slug" defaultValue={album?.slug} placeholder="athlete-name-event" required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Client Name</label>
+               <input name="client_name" defaultValue={album?.client_name} placeholder="e.g. LeBron James" className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm" />
+            </div>
+
+            <div className="p-6 bg-zinc-900/50 rounded-xl border border-white/5 space-y-6">
+              <div className="flex items-center justify-between">
+                 <div>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-white">Privacy Lock</h4>
+                    <p className="text-[9px] text-zinc-500 uppercase tracking-widest mt-1">Require a passcode to view this gallery</p>
+                 </div>
+                 <input 
+                   type="checkbox" 
+                   name="is_private" 
+                   checked={isPrivate} 
+                   onChange={togglePrivacy}
+                   className="w-6 h-6 accent-blue-600" 
+                 />
+              </div>
+              <div className="space-y-2">
+                 <div className="flex justify-between items-center">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Passcode</label>
+                    {isPrivate && (
+                      <button 
+                        type="button" 
+                        onClick={() => setPasscode(generatePasscode())}
+                        className="text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-white flex items-center gap-1 transition-colors"
+                      >
+                        <RefreshCw size={10} /> Regenerate
+                      </button>
+                    )}
+                 </div>
+                 <input 
+                   name="passcode" 
+                   value={passcode} 
+                   onChange={(e) => setPasscode(e.target.value)}
+                   placeholder="SECRET123" 
+                   className="w-full bg-black border border-white/5 px-6 py-4 text-white outline-none focus:border-blue-500/50 rounded-sm font-mono tracking-widest" 
+                 />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4">
+               <button type="submit" className="flex-1 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200">
+                  {album ? "Save Changes" : "Establish Vault"}
+               </button>
+               <button type="button" onClick={onClose} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800">
+                  Cancel
+               </button>
+            </div>
+         </form>
+      </motion.div>
     </div>
   );
 }
