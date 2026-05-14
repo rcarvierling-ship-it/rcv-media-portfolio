@@ -8,13 +8,16 @@ import {
   sendMessageToClient, 
   updateBookingPipeline, 
   deliverGallery,
-  replyToInquiry 
+  replyToInquiry,
+  updatePricingPackage,
+  updateSiteIdentity
 } from "@/app/actions/booking";
 import { 
   MessageSquare, Send, X, DollarSign, 
   ExternalLink, Package, Layout, Link as LinkIcon,
   Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2,
-  ChevronRight, Camera, Edit3, ArrowRightLeft, LayoutGrid, List
+  ChevronRight, Camera, Edit3, ArrowRightLeft, LayoutGrid, List,
+  Settings, User, Plus, Trash2, Save
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PipelineBoard from "@/components/dashboard/PipelineBoard";
@@ -24,18 +27,21 @@ export function BookingsAdminClient({
   initialBlockedDates,
   initialSettings,
   albums = [],
-  initialInquiries = []
+  initialInquiries = [],
+  initialPackages = []
 }: { 
   initialBookings: any[], 
   initialBlockedDates: any[],
   initialSettings: any,
   albums?: any[],
-  initialInquiries?: any[]
+  initialInquiries?: any[],
+  initialPackages?: any[]
 }) {
   const [activeTab, setActiveTab] = useState<"pipeline" | "details" | "inquiries" | "settings">("pipeline");
   const [bookings, setBookings] = useState(initialBookings);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
+  const [packages, setPackages] = useState(initialPackages);
   const [movingId, setMovingId] = useState<string | null>(null);
   
   // Messaging Logic
@@ -44,9 +50,7 @@ export function BookingsAdminClient({
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   
   // Settings State
-  const [minDays, setMinDays] = useState(initialSettings?.booking_min_advance_days ?? 21);
-  const [maxDays, setMaxDays] = useState(initialSettings?.booking_max_advance_days ?? 180);
-  const [isActive, setIsActive] = useState(initialSettings?.booking_is_active ?? true);
+  const [siteSettings, setSiteSettings] = useState(initialSettings);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
 
   const [isBlocking, setIsBlocking] = useState(false);
@@ -102,18 +106,18 @@ export function BookingsAdminClient({
     setIsSendingMessage(false);
   };
 
-  const handleSaveSettings = async () => {
+  const handleSavePackage = async (pkg: any) => {
+    const result = await updatePricingPackage(pkg.id, pkg);
+    if (result.success) {
+      alert(`${pkg.name} Updated!`);
+      router.refresh();
+    }
+  };
+
+  const handleSaveIdentity = async () => {
     setIsSavingSettings(true);
-    const { error } = await supabase
-      .from("site_settings")
-      .update({
-        booking_min_advance_days: minDays,
-        booking_max_advance_days: maxDays,
-        booking_is_active: isActive
-      })
-      .eq("id", initialSettings?.id);
-    
-    if (!error) alert("Settings updated!");
+    const result = await updateSiteIdentity(siteSettings.id, siteSettings);
+    if (result.success) alert("Identity Updated!");
     setIsSavingSettings(false);
     router.refresh();
   };
@@ -138,7 +142,7 @@ export function BookingsAdminClient({
 
   return (
     <div className="space-y-12">
-      {/* Integrated Command Center Header */}
+      {/* Command Center Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-8 border-b border-white/5">
         <div>
           <h1 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white leading-none">Command Center</h1>
@@ -168,7 +172,7 @@ export function BookingsAdminClient({
              onClick={() => setActiveTab("settings")}
              className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'settings' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
-             <Layout size={14} /> Settings
+             <Settings size={14} /> Agency Settings
            </button>
         </div>
       </div>
@@ -339,91 +343,195 @@ export function BookingsAdminClient({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-12"
+            className="space-y-16"
           >
-            <div className="space-y-12">
-               <div className="premium-card p-10 rounded-sm border border-white/5">
-                  <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">
-                    <Layout size={20} className="text-blue-500" /> Booking Rules
-                  </h2>
-                  <div className="space-y-8">
-                    <div className="flex items-center justify-between">
-                       <div>
-                          <p className="text-white font-bold uppercase tracking-widest text-xs">Booking Status</p>
-                          <p className="text-zinc-500 text-[10px] uppercase font-medium">Turn on/off all new inquiries</p>
-                       </div>
-                       <button 
-                         onClick={() => setIsActive(!isActive)}
-                         className={`w-14 h-8 rounded-full relative transition-colors ${isActive ? 'bg-blue-600' : 'bg-zinc-800'}`}
-                       >
-                         <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${isActive ? 'left-7' : 'left-1'}`} />
-                       </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-6">
-                       <div>
-                          <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-2">Min Advance (Days)</label>
-                          <input 
-                            type="number" 
-                            value={minDays} 
-                            onChange={(e) => setMinDays(parseInt(e.target.value))}
-                            className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
-                          />
-                       </div>
-                       <div>
-                          <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-2">Max Horizon (Days)</label>
-                          <input 
-                            type="number" 
-                            value={maxDays} 
-                            onChange={(e) => setMaxDays(parseInt(e.target.value))}
-                            className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
-                          />
-                       </div>
-                    </div>
-
-                    <button 
-                      onClick={handleSaveSettings}
-                      disabled={isSavingSettings}
-                      className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] hover:bg-white/10 transition-colors"
-                    >
-                      {isSavingSettings ? "Saving..." : "Save Configuration"}
-                    </button>
+            {/* 1. PRICING PACKAGES EDITOR */}
+            <div className="space-y-8">
+               <div className="flex justify-between items-end">
+                  <div>
+                    <h2 className="text-2xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
+                      <Package size={24} className="text-blue-500" /> Pricing Architecture
+                    </h2>
+                    <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-2">Manage public service tiers</p>
                   </div>
                </div>
 
-               <div className="premium-card p-10 rounded-sm border border-white/5">
-                  <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8">Calendar Blackout</h2>
-                  <form onSubmit={handleBlockDate} className="flex gap-4 mb-8">
-                     <input 
-                       required
-                       type="date" 
-                       value={newBlockDate} 
-                       onChange={(e) => setNewBlockDate(e.target.value)}
-                       className="flex-1 bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white text-xs"
-                     />
-                     <button 
-                       disabled={isBlocking}
-                       className="px-6 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-200"
-                     >
-                       Block
-                     </button>
-                  </form>
-
-                  <div className="space-y-3">
-                     {blockedDates.map((date) => (
-                       <div key={date.id} className="flex justify-between items-center p-4 bg-black/40 rounded-sm border border-white/5">
-                          <span className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">{new Date(date.date).toLocaleDateString()}</span>
-                          <button 
-                            onClick={async () => {
-                               await supabase.from("blocked_dates").delete().eq("id", date.id);
-                               setBlockedDates(prev => prev.filter(d => d.id !== date.id));
-                            }}
-                            className="text-zinc-600 hover:text-red-500 transition-colors"
-                          >
-                             <X size={14} />
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {packages.map((pkg, idx) => (
+                    <div key={pkg.id} className="premium-card p-8 border border-white/5 bg-zinc-900/20 rounded-sm">
+                       <div className="flex justify-between items-center mb-8">
+                          <input 
+                             className="bg-transparent text-xl font-black uppercase tracking-tight text-white border-b border-white/10 focus:border-blue-500 outline-none w-2/3"
+                             value={pkg.name}
+                             onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, name: e.target.value } : p))}
+                          />
+                          <button onClick={() => handleSavePackage(pkg)} className="p-3 bg-white/5 hover:bg-white/10 text-white rounded-full transition-all">
+                             <Save size={16} />
                           </button>
                        </div>
-                     ))}
+                       
+                       <div className="space-y-6">
+                          <div className="flex items-center gap-4">
+                             <DollarSign size={20} className="text-emerald-500" />
+                             <input 
+                                className="bg-transparent text-3xl font-black text-white border-b border-white/10 focus:border-blue-500 outline-none w-full"
+                                placeholder="Price (e.g. $250)"
+                                value={pkg.price}
+                                onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, price: e.target.value } : p))}
+                             />
+                          </div>
+
+                          <div>
+                             <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">Accent Color (HEX)</label>
+                             <div className="flex gap-3">
+                                <input 
+                                   className="bg-zinc-950 border border-white/10 rounded-sm px-4 py-2 text-white text-xs outline-none focus:border-blue-500 w-32"
+                                   value={pkg.accent_color}
+                                   onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, accent_color: e.target.value } : p))}
+                                />
+                                <div className="w-8 h-8 rounded-full border border-white/10" style={{ backgroundColor: pkg.accent_color }} />
+                             </div>
+                          </div>
+
+                          <div>
+                             <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2 block">Features (Line Separated)</label>
+                             <textarea 
+                                className="w-full bg-zinc-950 border border-white/10 rounded-sm p-4 text-zinc-400 text-xs outline-none focus:border-blue-500 h-32 resize-none"
+                                value={pkg.features.join('\n')}
+                                onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, features: e.target.value.split('\n') } : p))}
+                             />
+                          </div>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+            </div>
+
+            {/* 2. AGENCY IDENTITY EDITOR */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+               <div className="premium-card p-10 rounded-sm border border-white/5">
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">
+                    <User size={20} className="text-blue-500" /> Agency Identity
+                  </h2>
+                  <div className="space-y-8">
+                     <div className="grid grid-cols-2 gap-6">
+                        <div>
+                           <label className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">First Name</label>
+                           <input 
+                             type="text" 
+                             value={siteSettings.about_title_first} 
+                             onChange={(e) => setSiteSettings({ ...siteSettings, about_title_first: e.target.value })}
+                             className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                           />
+                        </div>
+                        <div>
+                           <label className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Last Name</label>
+                           <input 
+                             type="text" 
+                             value={siteSettings.about_title_last} 
+                             onChange={(e) => setSiteSettings({ ...siteSettings, about_title_last: e.target.value })}
+                             className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                           />
+                        </div>
+                     </div>
+
+                     <div>
+                        <label className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Professional Bio</label>
+                        <textarea 
+                          rows={6}
+                          value={siteSettings.about_bio} 
+                          onChange={(e) => setSiteSettings({ ...siteSettings, about_bio: e.target.value })}
+                          className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50 resize-none text-sm leading-relaxed"
+                        />
+                     </div>
+
+                     <button 
+                       onClick={handleSaveIdentity}
+                       disabled={isSavingSettings}
+                       className="w-full py-4 bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-blue-500 transition-colors"
+                     >
+                       {isSavingSettings ? "Saving..." : "Update Agency Profile"}
+                     </button>
+                  </div>
+               </div>
+
+               {/* Booking Logic & Blackouts */}
+               <div className="space-y-8">
+                  <div className="premium-card p-10 rounded-sm border border-white/5">
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">
+                      <Calendar size={20} className="text-blue-500" /> Booking Rules
+                    </h2>
+                    <div className="space-y-8">
+                      <div className="flex items-center justify-between">
+                         <div>
+                            <p className="text-white font-bold uppercase tracking-widest text-xs">Booking Status</p>
+                            <p className="text-zinc-500 text-[10px] uppercase font-medium">Turn on/off all new inquiries</p>
+                         </div>
+                         <button 
+                           onClick={() => setSiteSettings({ ...siteSettings, booking_is_active: !siteSettings.booking_is_active })}
+                           className={`w-14 h-8 rounded-full relative transition-colors ${siteSettings.booking_is_active ? 'bg-blue-600' : 'bg-zinc-800'}`}
+                         >
+                           <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${siteSettings.booking_is_active ? 'left-7' : 'left-1'}`} />
+                         </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-6">
+                         <div>
+                            <label className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Min Advance (Days)</label>
+                            <input 
+                              type="number" 
+                              value={siteSettings.booking_min_advance_days} 
+                              onChange={(e) => setSiteSettings({ ...siteSettings, booking_min_advance_days: parseInt(e.target.value) })}
+                              className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                            />
+                         </div>
+                         <div>
+                            <label className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Max Horizon (Days)</label>
+                            <input 
+                              type="number" 
+                              value={siteSettings.booking_max_advance_days} 
+                              onChange={(e) => setSiteSettings({ ...siteSettings, booking_max_advance_days: parseInt(e.target.value) })}
+                              className="w-full bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white outline-none focus:border-blue-500/50"
+                            />
+                         </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="premium-card p-10 rounded-sm border border-white/5">
+                    <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8">Calendar Blackout</h2>
+                    <form onSubmit={handleBlockDate} className="flex gap-4 mb-8">
+                       <input 
+                         required
+                         type="date" 
+                         value={newBlockDate} 
+                         onChange={(e) => setNewBlockDate(e.target.value)}
+                         className="flex-1 bg-black/50 border border-white/10 rounded-sm px-4 py-3 text-white text-xs"
+                       />
+                       <button 
+                         disabled={isBlocking}
+                         className="px-6 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-200"
+                       >
+                         Block
+                       </button>
+                    </form>
+
+                    <div className="space-y-3">
+                       {blockedDates.map((date) => (
+                         <div key={date.id} className="flex justify-between items-center p-4 bg-black/40 rounded-sm border border-white/5">
+                            <span className="text-zinc-300 font-bold uppercase tracking-widest text-[10px]">{new Date(date.date).toLocaleDateString()}</span>
+                            <button 
+                              onClick={async () => {
+                                 await supabase.from("blocked_dates").delete().eq("id", date.id);
+                                 setBlockedDates(prev => prev.filter(d => d.id !== date.id));
+                              }}
+                              className="text-zinc-600 hover:text-red-500 transition-colors"
+                            >
+                               <Trash2 size={14} />
+                            </button>
+                         </div>
+                       ))}
+                    </div>
                   </div>
                </div>
             </div>

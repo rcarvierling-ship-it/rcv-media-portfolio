@@ -487,3 +487,39 @@ export async function replyToInquiry(inquiryId: string, message: string) {
   }
 }
 
+
+export async function updatePricingPackage(id: string, updates: any) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("pricing_packages")
+      .update(updates)
+      .eq("id", id);
+      
+    if (error) throw error;
+    revalidatePath("/book");
+    revalidatePath("/dashboard/bookings");
+    return { success: true };
+  } catch (error) {
+    console.error("Update package error:", error);
+    return { success: false };
+  }
+}
+
+export async function updateSiteIdentity(id: string, updates: any) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("site_settings")
+      .update(updates)
+      .eq("id", id);
+      
+    if (error) throw error;
+    revalidatePath("/about");
+    revalidatePath("/dashboard/bookings");
+    return { success: true };
+  } catch (error) {
+    console.error("Update site identity error:", error);
+    return { success: false };
+  }
+}
