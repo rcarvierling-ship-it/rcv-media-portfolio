@@ -7,7 +7,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen bg-black pt-20">
-      <div className="flex flex-col md:flex-row max-w-7xl mx-auto h-[calc(100vh-80px)]">
+      <div className="flex flex-col md:flex-row container-premium h-[calc(100vh-80px)]">
         {/* Sidebar */}
         <aside className="w-full md:w-64 border-r border-zinc-900 p-6 flex flex-col gap-8">
           <div>

@@ -164,15 +164,36 @@ export function BookingsAdminClient({
         {activeView === "pipeline" && (
           <motion.div key="pipeline" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-12">
             {/* TIER 1 & 2 PIPELINE - Same as before... */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {STAGES.slice(0, 3).map((stage) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-6">
+              {STAGES.map((stage) => (
                 <div key={stage.id} className="flex flex-col space-y-4">
-                  <div className={`flex items-center justify-between p-4 rounded-sm ${stage.bg} border border-white/5`}><div className="flex items-center gap-3"><stage.icon size={16} className={stage.color} /><h3 className="text-[10px] font-black uppercase tracking-widest text-white">{stage.label}</h3></div><span className="text-[9px] font-black text-zinc-500 bg-black/40 px-2 py-0.5 rounded-full border border-white/5">{getBookingsByStage(stage.id).length}</span></div>
-                  <div className="space-y-4">{getBookingsByStage(stage.id).map((booking) => (<ProjectCard key={booking.id} booking={booking} stage={stage} onMove={handleMoveStage} onSetStatus={handleSetStatus} onUpdatePrice={handleUpdatePrice} albums={albums} onLinkAlbum={handleLinkAlbum} isProcessing={isProcessing === booking.id} />))}</div>
+                  <div className={`flex items-center justify-between p-4 rounded-sm ${stage.bg} border border-white/5`}>
+                    <div className="flex items-center gap-3">
+                      <stage.icon size={16} className={stage.color} />
+                      <h3 className="text-[10px] font-black uppercase tracking-widest text-white">{stage.label}</h3>
+                    </div>
+                    <span className="text-[9px] font-black text-zinc-500 bg-black/40 px-2 py-0.5 rounded-full border border-white/5">
+                      {getBookingsByStage(stage.id).length}
+                    </span>
+                  </div>
+                  <div className="space-y-4">
+                    {getBookingsByStage(stage.id).map((booking) => (
+                      <ProjectCard 
+                        key={booking.id} 
+                        booking={booking} 
+                        stage={stage} 
+                        onMove={handleMoveStage} 
+                        onSetStatus={handleSetStatus} 
+                        onUpdatePrice={handleUpdatePrice} 
+                        albums={albums} 
+                        onLinkAlbum={handleLinkAlbum} 
+                        isProcessing={isProcessing === booking.id} 
+                      />
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="pt-12 border-t border-white/5"><div className="grid grid-cols-1 md:grid-cols-3 gap-6">{STAGES.slice(3).map((stage) => (<div key={stage.id} className="flex flex-col space-y-4"><div className={`flex items-center justify-between p-4 rounded-sm ${stage.bg} border border-white/5`}><div className="flex items-center gap-3"><stage.icon size={16} className={stage.color} /><h3 className="text-[10px] font-black uppercase tracking-widest text-white">{stage.label}</h3></div><span className="text-[9px] font-black text-zinc-500 bg-black/40 px-2 py-0.5 rounded-full border border-white/5">{getBookingsByStage(stage.id).length}</span></div><div className="space-y-4">{getBookingsByStage(stage.id).map((booking) => (<ProjectCard key={booking.id} booking={booking} stage={stage} onMove={handleMoveStage} onSetStatus={handleSetStatus} onUpdatePrice={handleUpdatePrice} albums={albums} onLinkAlbum={handleLinkAlbum} isProcessing={isProcessing === booking.id} />))}</div></div>))}</div></div>
           </motion.div>
         )}
 
