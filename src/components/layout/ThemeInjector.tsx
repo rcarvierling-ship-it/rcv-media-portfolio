@@ -6,18 +6,20 @@ export async function ThemeInjector() {
 
   const primary = settings?.accent_color || "#3b82f6";
   
-  // Generate variations (secondary is slightly darker)
-  // For simplicity, we'll just use the primary for now or basic opacity for glow
-  const glow = `${primary}1A`; // 10% opacity in HEX
-  const border = `${primary}33`; // 20% opacity in HEX
+  // Generate variations
+  const glow = `${primary}1A`; // 10% opacity
+  const border = `${primary}33`; // 20% opacity
+  const muted = `${primary}80`; // 50% opacity
+  const solid = primary;
 
   return (
     <style dangerouslySetInnerHTML={{ __html: `
       :root {
-        --accent-primary: ${primary};
-        --accent-secondary: ${primary};
+        --accent-primary: ${solid};
+        --accent-secondary: ${solid};
         --accent-glow: ${glow};
         --accent-border: ${border};
+        --accent-muted: ${muted};
       }
     `}} />
   );

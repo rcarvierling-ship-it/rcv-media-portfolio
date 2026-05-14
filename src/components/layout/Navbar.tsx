@@ -67,7 +67,7 @@ export function Navbar() {
                   {isActive && (
                     <motion.div
                       layoutId="navbar-indicator"
-                      className="absolute -bottom-2 left-0 right-0 h-[2px] bg-white rounded-full"
+                      className="absolute -bottom-2 left-0 right-0 h-[2px] bg-brand-accent rounded-full shadow-[0_0_10px_var(--accent-glow)]"
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     />
                   )}

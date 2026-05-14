@@ -74,7 +74,7 @@ export default function HomePage() {
              <h1 className="text-[12vw] md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-white">
                Built For
              </h1>
-             <h1 className="text-[12vw] md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-800">
+             <h1 className="text-[12vw] md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">
                The Moment.
              </h1>
            </motion.div>
@@ -98,7 +98,7 @@ export default function HomePage() {
                href="/portfolio"
                className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center"
              >
-               <div className="absolute inset-0 w-full h-full bg-blue-600 origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
+               <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
                <span className="relative z-10 group-hover:text-white transition-colors duration-500">View Portfolio</span>
              </Link>
              <Link
@@ -148,7 +148,7 @@ export default function HomePage() {
              transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
              className="absolute top-12 left-0 z-20 premium-glass px-6 py-3 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 backdrop-blur-2xl"
            >
-             <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+             <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Latest Work</span>
            </motion.div>
         </div>
@@ -168,7 +168,7 @@ export default function HomePage() {
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
           ))}
         </div>
@@ -184,7 +184,7 @@ export default function HomePage() {
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
               <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
           ))}
         </div>
@@ -398,7 +398,7 @@ export default function HomePage() {
             className="text-[10vw] md:text-9xl font-black uppercase tracking-tighter text-white mb-16 leading-none"
           >
             Ready To <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-700">Capture?</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">Capture?</span>
           </motion.h2>
           
           <motion.div 

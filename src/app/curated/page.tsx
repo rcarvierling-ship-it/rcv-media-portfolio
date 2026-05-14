@@ -66,7 +66,7 @@ export default function CuratedCollectionPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.5em] mb-6 block">The Master Collection</span>
+            <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em] mb-6 block">The Master Collection</span>
             <h1 className="text-[12vw] md:text-[10vw] font-black uppercase tracking-tighter leading-[0.8] mb-8">
               Director's <br/> <span className="text-zinc-800 italic">Cut.</span>
             </h1>
@@ -118,7 +118,7 @@ export default function CuratedCollectionPage() {
                     <span className="text-[9px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-2 block">
                        {photo.albums?.title || "Photography"}
                     </span>
-                    <h3 className="text-2xl font-black uppercase tracking-tight group-hover:text-blue-500 transition-colors">
+                    <h3 className="text-2xl font-black uppercase tracking-tight group-hover:text-brand-accent transition-colors">
                        RCV Frame
                     </h3>
                  </div>
@@ -145,7 +145,7 @@ export default function CuratedCollectionPage() {
            viewport={{ once: true }}
         >
           <h2 className="text-[10vw] font-black uppercase tracking-tighter leading-none mb-12">
-            Build The <br/> <span className="text-blue-500 italic">Vision.</span>
+            Build The <br/> <span className="text-brand-accent italic">Vision.</span>
           </h2>
           <Link 
             href="/book" 
@@ -165,7 +165,7 @@ export default function CuratedCollectionPage() {
            >
               <header className="p-8 flex justify-between items-center relative z-10">
                  <div>
-                    <span className="text-blue-500 text-[9px] font-black uppercase tracking-widest block mb-1">Master Collection</span>
+                    <span className="text-brand-accent text-[9px] font-black uppercase tracking-widest block mb-1">Master Collection</span>
                     <h3 className="text-white font-black uppercase tracking-widest text-xs">
                       Elite Capture
                     </h3>

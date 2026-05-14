@@ -55,6 +55,8 @@
   /* Dynamic Accent utility */
   --color-brand-accent: var(--accent-primary);
   --color-brand-glow: var(--accent-glow);
+  --color-brand-border: var(--accent-border);
+  --color-brand-muted: var(--accent-muted);
   
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: calc(var(--radius));

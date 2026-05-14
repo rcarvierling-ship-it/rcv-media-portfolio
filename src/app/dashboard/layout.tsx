@@ -20,34 +20,28 @@ export default function DashboardLayout({
                 Analytics
               </Link>
               <Link href="/dashboard/media" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Library
+                Master Library
+              </Link>
+              <Link href="/dashboard/curated" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
+                Curation Hub
               </Link>
               <Link href="/dashboard/albums" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Albums
-              </Link>
-              <Link href="/dashboard/bookings" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Command Center
               </Link>
             </nav>
           </div>
           
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Site</h2>
+            <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Operations</h2>
             <nav className="flex flex-col gap-2">
-              <Link href="/dashboard/editor" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Site Editor
-              </Link>
               <Link href="/dashboard/bookings" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Bookings
+                Command Center
               </Link>
               <Link href="/dashboard/pricing" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Pricing
-              </Link>
-              <Link href="/dashboard/about" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                About
+                Pricing Engine
               </Link>
               <Link href="/dashboard/settings" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Settings
+                Vibe Settings
               </Link>
               <button className="text-left text-red-500 hover:text-red-400 transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Sign Out
