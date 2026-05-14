@@ -101,16 +101,22 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     const auto_publish = formData.get("auto_publish") === "on";
 
     try {
-      const uploadData = new FormData();
-      files.forEach(f => uploadData.append("files", f));
-      
-      const cloudinaryResults = await uploadMultipleToCloudinary(uploadData);
-      
       const newPhotos: any[] = [];
-      for (let i = 0; i < cloudinaryResults.length; i++) {
-        const res = cloudinaryResults[i];
+      
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
+        
+        // Create a single-file FormData
+        const singleUploadData = new FormData();
+        singleUploadData.append("file", file);
+        
+        // Upload to Cloudinary individually
+        const res = await uploadToCloudinary(singleUploadData);
+        
+        // Save to Database
         const result = await addPhoto({
-          title: files[i].name.split('.')[0],
+          title: file.name.split('.')[0],
           category: tag,
           album_id: album_id || null,
           is_featured: false,
@@ -123,15 +129,16 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         
         if (result?.success) {
           newPhotos.push(result.data);
+          // Update UI state progressively
+          setPhotos(prev => [result.data, ...prev]);
         }
       }
 
-      setPhotos(prev => [...newPhotos, ...prev]);
       setFiles([]);
       setIsUploadOpen(false);
     } catch (err: any) {
       console.error("Batch upload failed:", err);
-      alert(`Upload failed: ${err.message || "Unknown error"}`);
+      alert(`Upload failed: ${err.message || "The file might be too large or there was a server error."}`);
     } finally {
       setUploadLoading(false);
     }
