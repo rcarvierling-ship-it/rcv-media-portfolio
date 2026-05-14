@@ -6,11 +6,14 @@ import {
   Edit3, Star, Check, X, 
   Loader2, Upload, ExternalLink,
   ChevronDown, Grid, List as ListIcon,
-  Image as ImageIcon, MoreVertical
+  Image as ImageIcon, MoreVertical,
+  ChevronUp, Tag
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { updatePhoto, deletePhoto } from "@/app/actions/photos";
+import { useDropzone } from "react-dropzone";
+import { updatePhoto, deletePhoto, addPhoto } from "@/app/actions/photos";
+import { uploadMultipleToCloudinary } from "@/app/actions/upload";
 import { createClient } from "@/utils/supabase/client";
 
 export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: any[], albums: any[] }) {
@@ -20,10 +23,17 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<any | null>(null);
   
+  // Upload State
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploadLoading, setUploadLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const router = useRouter();
   const supabase = createClient();
 
-  const categories = ["All", ...Array.from(new Set(initialPhotos.map(p => p.category).filter(Boolean)))];
+  const PORTFOLIO_TAGS = ["Sports", "Basketball", "Volleyball", "Football", "Soccer", "Portraits", "Lifestyle", "Events", "Cinematic"];
+  const categories = ["All", ...PORTFOLIO_TAGS];
 
   const filteredPhotos = useMemo(() => {
     return photos.filter(p => {
@@ -33,9 +43,14 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     });
   }, [photos, searchTerm, categoryFilter]);
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: { 'image/*': [] },
+    onDrop: acceptedFiles => setFiles(prev => [...prev, ...acceptedFiles])
+  });
+
   const handleToggleFeatured = async (photo: any) => {
     setIsProcessing(photo.id);
-    const result = await updatePhoto(photo.id, { is_featured: !photo.is_featured });
+    await updatePhoto(photo.id, { is_featured: !photo.is_featured });
     setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_featured: !p.is_featured } : p));
     setIsProcessing(null);
   };
@@ -65,19 +80,145 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     setIsProcessing(null);
   };
 
+  const handleBatchUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (files.length === 0) return;
+
+    setUploadLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const tag = formData.get("category") as string;
+    const album_id = formData.get("album_id") as string;
+
+    try {
+      const uploadData = new FormData();
+      files.forEach(f => uploadData.append("files", f));
+      
+      const cloudinaryResults = await uploadMultipleToCloudinary(uploadData);
+      
+      const newPhotos: any[] = [];
+      for (let i = 0; i < cloudinaryResults.length; i++) {
+        const res = cloudinaryResults[i];
+        const result = await addPhoto({
+          title: files[i].name.split('.')[0],
+          category: tag,
+          album_id: album_id || null,
+          image_url: res.url,
+          public_id: res.public_id,
+          width: res.width,
+          height: res.height,
+        }) as any;
+        
+        if (result?.success) {
+          newPhotos.push(result.data);
+        }
+      }
+
+      setPhotos(prev => [...newPhotos, ...prev]);
+      setFiles([]);
+      setIsUploadOpen(false);
+    } catch (err) {
+      alert("Upload failed.");
+    } finally {
+      setUploadLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">Master Media Library</h1>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2">Master Library</h1>
           <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Managing {photos.length} assets across your entire horizon</p>
         </div>
         <div className="flex gap-4">
-           <button onClick={() => router.push("/dashboard/upload")} className="px-8 py-4 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center gap-2 rounded-sm">
-             <Plus size={14} /> Bulk Upload
+           <button 
+             onClick={() => setIsUploadOpen(!isUploadOpen)} 
+             className={`px-8 py-4 ${isUploadOpen ? 'bg-zinc-800 text-white' : 'bg-white text-black'} text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center gap-2 rounded-sm`}
+           >
+             {isUploadOpen ? <ChevronUp size={14} /> : <Plus size={14} />} {isUploadOpen ? 'Close Upload' : 'Batch Upload'}
            </button>
         </div>
       </header>
+
+      {/* UPLOAD SECTION (EXPANDABLE) */}
+      <AnimatePresence>
+         {isUploadOpen && (
+           <motion.section 
+             initial={{ height: 0, opacity: 0 }} 
+             animate={{ height: 'auto', opacity: 1 }} 
+             exit={{ height: 0, opacity: 0 }}
+             className="overflow-hidden"
+           >
+             <div className="premium-card p-10 bg-zinc-900 border border-white/10 rounded-sm mb-12">
+                <form onSubmit={handleBatchUpload} className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                   <div className="lg:col-span-7">
+                      <div 
+                        {...getRootProps()} 
+                        className={`border-2 border-dashed aspect-video rounded-sm flex flex-col items-center justify-center gap-6 transition-all cursor-pointer ${
+                          isDragActive ? 'border-blue-500 bg-blue-500/5' : 'border-white/5 hover:border-white/20 bg-black/40'
+                        }`}
+                      >
+                         <input {...getInputProps()} />
+                         <div className="p-6 bg-zinc-800 rounded-full text-zinc-500 group-hover:text-white transition-colors">
+                            <Upload size={32} />
+                         </div>
+                         <div className="text-center">
+                            <p className="text-xs font-black uppercase tracking-widest text-white mb-2">
+                               {files.length > 0 ? `${files.length} Files Prepared` : 'Drag & Drop Media'}
+                            </p>
+                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Supports PNG, JPG, WEBP (Max 20 Files)</p>
+                         </div>
+                      </div>
+                      
+                      {files.length > 0 && (
+                        <div className="mt-6 flex flex-wrap gap-2">
+                           {files.map((f, i) => (
+                             <div key={i} className="px-3 py-1 bg-zinc-800 text-[8px] font-black uppercase text-zinc-400 border border-white/5 rounded-full flex items-center gap-2">
+                                {f.name} <X size={10} className="cursor-pointer hover:text-white" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} />
+                             </div>
+                           ))}
+                        </div>
+                      )}
+                   </div>
+
+                   <div className="lg:col-span-5 space-y-8">
+                      <div className="space-y-4">
+                         <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                            <Tag size={12} /> Assign Portfolio Tags
+                         </label>
+                         <select name="category" required className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase tracking-widest">
+                            {PORTFOLIO_TAGS.map(tag => (
+                              <option key={tag} value={tag}>{tag}</option>
+                            ))}
+                         </select>
+                      </div>
+
+                      <div className="space-y-4">
+                         <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 flex items-center gap-2">
+                            <ImageIcon size={12} /> Target Album (Optional)
+                         </label>
+                         <select name="album_id" className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase tracking-widest">
+                            <option value="">No Album</option>
+                            {albums.map(a => (
+                              <option key={a.id} value={a.id}>{a.title}</option>
+                            ))}
+                         </select>
+                      </div>
+
+                      <div className="pt-6">
+                         <button 
+                           disabled={files.length === 0 || uploadLoading}
+                           className="w-full py-5 bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] hover:bg-zinc-200 transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                         >
+                            {uploadLoading ? <Loader2 className="animate-spin" size={16} /> : <>Commence Batch Sync <Upload size={16} /></>}
+                         </button>
+                      </div>
+                   </div>
+                </form>
+             </div>
+           </motion.section>
+         )}
+      </AnimatePresence>
 
       {/* FILTERS & SEARCH */}
       <section className="premium-card p-6 bg-zinc-900/20 border border-white/5 rounded-sm flex flex-col md:flex-row gap-6 items-center">
@@ -149,7 +290,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
          ))}
       </div>
 
-      {/* QUICK EDIT SLIDE-OUT / MODAL */}
+      {/* QUICK EDIT MODAL */}
       <AnimatePresence>
          {selectedPhoto && (
            <div className="fixed inset-0 z-[500] flex items-center justify-end">
@@ -186,14 +327,14 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
                     <div className="grid grid-cols-2 gap-8">
                        <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Category</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Image Tag</label>
                           <select 
                             className="w-full bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-blue-500 transition-all text-sm font-bold uppercase"
                             value={selectedPhoto.category || ""}
                             onChange={(e) => handleUpdatePhoto(selectedPhoto.id, { category: e.target.value })}
                           >
-                             {["Sports", "Portraits", "Lifestyle", "Events", "Basketball", "Volleyball"].map(cat => (
-                               <option key={cat} value={cat}>{cat}</option>
+                             {PORTFOLIO_TAGS.map(tag => (
+                               <option key={tag} value={tag}>{tag}</option>
                              ))}
                           </select>
                        </div>

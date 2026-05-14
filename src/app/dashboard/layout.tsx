@@ -22,9 +22,6 @@ export default function DashboardLayout({
               <Link href="/dashboard/media" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Library
               </Link>
-              <Link href="/dashboard/upload" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                Upload New
-              </Link>
               <Link href="/dashboard/albums" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Albums
               </Link>
