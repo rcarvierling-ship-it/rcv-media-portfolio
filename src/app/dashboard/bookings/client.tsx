@@ -13,9 +13,18 @@ import {
 import { 
   MessageSquare, Send, X, DollarSign, 
   ExternalLink, Package, Layout, Link as LinkIcon,
-  Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2
+  Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2,
+  ChevronRight, Camera, Edit3
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const STAGES = [
+  { id: 'lead', label: 'Lead', icon: Clock, color: 'text-blue-400' },
+  { id: 'confirmed', label: 'Booked', icon: CheckCircle2, color: 'text-emerald-400' },
+  { id: 'shooting', label: 'Shot', icon: Camera, color: 'text-purple-400' },
+  { id: 'editing', label: 'Editing', icon: Edit3, color: 'text-amber-400' },
+  { id: 'delivered', label: 'Delivered', icon: Send, color: 'text-zinc-400' }
+];
 
 export function BookingsAdminClient({ 
   initialBookings, 
@@ -172,7 +181,21 @@ export function BookingsAdminClient({
                         }`}>
                           {booking.status}
                         </span>
-                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                        
+                        {/* Pipeline Status Indicator */}
+                        <div className="flex items-center gap-1 bg-black/40 border border-white/5 px-2 py-1 rounded-sm">
+                           {STAGES.map((s) => {
+                             const isActive = (booking.pipeline_stage || 'lead') === s.id;
+                             return (
+                               <div key={s.id} className={`w-2 h-2 rounded-full ${isActive ? s.color.replace('text-', 'bg-') : 'bg-zinc-800'}`} title={s.label} />
+                             );
+                           })}
+                           <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 ml-2">
+                             {(booking.pipeline_stage || 'lead')}
+                           </span>
+                        </div>
+
+                        <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest ml-auto lg:ml-0">
                            {new Date(booking.created_at).toLocaleDateString()}
                         </span>
                       </div>
@@ -215,12 +238,6 @@ export function BookingsAdminClient({
                           >
                             Confirm Booking
                           </button>
-                          <button 
-                            onClick={() => handleUpdateStatus(booking.id, 'canceled')}
-                            className="w-full py-4 border border-red-500/50 text-red-500 font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-red-500 hover:text-white transition-colors"
-                          >
-                            Cancel
-                          </button>
                         </>
                       )}
                       
@@ -229,6 +246,14 @@ export function BookingsAdminClient({
                         className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-white/10 transition-colors flex items-center justify-center gap-2"
                       >
                         <MessageSquare size={14} /> Send Message
+                      </button>
+
+                      {/* Rapid Link to Pipeline */}
+                      <button 
+                        onClick={() => router.push('/dashboard/pipeline')}
+                        className="w-full py-4 bg-zinc-800 text-zinc-400 font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-zinc-700 hover:text-white transition-colors flex items-center justify-center gap-2"
+                      >
+                        <ArrowRightLeft size={14} /> Manage Life-Cycle
                       </button>
                     </div>
                   </div>
