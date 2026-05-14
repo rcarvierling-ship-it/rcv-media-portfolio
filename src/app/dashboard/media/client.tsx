@@ -129,8 +129,9 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
       setPhotos(prev => [...newPhotos, ...prev]);
       setFiles([]);
       setIsUploadOpen(false);
-    } catch (err) {
-      alert("Upload failed.");
+    } catch (err: any) {
+      console.error("Batch upload failed:", err);
+      alert(`Upload failed: ${err.message || "Unknown error"}`);
     } finally {
       setUploadLoading(false);
     }

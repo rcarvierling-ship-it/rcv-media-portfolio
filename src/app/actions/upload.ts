@@ -8,7 +8,15 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+function checkConfig() {
+  if (!process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+    throw new Error("Cloudinary credentials are missing in environment variables");
+  }
+}
+
 export async function uploadToCloudinary(formData: FormData) {
+  checkConfig();
+  console.log("Starting single upload to Cloudinary...");
   const file = formData.get("file") as File;
   if (!file) {
     throw new Error("No file provided");
@@ -40,7 +48,9 @@ export async function uploadToCloudinary(formData: FormData) {
 }
 
 export async function uploadMultipleToCloudinary(formData: FormData) {
+  checkConfig();
   const files = formData.getAll("files") as File[];
+  console.log(`Starting batch upload of ${files?.length || 0} files to Cloudinary...`);
   if (!files || files.length === 0) {
     throw new Error("No files provided");
   }
