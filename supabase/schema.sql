@@ -261,3 +261,10 @@ CREATE POLICY "Admins can view inquiries" ON public.inquiries
 
 CREATE POLICY "Admins can update inquiries" ON public.inquiries
     FOR UPDATE USING (auth.role() = 'authenticated');
+
+-- Master Collection Support
+ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS is_curated BOOLEAN DEFAULT false;
+
+-- Allow public to view curated photos regardless of album privacy
+CREATE POLICY "Public can view curated photos" ON public.photos
+    FOR SELECT USING (is_curated = true);

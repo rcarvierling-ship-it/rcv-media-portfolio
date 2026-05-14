@@ -10,14 +10,15 @@ import {
   deliverGallery,
   replyToInquiry,
   updatePricingPackage,
-  updateSiteIdentity
+  updateSiteIdentity,
+  togglePhotoCurated
 } from "@/app/actions/booking";
 import { 
   MessageSquare, Send, X, DollarSign, 
   ExternalLink, Package, Layout, Link as LinkIcon,
   Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2,
   ChevronRight, Camera, Edit3, ArrowRightLeft, LayoutGrid, List,
-  Settings, User, Plus, Trash2, Save
+  Settings, User, Plus, Trash2, Save, Star, Image as ImageIcon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import PipelineBoard from "@/components/dashboard/PipelineBoard";
@@ -28,20 +29,23 @@ export function BookingsAdminClient({
   initialSettings,
   albums = [],
   initialInquiries = [],
-  initialPackages = []
+  initialPackages = [],
+  initialPhotos = []
 }: { 
   initialBookings: any[], 
   initialBlockedDates: any[],
   initialSettings: any,
   albums?: any[],
   initialInquiries?: any[],
-  initialPackages?: any[]
+  initialPackages?: any[],
+  initialPhotos?: any[]
 }) {
-  const [activeTab, setActiveTab] = useState<"pipeline" | "details" | "inquiries" | "settings">("pipeline");
+  const [activeTab, setActiveTab] = useState<"pipeline" | "curated" | "details" | "inquiries" | "settings">("pipeline");
   const [bookings, setBookings] = useState(initialBookings);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
   const [packages, setPackages] = useState(initialPackages);
+  const [photos, setPhotos] = useState(initialPhotos);
   const [movingId, setMovingId] = useState<string | null>(null);
   
   // Messaging Logic
@@ -106,6 +110,14 @@ export function BookingsAdminClient({
     setIsSendingMessage(false);
   };
 
+  const handleToggleCurated = async (photoId: string, currentState: boolean) => {
+    const result = await togglePhotoCurated(photoId, !currentState);
+    if (result.success) {
+      setPhotos(prev => prev.map(p => p.id === photoId ? { ...p, is_curated: !currentState } : p));
+      router.refresh();
+    }
+  };
+
   const handleSavePackage = async (pkg: any) => {
     const result = await updatePricingPackage(pkg.id, pkg);
     if (result.success) {
@@ -157,6 +169,12 @@ export function BookingsAdminClient({
              <LayoutGrid size={14} /> Pipeline
            </button>
            <button 
+             onClick={() => setActiveTab("curated")}
+             className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'curated' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
+           >
+             <Star size={14} /> Master Collection
+           </button>
+           <button 
              onClick={() => setActiveTab("details")}
              className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'details' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
@@ -172,7 +190,7 @@ export function BookingsAdminClient({
              onClick={() => setActiveTab("settings")}
              className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-widest transition-all border ${activeTab === 'settings' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}
            >
-             <Settings size={14} /> Agency Settings
+             <Settings size={14} /> Settings
            </button>
         </div>
       </div>
@@ -190,6 +208,57 @@ export function BookingsAdminClient({
                onMoveStage={handleMovePipelineStage}
                movingId={movingId}
              />
+          </motion.div>
+        )}
+
+        {activeTab === "curated" && (
+          <motion.div 
+            key="curated"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-8"
+          >
+             <div className="flex justify-between items-center">
+                <div>
+                   <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Master Collection Manager</h2>
+                   <p className="text-zinc-500 text-[10px] font-black uppercase tracking-widest mt-2">Star your best work for the curated showcase</p>
+                </div>
+                <button 
+                  onClick={() => window.open('/curated', '_blank')}
+                  className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all rounded-sm"
+                >
+                  <ExternalLink size={14} /> View Live Showcase
+                </button>
+             </div>
+
+             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {photos.map((photo) => (
+                   <div key={photo.id} className="relative aspect-[4/5] bg-zinc-900 border border-white/5 rounded-sm overflow-hidden group">
+                      <img 
+                        src={photo.image_url} 
+                        className={`w-full h-full object-cover transition-all duration-500 ${photo.is_curated ? 'opacity-100 scale-100' : 'opacity-40 grayscale scale-105 group-hover:opacity-60 group-hover:grayscale-0'}`} 
+                        alt=""
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                      
+                      <div className="absolute top-2 right-2 flex gap-2">
+                         <button 
+                           onClick={() => handleToggleCurated(photo.id, photo.is_curated)}
+                           className={`p-2 rounded-full transition-all ${photo.is_curated ? 'bg-amber-500 text-white scale-110 shadow-lg' : 'bg-black/50 text-white/50 hover:text-white hover:bg-black/80'}`}
+                         >
+                            <Star size={14} fill={photo.is_curated ? "currentColor" : "none"} />
+                         </button>
+                      </div>
+
+                      <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                         <p className="text-[8px] font-black uppercase tracking-widest text-white/70 truncate max-w-[120px]">
+                            {photo.albums?.title}
+                         </p>
+                      </div>
+                   </div>
+                ))}
+             </div>
           </motion.div>
         )}
 
@@ -455,7 +524,6 @@ export function BookingsAdminClient({
                   </div>
                </div>
 
-               {/* Booking Logic & Blackouts */}
                <div className="space-y-8">
                   <div className="premium-card p-10 rounded-sm border border-white/5">
                     <h2 className="text-xl font-black uppercase tracking-tighter text-white mb-8 flex items-center gap-3">

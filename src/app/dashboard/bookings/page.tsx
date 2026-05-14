@@ -35,6 +35,11 @@ export default async function BookingsDashboard() {
     .select("*")
     .order("sort_order", { ascending: true });
 
+  const { data: allPhotos } = await supabase
+    .from("photos")
+    .select("*, albums(title)")
+    .order("created_at", { ascending: false });
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
       <BookingsAdminClient 
@@ -44,6 +49,7 @@ export default async function BookingsDashboard() {
         albums={albums || []}
         initialInquiries={inquiries || []}
         initialPackages={packages || []}
+        initialPhotos={allPhotos || []}
       />
     </div>
   );

@@ -523,3 +523,21 @@ export async function updateSiteIdentity(id: string, updates: any) {
     return { success: false };
   }
 }
+
+export async function togglePhotoCurated(photoId: string, isCurated: boolean) {
+  try {
+    const supabase = await createClient();
+    const { error } = await supabase
+      .from("photos")
+      .update({ is_curated: isCurated })
+      .eq("id", photoId);
+      
+    if (error) throw error;
+    revalidatePath("/curated");
+    revalidatePath("/dashboard/bookings");
+    return { success: true };
+  } catch (error) {
+    console.error("Toggle curated error:", error);
+    return { success: false };
+  }
+}
