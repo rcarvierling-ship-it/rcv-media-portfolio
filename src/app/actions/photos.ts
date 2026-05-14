@@ -21,13 +21,15 @@ export async function addPhoto(data: {
     throw new Error("Unauthorized");
   }
 
-  const { error } = await supabase.from("photos").insert([data]);
+  const { data: inserted, error } = await supabase.from("photos").insert([data]).select().single();
 
   if (error) throw new Error(error.message);
 
   revalidatePath("/");
   revalidatePath("/portfolio");
   revalidatePath("/dashboard");
+  
+  return { success: true, data: inserted };
 }
 
 export async function deletePhoto(id: string, publicId: string) {

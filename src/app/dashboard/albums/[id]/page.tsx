@@ -77,8 +77,8 @@ export default function AlbumMediaManager() {
           public_id: res.public_id,
           width: res.width,
           height: res.height,
-        });
-        if (result.success) {
+        }) as any;
+        if (result?.success) {
           newPhotoIds.push(result.data.id);
         }
       }
