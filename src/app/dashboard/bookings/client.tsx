@@ -293,59 +293,222 @@ export function BookingsAdminClient({
 
 // ProjectCard remains the same Fulfillment Engine...
 function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, albums, onLinkAlbum, isProcessing }: any) {
-  const linkedAlbum = albums.find((a: any) => a.id === booking.linked_album_id);
+  const [isDelivering, setIsDelivering] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const [showAlbumLinker, setShowAlbumLinker] = useState(false);
+  const linkedAlbum = albums.find((a: any) => a.id === booking.linked_album_id);
+
+  const handleGalleryDelivery = async () => {
+    setIsDelivering(true);
+    const result = await deliverGallery(booking.id);
+    if (result.success) {
+      alert("Gallery Link Dispatched to Client!");
+    } else {
+      alert("Gallery delivery failed. Check Resend logs.");
+    }
+    setIsDelivering(false);
+  };
 
   return (
-    <motion.div layout className="bg-zinc-900/50 backdrop-blur-md border border-white/5 p-6 rounded-sm relative group hover:border-white/20 transition-all">
-       {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-blue-500" /></div>)}
-       <div className="flex justify-between items-start mb-6">
-          <div>
-            <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1 leading-none">{booking.name}</h4>
-            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
-          </div>
-          {stage.id === 'lead' ? (
-            <button onClick={() => onSetStatus(booking.id, 'canceled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">
-              Cancel Request
-            </button>
-          ) : (
-            <button onClick={() => onSetStatus(booking.id, 'canceled')} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
-              <Trash2 size={16} />
-            </button>
+    <>
+      <motion.div layout className="bg-zinc-900/50 backdrop-blur-md border border-white/5 p-6 rounded-sm relative group hover:border-white/20 transition-all">
+        {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-blue-500" /></div>)}
+        <div className="flex justify-between items-start mb-6">
+            <div className="cursor-pointer group/title" onClick={() => setShowDetails(true)}>
+              <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors">{booking.name}</h4>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
+                <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10} /> Details</span>
+              </div>
+            </div>
+            {stage.id === 'lead' ? (
+              <button onClick={() => onSetStatus(booking.id, 'canceled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">
+                Cancel Request
+              </button>
+            ) : (
+              <button onClick={() => onSetStatus(booking.id, 'canceled')} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
+                <Trash2 size={16} />
+              </button>
+            )}
+        </div>
+        
+        <div className="space-y-4 mb-6">
+            {(stage.id === 'lead' || stage.id === 'confirmed') && booking.message && (
+              <div className="bg-black/30 p-4 rounded-sm border border-white/5 relative cursor-pointer" onClick={() => setShowDetails(true)}>
+                <Quote size={12} className="absolute -top-2 -left-1 text-zinc-800" />
+                <p className="text-[11px] text-zinc-500 italic leading-relaxed line-clamp-2">"{booking.message}"</p>
+              </div>
+            )}
+            
+            {(stage.id === 'confirmed' || stage.id === 'shooting') && (
+              <div className="flex items-center gap-3 text-zinc-400">
+                <MapPin size={14} className="text-zinc-600 shrink-0" />
+                <p className="text-[11px] font-bold uppercase tracking-tight truncate">{booking.location || "Location TBD"}</p>
+              </div>
+            )}
+
+            {stage.id === 'editing' && (
+              <div className="space-y-3">
+                <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Fulfillment Asset</span>
+                {linkedAlbum ? (
+                  <div className="flex items-center justify-between p-3 bg-blue-500/5 border border-blue-500/20 rounded-sm">
+                    <div className="flex items-center gap-3">
+                      <ImageIcon size={14} className="text-blue-500" />
+                      <span className="text-[11px] font-bold uppercase text-white truncate max-w-[120px]">{linkedAlbum.title}</span>
+                    </div>
+                    <button onClick={() => setShowAlbumLinker(true)} className="text-[9px] font-black uppercase text-blue-500 hover:text-white">Change</button>
+                  </div>
+                ) : (
+                  <button onClick={() => setShowAlbumLinker(true)} className="w-full py-3 border border-dashed border-zinc-800 text-zinc-600 hover:border-blue-500 hover:text-blue-500 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2">
+                    <Plus size={14} /> Link Gallery
+                  </button>
+                )}
+              </div>
+            )}
+
+            {stage.id === 'delivered' && (
+              <div className="space-y-4 bg-zinc-950 p-4 border border-white/5 rounded-sm">
+                <div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-2">
+                  <CheckCircle size={14} /> Ready for Delivery
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <LinkIcon size={12} className="text-zinc-600" />
+                    <span className="text-[10px] text-zinc-400 font-mono">/gallery/{linkedAlbum?.slug || '...'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock size={12} className="text-zinc-600" />
+                    <span className="text-[10px] text-white font-mono bg-white/5 px-2 py-0.5 rounded-sm">PASS: {linkedAlbum?.passcode || 'PENDING'}</span>
+                  </div>
+                </div>
+                <button 
+                  disabled={isDelivering || !linkedAlbum}
+                  onClick={handleGalleryDelivery} 
+                  className="w-full py-3 bg-blue-600 text-white font-black uppercase text-[9px] tracking-widest rounded-sm hover:bg-blue-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  {isDelivering ? <Loader2 className="animate-spin" size={12} /> : <Send size={12} />} 
+                  {isDelivering ? 'Dispatching...' : 'Email Gallery Link'}
+                </button>
+              </div>
+            )}
+        </div>
+
+        <div className="space-y-5">
+            <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest border-t border-white/5 pt-4">
+              <div className="flex items-center gap-2 text-zinc-500">
+                  <Calendar size={12} />
+                  <span>{booking.event_date || 'Date TBD'}</span>
+              </div>
+              <div className="flex items-center gap-1 text-emerald-500">
+                  <DollarSign size={14} />
+                  <input 
+                    type="number" 
+                    className="bg-transparent w-20 text-white font-black text-sm outline-none" 
+                    defaultValue={booking.total_amount || 0} 
+                    onBlur={(e) => onUpdatePrice(booking.id, parseFloat(e.target.value))} 
+                  />
+              </div>
+            </div>
+            <div className="flex gap-2 pt-4 border-t border-white/5">
+              <button disabled={stage.id === 'lead'} onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx-1].id); }} className="flex-1 py-3 bg-zinc-800 text-white rounded-sm disabled:opacity-20 flex items-center justify-center hover:bg-zinc-700 transition-colors">
+                  <ChevronRight size={16} className="rotate-180" />
+              </button>
+              <button onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx+1].id); }} className={`flex-[3] py-3 rounded-sm flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] gap-2 transition-all ${stage.id === 'delivered' ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-white text-black hover:bg-zinc-200'}`}>
+                  {stage.id === 'lead' ? 'CONFIRM LEAD' : stage.id === 'delivered' ? 'PAYMENT RECEIVED' : 'NEXT STAGE'} <ChevronRight size={16} />
+              </button>
+            </div>
+        </div>
+
+        {/* Album Linker Overlay */}
+        <AnimatePresence>
+          {showAlbumLinker && (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="absolute inset-0 z-[100] bg-black/95 p-6 flex flex-col rounded-sm">
+              <div className="flex justify-between items-center mb-6">
+                <h4 className="text-xs font-black uppercase tracking-widest text-white">Link Gallery</h4>
+                <button onClick={() => setShowAlbumLinker(false)} className="text-zinc-500 hover:text-white"><X size={16} /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                {albums.map((album: any) => (
+                  <button 
+                    key={album.id} 
+                    onClick={() => { onLinkAlbum(booking.id, album.id); setShowAlbumLinker(false); }} 
+                    className={`w-full p-4 text-left rounded-sm border transition-all ${booking.linked_album_id === album.id ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}
+                  >
+                    <p className="text-[11px] font-bold uppercase text-white truncate">{album.title}</p>
+                    <p className="text-[9px] text-zinc-500 uppercase">{album.is_private ? 'Private Vault' : 'Public Gallery'}</p>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
           )}
-       </div>
-       <div className="space-y-4 mb-6">
-          {(stage.id === 'lead' || stage.id === 'confirmed') && booking.message && (<div className="bg-black/30 p-4 rounded-sm border border-white/5 relative"><Quote size={12} className="absolute -top-2 -left-1 text-zinc-800" /><p className="text-[11px] text-zinc-500 italic leading-relaxed">"{booking.message}"</p></div>)}
-          {(stage.id === 'confirmed' || stage.id === 'shooting') && (<div className="flex items-center gap-3 text-zinc-400"><MapPin size={14} className="text-zinc-600 shrink-0" /><p className="text-[11px] font-bold uppercase tracking-tight truncate">{booking.location || "Location TBD"}</p></div>)}
-          {stage.id === 'editing' && (<div className="space-y-3"><span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Fulfillment Asset</span>{linkedAlbum ? (<div className="flex items-center justify-between p-3 bg-blue-500/5 border border-blue-500/20 rounded-sm"><div className="flex items-center gap-3"><ImageIcon size={14} className="text-blue-500" /><span className="text-[11px] font-bold uppercase text-white truncate max-w-[120px]">{linkedAlbum.title}</span></div><button onClick={() => setShowAlbumLinker(true)} className="text-[9px] font-black uppercase text-blue-500 hover:text-white">Change</button></div>) : (<button onClick={() => setShowAlbumLinker(true)} className="w-full py-3 border border-dashed border-zinc-800 text-zinc-600 hover:border-blue-500 hover:text-blue-500 text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"><Plus size={14} /> Link Gallery</button>)}</div>)}
-          {stage.id === 'delivered' && (<div className="space-y-4 bg-zinc-950 p-4 border border-white/5 rounded-sm"><div className="flex items-center gap-2 text-emerald-500 text-[10px] font-black uppercase tracking-widest mb-2"><CheckCircle size={14} /> Ready for Delivery</div><div className="space-y-2"><div className="flex items-center gap-2"><LinkIcon size={12} className="text-zinc-600" /><span className="text-[10px] text-zinc-400 font-mono">/gallery/{linkedAlbum?.slug || '...'}</span></div><div className="flex items-center gap-2"><Lock size={12} className="text-zinc-600" /><span className="text-[10px] text-white font-mono bg-white/5 px-2 py-0.5 rounded-sm">PASS: {linkedAlbum?.passcode || 'PENDING'}</span></div></div><button onClick={() => deliverGallery(booking.id)} className="w-full py-3 bg-blue-600 text-white font-black uppercase text-[9px] tracking-widest rounded-sm hover:bg-blue-500 transition-all flex items-center justify-center gap-2"><Send size={12} /> Email Gallery Link</button></div>)}
-       </div>
-       <div className="space-y-5">
-          <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest border-t border-white/5 pt-4">
-             <div className="flex items-center gap-2 text-zinc-500">
-                <Calendar size={12} />
-                <span>{booking.event_date || 'Date TBD'}</span>
-             </div>
-             <div className="flex items-center gap-1 text-emerald-500">
-                <DollarSign size={14} />
-                <input 
-                  type="number" 
-                  className="bg-transparent w-20 text-white font-black text-sm outline-none" 
-                  defaultValue={booking.total_amount || 0} 
-                  onBlur={(e) => onUpdatePrice(booking.id, parseFloat(e.target.value))} 
-                />
-             </div>
+        </AnimatePresence>
+      </motion.div>
+
+      {/* SHOOT DETAILS MODAL */}
+      <AnimatePresence>
+        {showDetails && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 20 }} className="w-full max-w-2xl bg-zinc-900 border border-white/10 p-10 rounded-sm shadow-2xl relative">
+              <button onClick={() => setShowDetails(false)} className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"><X size={24} /></button>
+              
+              <div className="mb-10">
+                <span className="text-blue-500 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">Project Details</span>
+                <h2 className="text-4xl font-black uppercase tracking-tighter text-white leading-none mb-2">{booking.name}</h2>
+                <p className="text-zinc-500 text-[11px] font-black uppercase tracking-widest">{booking.email} • {booking.phone || 'No Phone'}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-12 mb-12">
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Shoot Type / Package</p>
+                    <p className="text-sm font-bold text-white uppercase">{booking.shoot_type || booking.package_selected}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Location</p>
+                    <p className="text-sm font-bold text-white uppercase">{booking.location || 'Pending'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Logistics</p>
+                    <p className="text-sm font-bold text-white uppercase">{booking.event_date} @ {booking.event_time || 'TBD'}</p>
+                  </div>
+                </div>
+
+                <div className="space-y-6 bg-black/30 p-6 border border-white/5 rounded-sm">
+                  <div>
+                    <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-2">Financial Snapshot</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl font-black text-white">$</span>
+                      <input 
+                        type="number" 
+                        className="bg-transparent text-3xl font-black text-white outline-none w-full" 
+                        defaultValue={booking.total_amount || 0} 
+                        onBlur={(e) => onUpdatePrice(booking.id, parseFloat(e.target.value))} 
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Payment Status</p>
+                    <span className={`px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full border ${booking.payment_status === 'paid' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'}`}>
+                      {booking.payment_status || 'Pending'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {booking.message && (
+                <div className="mb-10 p-6 bg-zinc-950 border-l-2 border-blue-600">
+                  <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-4">Client Message</p>
+                  <p className="text-zinc-400 text-sm leading-relaxed italic">"{booking.message}"</p>
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-10 border-t border-white/5">
+                <button onClick={() => setShowDetails(false)} className="flex-1 py-4 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-zinc-200 transition-all rounded-sm">Close Dashboard</button>
+              </div>
+            </motion.div>
           </div>
-          <div className="flex gap-2 pt-4 border-t border-white/5">
-             <button disabled={stage.id === 'lead'} onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx-1].id); }} className="flex-1 py-3 bg-zinc-800 text-white rounded-sm disabled:opacity-20 flex items-center justify-center hover:bg-zinc-700 transition-colors">
-                <ChevronRight size={16} className="rotate-180" />
-             </button>
-             <button onClick={() => { const idx = STAGES.findIndex(s => s.id === stage.id); onMove(booking.id, STAGES[idx+1].id); }} className={`flex-[3] py-3 rounded-sm flex items-center justify-center font-black uppercase text-[10px] tracking-[0.2em] gap-2 transition-all ${stage.id === 'delivered' ? 'bg-emerald-500 text-black hover:bg-emerald-400' : 'bg-white text-black hover:bg-zinc-200'}`}>
-                {stage.id === 'lead' ? 'CONFIRM LEAD' : stage.id === 'delivered' ? 'PAYMENT RECEIVED' : 'NEXT STAGE'} <ChevronRight size={16} />
-             </button>
-          </div>
-       </div>
-       <AnimatePresence>{showAlbumLinker && (<div className="absolute inset-0 z-[100] bg-black/95 p-6 flex flex-col"><div className="flex justify-between items-center mb-6"><h4 className="text-xs font-black uppercase tracking-widest text-white">Link Gallery</h4><button onClick={() => setShowAlbumLinker(false)} className="text-zinc-500 hover:text-white"><X size={16} /></button></div><div className="flex-1 overflow-y-auto space-y-2 pr-2">{albums.map((album: any) => (<button key={album.id} onClick={() => { onLinkAlbum(booking.id, album.id); setShowAlbumLinker(false); }} className={`w-full p-4 text-left rounded-sm border transition-all ${booking.linked_album_id === album.id ? 'border-blue-500 bg-blue-500/10' : 'border-white/5 bg-white/5 hover:border-white/20'}`}><p className="text-[11px] font-bold uppercase text-white truncate">{album.title}</p><p className="text-[9px] text-zinc-500 uppercase">{album.is_private ? 'Private Vault' : 'Public Gallery'}</p></button>))}</div></div>)}</AnimatePresence>
-    </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
