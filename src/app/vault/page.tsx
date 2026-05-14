@@ -87,7 +87,9 @@ export default function VaultEntryPage() {
             </AnimatePresence>
           </div>
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
             type="submit"
             disabled={loading || passcode.length < 4}
             className="w-full group relative overflow-hidden bg-white text-black font-black uppercase tracking-[0.3em] text-[10px] py-6 rounded-sm disabled:opacity-50 transition-all hover:bg-zinc-200"
