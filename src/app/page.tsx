@@ -55,7 +55,7 @@ export default function HomePage() {
       <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
 
       {/* 1. EDITORIAL SPLIT HERO */}
-      <section className="relative w-full min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-screen-2xl mx-auto gap-12 overflow-hidden">
+      <section className="relative w-full min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-[2800px] mx-auto gap-12 overflow-hidden">
         
         {/* Left Side: Dramatic Typography */}
         <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-8 md:pt-0">
@@ -175,7 +175,7 @@ export default function HomePage() {
 
       {/* 3. FEATURED WORK (MAGAZINE GRID) */}
       <section className="py-32 relative z-10 bg-zinc-950">
-        <div className="max-w-screen-2xl mx-auto px-6">
+        <div className="max-w-[2800px] mx-auto px-6">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-16 gap-6">
             <div>
               <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-2 leading-none">The Edit</h2>
@@ -238,7 +238,7 @@ export default function HomePage() {
 
       {/* 4. NUMBERED DISCIPLINES */}
       <section className="py-32 relative z-10 border-t border-white/5 bg-zinc-950">
-        <div className="max-w-screen-2xl mx-auto px-6">
+        <div className="max-w-[2800px] mx-auto px-6">
           <div className="mb-20">
             <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 leading-none">Specialties</h2>
             <p className="text-zinc-500 font-light max-w-xl text-lg">Mastering the art of motion, portraiture, and narrative across all fields of play.</p>
@@ -283,7 +283,7 @@ export default function HomePage() {
 
       {/* 5. STICKY SPLIT LAYOUT (EXPERIENCE) */}
       <section className="relative z-10 border-t border-white/5 bg-zinc-950">
-        <div className="max-w-screen-2xl mx-auto px-6 py-20 md:py-32">
+        <div className="max-w-[2800px] mx-auto px-6 py-20 md:py-32">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
             
             {/* Sticky Left Column */}
@@ -339,7 +339,7 @@ export default function HomePage() {
 
       {/* 6. RECENT FRAMES (HORIZONTAL SCROLL PREVIEW) */}
       <section className="py-20 relative z-10 border-t border-white/5 bg-zinc-950 overflow-hidden">
-         <div className="max-w-screen-2xl mx-auto px-6 mb-12 flex justify-between items-end">
+         <div className="max-w-[2800px] mx-auto px-6 mb-12 flex justify-between items-end">
             <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Recent Frames</h2>
          </div>
          
