@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 export async function logAnalyticsEvent(event: {
-  event_type: 'vault_view' | 'photo_download' | 'portfolio_view' | 'booking_start',
+  event_type: 'vault_view' | 'photo_download' | 'portfolio_view' | 'booking_start' | 'photo_hover' | 'engagement_duration',
   album_id?: string,
   photo_id?: string,
   metadata?: any

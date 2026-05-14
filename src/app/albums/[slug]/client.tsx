@@ -8,6 +8,7 @@ import {
   ArrowLeft, Maximize2, X, ChevronLeft, 
   ChevronRight, Download
 } from "lucide-react";
+import { EngagementTracker } from "./engagement-tracker";
 
 export function AlbumClientView({ 
   album, 
@@ -85,6 +86,7 @@ export function AlbumClientView({
                 className="relative break-inside-avoid group cursor-none overflow-hidden bg-zinc-900 rounded-sm shadow-2xl border border-white/5"
                 onClick={() => openLightbox(index)}
               >
+                <EngagementTracker photoId={photo.id} albumId={album.id} type="hover" />
                 <Image
                   src={photo.image_url}
                   alt={photo.title || "Album photo"}
@@ -166,6 +168,7 @@ export function AlbumClientView({
                 transition={{ type: "spring", stiffness: 200, damping: 25 }}
                 className="relative max-w-full max-h-full flex flex-col items-center shadow-[0_0_100px_rgba(0,0,0,0.8)]"
               >
+                <EngagementTracker photoId={initialPhotos[selectedImageIndex].id} albumId={album.id} type="view" />
                 <img
                   src={initialPhotos[selectedImageIndex].image_url}
                   alt={initialPhotos[selectedImageIndex].title || "Image"}
