@@ -205,11 +205,18 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                       
                       {files.length > 0 && (
                         <div className="mt-6 flex flex-wrap gap-2">
-                           {files.map((f, i) => (
-                             <div key={i} className="px-3 py-1 bg-zinc-800 text-[8px] font-black uppercase text-zinc-400 border border-white/5 rounded-full flex items-center gap-2">
-                                {f.name} <X size={10} className="cursor-pointer hover:text-white" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} />
-                             </div>
-                           ))}
+                           {files.map((f, i) => {
+                             const isTooLarge = f.size > 10 * 1024 * 1024;
+                             return (
+                               <div key={i} className={`px-3 py-1 bg-zinc-800 text-[8px] font-black uppercase border rounded-full flex items-center gap-2 ${
+                                 isTooLarge ? 'border-red-500/50 text-red-500' : 'border-white/5 text-zinc-400'
+                               }`}>
+                                  {f.name} ({(f.size / (1024 * 1024)).toFixed(1)}MB) 
+                                  {isTooLarge && <span className="text-red-500 font-bold">[TOO LARGE]</span>}
+                                  <X size={10} className="cursor-pointer hover:text-white" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} />
+                               </div>
+                             );
+                           })}
                         </div>
                       )}
                    </div>
