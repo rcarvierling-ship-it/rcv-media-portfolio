@@ -46,28 +46,53 @@ export async function submitBooking(formData: FormData) {
     try {
       if (process.env.RESEND_API_KEY) {
         const adminEmail = "rcar.vierling@gmail.com";
-        console.log("Attempting to send email to:", adminEmail);
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+                        (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
         const { data, error: emailError } = await resend.emails.send({
           from: "RCV Media <bookings@rcv-media.com>",
           to: adminEmail,
-          subject: `New Booking: ${shoot_type} from ${name}`,
+          subject: `NEW REQUEST: ${shoot_type} - ${name}`,
           html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #09090b; color: #ffffff;">
-              <h1 style="text-transform: uppercase; letter-spacing: 2px; color: #2563eb;">New Booking Request</h1>
-              <p><strong>Name:</strong> ${name}</p>
-              <p><strong>Email:</strong> ${email}</p>
-              <p><strong>Phone:</strong> ${phone || "N/A"}</p>
-              <p><strong>Shoot Type:</strong> ${shoot_type}</p>
-              <p><strong>Package:</strong> ${package_selected || "N/A"}</p>
-              <p><strong>Date:</strong> ${event_date}</p>
-              <p><strong>Time:</strong> ${event_time || "N/A"}</p>
-              <p><strong>Location:</strong> ${location || "N/A"}</p>
-              <p><strong>Message:</strong></p>
-              <blockquote style="border-left: 4px solid #2563eb; padding-left: 16px; margin-left: 0; color: #a1a1aa;">
-                ${message || "No message provided."}
-              </blockquote>
-              <a href="${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/dashboard/bookings" style="display: inline-block; margin-top: 20px; padding: 12px 24px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: bold; text-transform: uppercase;">Manage Bookings</a>
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
+              <div style="margin-bottom: 40px; text-align: center;">
+                <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin: 0;">RCV<span style="color: #52525b;">.</span>MEDIA</h1>
+                <p style="font-size: 10px; font-weight: 900; color: #3b82f6; text-transform: uppercase; letter-spacing: 3px; margin-top: 10px;">New Booking Request</p>
+              </div>
+              
+              <div style="padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 4px;">
+                <div style="margin-bottom: 30px;">
+                  <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin-bottom: 5px;">Client Information</p>
+                  <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: #ffffff;">${name}</h2>
+                  <p style="margin: 5px 0; font-size: 14px; color: #a1a1aa;">${email} • ${phone || "No Phone"}</p>
+                </div>
+
+                <div style="grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #18181b; padding-top: 20px;">
+                  <div style="margin-bottom: 15px;">
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Shoot Type</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${shoot_type}</p>
+                  </div>
+                  <div style="margin-bottom: 15px;">
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Date / Time</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${event_date} @ ${event_time || "TBD"}</p>
+                  </div>
+                  <div style="margin-bottom: 15px;">
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Location</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${location || "Not Specified"}</p>
+                  </div>
+                </div>
+
+                ${message ? `
+                  <div style="margin-top: 20px; padding: 20px; background-color: #000000; border-left: 2px solid #3b82f6;">
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin-bottom: 10px;">Message</p>
+                    <p style="font-size: 13px; font-style: italic; color: #d4d4d8; margin: 0; line-height: 1.6;">"${message}"</p>
+                  </div>
+                ` : ""}
+
+                <div style="margin-top: 40px;">
+                  <a href="${siteUrl}/dashboard/bookings" style="display: block; padding: 20px; background-color: #3b82f6; color: #ffffff; text-decoration: none; text-align: center; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; font-size: 12px; border-radius: 2px;">Review Request</a>
+                </div>
+              </div>
             </div>
           `,
         });
