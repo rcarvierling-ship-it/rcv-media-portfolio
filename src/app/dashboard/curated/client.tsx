@@ -114,17 +114,25 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
             </div>
 
             {/* Top Right Quick Badge */}
-            <div className="absolute top-3 right-3">
-               {photo.is_curated ? (
-                 <div className="w-8 h-8 rounded-full bg-brand-accent flex items-center justify-center text-white shadow-xl border border-white/20">
+            <button 
+              onClick={() => handleToggleCurated(photo)}
+              disabled={loading === photo.id}
+              className="absolute top-3 right-3 z-20"
+            >
+               {loading === photo.id ? (
+                 <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white border border-white/10">
+                    <Loader2 className="animate-spin" size={14} />
+                 </div>
+               ) : photo.is_curated ? (
+                 <div className="w-8 h-8 rounded-full bg-brand-accent flex items-center justify-center text-white shadow-xl border border-white/20 hover:scale-110 transition-transform">
                     <Star size={14} fill="currentColor" />
                  </div>
                ) : (
-                 <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white/30 border border-white/10">
+                 <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white/30 border border-white/10 hover:text-white hover:bg-black/60 transition-all">
                     <Circle size={14} />
                  </div>
                )}
-            </div>
+            </button>
           </motion.div>
         ))}
       </div>

@@ -50,6 +50,7 @@ TERMS AND CONDITIONS
 
   revalidatePath("/dashboard/contracts");
   revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/analytics");
   return { success: true, contractId: contract.id };
 }
 
@@ -68,5 +69,24 @@ export async function updateContractStatus(contractId: string, status: string) {
   if (error) return { success: false, error: error.message };
   
   revalidatePath("/dashboard/contracts");
+  revalidatePath("/dashboard/analytics");
+  return { success: true };
+}
+
+export async function deleteContract(contractId: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("contracts")
+    .delete()
+    .eq("id", contractId);
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath("/dashboard/contracts");
+  revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/analytics");
   return { success: true };
 }

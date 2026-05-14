@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { updateContractStatus } from "@/app/actions/contracts";
+import { updateContractStatus, deleteContract } from "@/app/actions/contracts";
 
 export function ContractListClient({ initialContracts }: { initialContracts: any[] }) {
   const [contracts, setContracts] = useState(initialContracts);
@@ -113,6 +113,18 @@ export function ContractListClient({ initialContracts }: { initialContracts: any
                               <ShieldCheck size={14} /> Transaction Complete
                            </div>
                         )}
+
+                        <button 
+                          onClick={async () => {
+                            if (!confirm("Are you sure you want to delete this contract?")) return;
+                            const res = await deleteContract(contract.id);
+                            if (res.success) setContracts(prev => prev.filter(c => c.id !== contract.id));
+                          }}
+                          className="p-3 text-zinc-800 hover:text-red-500 transition-colors"
+                          title="Delete Contract"
+                        >
+                           <Trash2 size={16} />
+                        </button>
                      </div>
                   </div>
                </motion.div>
