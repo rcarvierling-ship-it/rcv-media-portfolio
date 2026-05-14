@@ -95,7 +95,7 @@ export function BookingsAdminClient({
     setIsProcessing(null);
   };
 
-  const handleSetStatus = async (id: string, status: 'confirmed' | 'canceled') => {
+  const handleSetStatus = async (id: string, status: 'confirmed' | 'cancelled') => {
     setIsProcessing(id);
     const prevBookings = [...bookings];
     const pipeline_stage = status === 'confirmed' ? 'confirmed' : 'lead';
@@ -324,11 +324,11 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
               </div>
             </div>
             {stage.id === 'lead' ? (
-              <button onClick={() => onSetStatus(booking.id, 'canceled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">
+              <button onClick={() => onSetStatus(booking.id, 'cancelled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">
                 Cancel Request
               </button>
             ) : (
-              <button onClick={() => onSetStatus(booking.id, 'canceled')} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
+              <button onClick={() => onSetStatus(booking.id, 'cancelled')} className="p-2 text-zinc-600 hover:text-red-500 transition-colors">
                 <Trash2 size={16} />
               </button>
             )}
