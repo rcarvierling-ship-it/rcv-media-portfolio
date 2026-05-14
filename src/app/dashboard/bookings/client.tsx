@@ -154,6 +154,22 @@ export function BookingsAdminClient({
           <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white leading-none">Command <br/> <span className="text-zinc-800">Center.</span></h1>
         </div>
 
+        <div className="flex flex-wrap gap-4 mb-12">
+          {["all", ...STAGES.map(s => s.id)].map((stageId) => (
+            <button
+              key={stageId}
+              onClick={() => setFilter(stageId)}
+              className={`px-6 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all border ${
+                filter === stageId 
+                ? 'bg-white text-black border-white' 
+                : 'bg-zinc-900/40 text-zinc-500 border-white/5 hover:border-white/20'
+              }`}
+            >
+              {stageId}
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-wrap gap-2">
            <button onClick={() => setActiveView("pipeline")} className={`flex items-center gap-3 px-6 py-3 rounded-sm text-[11px] font-black uppercase tracking-widest transition-all border ${activeView === 'pipeline' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}><LayoutGrid size={16} /> Workflow</button>
            <button onClick={() => setActiveView("inquiries")} className={`flex items-center gap-3 px-6 py-3 rounded-sm text-[11px] font-black uppercase tracking-widest transition-all border ${activeView === 'inquiries' ? 'bg-white text-black border-white' : 'text-zinc-500 border-white/5 hover:border-white/20'}`}><Mail size={16} /> Inbox ({inquiries.filter(i => i.status === 'new').length})</button>

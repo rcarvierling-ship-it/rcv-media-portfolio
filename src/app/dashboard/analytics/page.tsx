@@ -309,55 +309,97 @@ export default function AnalyticsPage() {
             </div>
          </div>
 
-         <div className="overflow-x-auto">
-            <table className="w-full text-left">
-               <thead>
-                  <tr className="border-b border-white/5 bg-zinc-900/20">
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Client / Shoot</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Tier</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Value</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Stage</th>
-                     <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Delete</th>
-                  </tr>
-               </thead>
-               <tbody className="divide-y divide-white/5">
-                  <AnimatePresence>
-                     {filteredBookings.map((b) => (
-                        <motion.tr 
-                          key={b.id}
-                          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}
-                          className="group hover:bg-white/[0.02] transition-colors"
-                        >
-                           <td className="px-8 py-6">
-                              <div className="font-black text-white uppercase tracking-tight">{b.name}</div>
-                              <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">{b.shoot_type}</div>
-                           </td>
-                           <td className="px-8 py-6">
-                              <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{b.package_selected}</span>
-                           </td>
-                           <td className="px-8 py-6 text-white font-black text-sm">${(b.total_amount || 0).toLocaleString()}</td>
-                           <td className="px-8 py-6">
-                              <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
-                                 b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-500'
-                              }`}>
-                                 {b.pipeline_stage || b.status}
-                              </span>
-                           </td>
-                           <td className="px-8 py-6 text-right">
-                              <button 
-                                type="button"
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeletingId(b.id); }}
-                                className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
-                              >
-                                 <Trash2 size={16} />
-                              </button>
-                           </td>
-                        </motion.tr>
-                     ))}
-                  </AnimatePresence>
-               </tbody>
-            </table>
-         </div>
+          {/* RESPONSIVE TABLE / LIST */}
+          <div className="overflow-hidden">
+             {/* Desktop Table View */}
+             <div className="hidden md:block">
+                <table className="w-full text-left">
+                   <thead>
+                      <tr className="border-b border-white/5 bg-zinc-900/20">
+                         <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Client / Shoot</th>
+                         <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Tier</th>
+                         <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Value</th>
+                         <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Stage</th>
+                         <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-right">Delete</th>
+                      </tr>
+                   </thead>
+                   <tbody className="divide-y divide-white/5">
+                      <AnimatePresence>
+                         {filteredBookings.map((b) => (
+                            <motion.tr 
+                              key={b.id}
+                              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, x: -20 }}
+                              className="group hover:bg-white/[0.02] transition-colors"
+                            >
+                               <td className="px-8 py-6">
+                                  <div className="font-black text-white uppercase tracking-tight">{b.name}</div>
+                                  <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-1">{b.shoot_type}</div>
+                               </td>
+                               <td className="px-8 py-6">
+                                  <span className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">{b.package_selected}</span>
+                               </td>
+                               <td className="px-8 py-6 text-white font-black text-sm">${(b.total_amount || 0).toLocaleString()}</td>
+                               <td className="px-8 py-6">
+                                  <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                     b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-zinc-800 text-zinc-500'
+                                  }`}>
+                                     {b.pipeline_stage || b.status}
+                                  </span>
+                               </td>
+                               <td className="px-8 py-6 text-right">
+                                  <button 
+                                    type="button"
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDeletingId(b.id); }}
+                                    className="relative z-50 p-3 text-zinc-600 hover:text-red-500 hover:bg-red-500/10 rounded-full transition-all"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                               </td>
+                            </motion.tr>
+                         ))}
+                      </AnimatePresence>
+                   </tbody>
+                </table>
+             </div>
+
+             {/* Mobile Card List View */}
+             <div className="md:hidden space-y-4 p-4">
+                <AnimatePresence>
+                   {filteredBookings.map((b) => (
+                      <motion.div 
+                        key={b.id}
+                        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
+                        className="premium-card p-6 border border-white/5 bg-zinc-900/40"
+                      >
+                         <div className="flex justify-between items-start mb-4">
+                            <div>
+                               <div className="font-black text-white uppercase tracking-tight text-lg">{b.name}</div>
+                               <div className="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-1">{b.shoot_type}</div>
+                            </div>
+                            <button onClick={() => setDeletingId(b.id)} className="text-zinc-700 hover:text-red-500"><Trash2 size={16} /></button>
+                         </div>
+                         <div className="grid grid-cols-2 gap-4 py-4 border-y border-white/5 mb-4">
+                            <div>
+                               <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 block mb-1">Tier</span>
+                               <span className="text-[10px] text-zinc-400 font-bold uppercase">{b.package_selected}</span>
+                            </div>
+                            <div>
+                               <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 block mb-1">Value</span>
+                               <span className="text-sm text-white font-black">${(b.total_amount || 0).toLocaleString()}</span>
+                            </div>
+                         </div>
+                         <div className="flex justify-between items-center">
+                            <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                               b.status === 'confirmed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-800 text-zinc-500'
+                            }`}>
+                               {b.pipeline_stage || b.status}
+                            </span>
+                         </div>
+                      </motion.div>
+                   ))}
+                </AnimatePresence>
+             </div>
+          </div>
       </section>
 
       {/* DELETE CONFIRMATION */}

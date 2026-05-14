@@ -322,7 +322,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
               className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-white outline-none focus:border-blue-500/50 transition-all"
             />
          </div>
-         <div className="flex gap-3 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+         <div className="flex flex-wrap gap-3">
             {categories.map(cat => (
               <button 
                 key={cat} 

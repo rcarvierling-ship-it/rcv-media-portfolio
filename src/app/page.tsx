@@ -360,22 +360,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 6. RECENT FRAMES (HORIZONTAL SCROLL PREVIEW) */}
-      <section className="py-20 relative z-10 border-t border-white/5 bg-zinc-950 overflow-hidden">
+      {/* 6. RECENT FRAMES (GRID PREVIEW) */}
+      <section className="py-20 relative z-10 border-t border-white/5 bg-zinc-950">
          <div className="max-w-[3200px] mx-auto px-6 mb-12 flex justify-between items-end">
             <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Recent Frames</h2>
+            <Link href="/portfolio" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white">View Full Archive &rarr;</Link>
          </div>
          
-         {/* Horizontal Scroll Track */}
-         <div className="flex gap-4 px-6 overflow-x-auto pb-8 hide-scrollbar snap-x w-full">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 px-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <motion.div 
                 key={i}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="min-w-[300px] md:min-w-[400px] h-[500px] premium-placeholder rounded-sm border border-white/10 shrink-0 snap-center relative overflow-hidden group bg-court-grid"
+                className="aspect-[3/4] h-[500px] md:h-auto premium-placeholder rounded-sm border border-white/10 relative overflow-hidden group bg-court-grid"
               >
                  {featuredPhotos[i]?.image_url ? (
                    <Image src={featuredPhotos[i].image_url} alt="Recent Frame" fill className="object-cover transition-all duration-700" />

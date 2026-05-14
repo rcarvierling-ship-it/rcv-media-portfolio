@@ -57,7 +57,7 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
             />
           </div>
           
-          <div className="flex gap-2 p-1 bg-zinc-900/50 border border-white/5 rounded-sm">
+          <div className="flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-white/5 rounded-sm">
              {(["all", "curated", "pending"] as const).map((f) => (
                <button
                  key={f}
