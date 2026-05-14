@@ -14,7 +14,7 @@ export default function DashboardLayout({
             <h2 className="text-xs font-bold uppercase tracking-widest text-zinc-500 mb-4">Media Library</h2>
             <nav className="flex flex-col gap-2">
               <Link href="/dashboard" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
-                All Photos
+                Overview
               </Link>
               <Link href="/dashboard/upload" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-zinc-900">
                 Upload New

@@ -1,26 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { createClient } from "@/utils/supabase/client";
 import { updateSiteSettings } from "@/app/actions/settings";
-import { motion } from "framer-motion";
-import { Check, Save, User } from "lucide-react";
+import { Check, Save, Image as ImageIcon, X } from "lucide-react";
 
 export default function AboutEditorPage() {
   const [settings, setSettings] = useState<any>(null);
+  const [photos, setPhotos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showPhotoPicker, setShowPhotoPicker] = useState(false);
   
   const supabase = createClient();
 
   useEffect(() => {
-    async function fetchSettings() {
-      const { data } = await supabase.from("site_settings").select("*").limit(1).single();
-      if (data) setSettings(data);
+    async function fetchData() {
+      const [{ data: settingsData }, { data: photosData }] = await Promise.all([
+        supabase.from("site_settings").select("*").limit(1).single(),
+        supabase.from("photos").select("*").order("created_at", { ascending: false })
+      ]);
+      if (settingsData) setSettings(settingsData);
+      if (photosData) setPhotos(photosData);
       setLoading(false);
     }
-    fetchSettings();
+    fetchData();
   }, [supabase]);
 
   const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -33,7 +39,7 @@ export default function AboutEditorPage() {
       about_title_first: formData.get("about_title_first") as string,
       about_title_last: formData.get("about_title_last") as string,
       about_bio: formData.get("about_bio") as string,
-      about_image_url: formData.get("about_image_url") as string,
+      about_image_url: settings.about_image_url, // URL managed by picker
     };
 
     try {
@@ -47,59 +53,80 @@ export default function AboutEditorPage() {
     }
   };
 
+  const selectImage = (url: string) => {
+    setSettings({ ...settings, about_image_url: url });
+    setShowPhotoPicker(false);
+  };
+
   if (loading) return <div className="text-zinc-500 uppercase font-black tracking-widest text-xs">Loading Settings...</div>;
 
   return (
     <div className="max-w-4xl mx-auto">
       <header className="mb-12 border-b border-white/5 pb-8">
         <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">About Page Editor</h1>
-        <p className="text-zinc-400 font-light text-lg">Customize your bio, cinematic portrait, and brand story.</p>
+        <p className="text-zinc-400 font-light text-lg uppercase tracking-widest text-[10px]">Customize your brand story & portrait.</p>
       </header>
 
       <form onSubmit={handleSave} className="space-y-12 pb-24">
         {/* Step 1: Branding */}
         <div className="space-y-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">01. Branding & Name</h2>
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">01. Branding</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name / Brand Start</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name</label>
               <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" required />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name / Brand End</label>
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name</label>
               <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" required />
             </div>
           </div>
         </div>
 
-        {/* Step 2: The Bio */}
+        {/* Step 2: Visuals (Portrait Picker) */}
         <div className="space-y-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">02. The Story (Bio)</h2>
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">02. Cinematic Portrait</h2>
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+             <div className="relative aspect-[3/4] w-48 rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group">
+                {settings?.about_image_url ? (
+                  <Image src={settings.about_image_url} alt="Portrait" fill className="object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-zinc-700 font-black uppercase text-[8px] tracking-widest">No Image</div>
+                )}
+                <button 
+                  type="button"
+                  onClick={() => setShowPhotoPicker(true)}
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white"
+                >
+                  Change Photo
+                </button>
+             </div>
+             <div className="flex-1 space-y-4">
+                <p className="text-zinc-500 text-sm leading-relaxed">Choose a high-end cinematic portrait from your media library to represent your brand.</p>
+                <button 
+                  type="button" 
+                  onClick={() => setShowPhotoPicker(true)}
+                  className="px-6 py-3 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:bg-white hover:text-black transition-all flex items-center gap-2"
+                >
+                  <ImageIcon size={14} /> Open Media Library
+                </button>
+             </div>
+          </div>
+        </div>
+
+        {/* Step 3: Bio */}
+        <div className="space-y-8">
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">03. The Story</h2>
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Professional Bio</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Bio / Background</label>
             <textarea 
               name="about_bio" 
               defaultValue={settings?.about_bio} 
               rows={8}
               className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50 resize-none leading-relaxed" 
-              placeholder="Tell your story..."
               required 
             />
           </div>
-        </div>
-
-        {/* Step 3: Visuals */}
-        <div className="space-y-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">03. Cinematic Portrait</h2>
-          <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Profile Image URL</label>
-            <input name="about_image_url" defaultValue={settings?.about_image_url} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-blue-500/50" placeholder="https://..." required />
-          </div>
-          {settings?.about_image_url && (
-            <div className="relative aspect-[3/4] w-32 rounded-lg overflow-hidden border border-white/10">
-              <img src={settings.about_image_url} className="object-cover w-full h-full" alt="Preview" />
-            </div>
-          )}
         </div>
 
         <button 
@@ -110,6 +137,35 @@ export default function AboutEditorPage() {
           {saving ? 'Syncing...' : success ? <><Check size={18} /> Settings Updated</> : <><Save size={18} /> Update About Page</>}
         </button>
       </form>
+
+      {/* PHOTO PICKER MODAL */}
+      {showPhotoPicker && (
+        <div className="fixed inset-0 bg-black/95 z-[500] flex items-center justify-center p-8 backdrop-blur-xl">
+           <div className="bg-zinc-950 border border-white/5 w-full max-w-5xl h-[80vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden">
+              <div className="p-8 border-b border-white/5 flex justify-between items-center">
+                 <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Select Portrait</h2>
+                 <button onClick={() => setShowPhotoPicker(false)} className="text-zinc-500 hover:text-white transition-colors"><X /></button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                 {photos.map(photo => (
+                   <div 
+                     key={photo.id} 
+                     onClick={() => selectImage(photo.image_url)}
+                     className={`relative aspect-square cursor-pointer group border-2 transition-all ${settings.about_image_url === photo.image_url ? 'border-blue-500' : 'border-transparent hover:border-white/20'}`}
+                   >
+                      <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
+                      {settings.about_image_url === photo.image_url && (
+                        <div className="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-blue-600 px-3 py-1">Active</span>
+                        </div>
+                      )}
+                   </div>
+                 ))}
+                 {photos.length === 0 && <p className="col-span-full text-center py-20 text-zinc-600 font-black uppercase tracking-widest text-xs">No photos in library yet.</p>}
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 }
