@@ -28,6 +28,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
   const [isReorderModalOpen, setIsReorderModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [activeColor, setActiveColor] = useState(initialSettings?.accent_color || "#3b82f6");
   
   const supabase = createClient();
@@ -66,14 +67,21 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
     }
   };
 
-  const handleReorder = async (newOrder: any[]) => {
+  const handleReorder = (newOrder: any[]) => {
     setFeaturedPhotos(newOrder);
+    setHasUnsavedChanges(true);
+  };
+
+  const saveReorder = async () => {
     setIsReordering(true);
     try {
-      const updates = newOrder.map((p, i) => ({ id: p.id, sort_order: i + 1 }));
+      const updates = featuredPhotos.map((p, i) => ({ id: p.id, sort_order: i + 1 }));
       await reorderPhotos(updates);
+      setHasUnsavedChanges(false);
+      router.refresh();
     } catch (err) {
       console.error("Reorder failed:", err);
+      alert("Failed to sync sequence.");
     } finally {
       setIsReordering(false);
     }
@@ -256,14 +264,22 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                       {isReordering && (
                         <div className="flex items-center gap-2 text-brand-accent animate-pulse">
                            <RefreshCw size={12} className="animate-spin" />
-                           <span className="text-[10px] font-black uppercase tracking-widest">Syncing Order...</span>
+                           <span className="text-[10px] font-black uppercase tracking-widest">Syncing Hub...</span>
                         </div>
+                      )}
+                      {hasUnsavedChanges && !isReordering && (
+                        <button 
+                          onClick={saveReorder}
+                          className="px-8 py-4 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_var(--accent-glow)] flex items-center gap-2"
+                        >
+                           <Check size={14} strokeWidth={3} /> Apply Sequence
+                        </button>
                       )}
                       <button 
                         onClick={() => setIsReorderModalOpen(false)}
-                        className="p-4 bg-white text-black hover:bg-zinc-200 transition-all rounded-full shadow-2xl"
+                        className="p-4 bg-zinc-800 text-white hover:bg-zinc-700 transition-all rounded-full"
                       >
-                         <Check size={20} strokeWidth={4} />
+                         <X size={20} strokeWidth={3} />
                       </button>
                    </div>
                 </div>
@@ -285,7 +301,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                             zIndex: 100 
                           }}
                           className={`relative flex items-center gap-6 p-4 bg-zinc-900 border-2 transition-all cursor-grab active:cursor-grabbing group rounded-sm overflow-hidden ${
-                            isReordering ? 'border-brand-accent shadow-[0_0_20px_var(--accent-glow)]' : 'border-white/5 hover:border-white/10 shadow-xl'
+                            isReordering ? 'opacity-50 grayscale pointer-events-none' : 'border-white/5 hover:border-white/10 shadow-xl'
                           }`}
                         >
                            {/* Index Badge */}
