@@ -13,7 +13,7 @@ import {
 import { 
   MessageSquare, Send, X, DollarSign, 
   ExternalLink, Package, Layout, Link as LinkIcon,
-  Mail, Calendar, Clock, CheckCircle2, AlertCircle
+  Mail, Calendar, Clock, CheckCircle2, AlertCircle, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
