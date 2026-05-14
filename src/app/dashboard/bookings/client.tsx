@@ -318,10 +318,13 @@ function ProjectCard({ booking, stage, onMove, onSetStatus, onUpdatePrice, album
         <div className="flex justify-between items-start mb-6">
             <div className="cursor-pointer group/title" onClick={() => setShowDetails(true)}>
               <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1 leading-none group-hover/title:text-blue-500 transition-colors">{booking.name}</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
-                <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10} /> Details</span>
-              </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{booking.shoot_type || booking.package_selected}</span>
+                  <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest flex items-center gap-1">
+                    <DollarSign size={10} /> {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(booking.total_amount || 0)}
+                  </span>
+                  <span className="text-[10px] text-zinc-600 font-black uppercase tracking-widest flex items-center gap-1"><AlertCircle size={10} /> Details</span>
+                </div>
             </div>
             {stage.id === 'lead' ? (
               <button onClick={() => onSetStatus(booking.id, 'cancelled')} className="px-3 py-1 bg-red-500/10 text-red-500 text-[9px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all rounded-sm">

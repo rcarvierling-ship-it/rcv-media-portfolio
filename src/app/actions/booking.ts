@@ -21,6 +21,9 @@ export async function submitBooking(formData: FormData) {
       return { success: false, error: "Missing required fields." };
     }
 
+    const total_amount_raw = formData.get("total_amount") as string;
+    const total_amount = total_amount_raw ? parseFloat(total_amount_raw.replace(/[^0-9.]/g, '')) : 0;
+
     const supabase = await createClient();
 
     // Insert booking into Supabase
@@ -37,7 +40,7 @@ export async function submitBooking(formData: FormData) {
           event_time,
           location,
           message,
-          total_amount: parseFloat(formData.get("total_amount") as string || "0"),
+          total_amount: total_amount || 0,
         },
       ]);
 
