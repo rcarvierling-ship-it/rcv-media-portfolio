@@ -39,7 +39,9 @@ export default function AboutEditorPage() {
       about_title_first: formData.get("about_title_first") as string,
       about_title_last: formData.get("about_title_last") as string,
       about_bio: formData.get("about_bio") as string,
-      about_image_url: settings.about_image_url, // URL managed by picker
+      instagram_url: formData.get("instagram_url") as string,
+      contact_email: formData.get("contact_email") as string,
+      about_image_url: settings.about_image_url, 
     };
 
     try {
@@ -63,8 +65,8 @@ export default function AboutEditorPage() {
   return (
     <div className="max-w-4xl mx-auto">
       <header className="mb-12 border-b border-white/5 pb-8">
-        <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">About Page Editor</h1>
-        <p className="text-zinc-400 font-light text-lg uppercase tracking-widest text-[10px]">Customize your brand story & portrait.</p>
+        <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">Identity & Bio Editor</h1>
+        <p className="text-zinc-400 font-light text-lg uppercase tracking-widest text-[10px]">Surgically curate your professional narrative.</p>
       </header>
 
       <form onSubmit={handleSave} className="space-y-12 pb-24">
@@ -87,7 +89,7 @@ export default function AboutEditorPage() {
         <div className="space-y-8">
           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">02. Cinematic Portrait</h2>
           <div className="flex flex-col md:flex-row gap-8 items-start">
-             <div className="relative aspect-[3/4] w-48 rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group">
+             <div className="relative aspect-[3/4] w-48 rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group shadow-2xl">
                 {settings?.about_image_url ? (
                   <Image src={settings.about_image_url} alt="Portrait" fill className="object-cover" />
                 ) : (
@@ -102,13 +104,13 @@ export default function AboutEditorPage() {
                 </button>
              </div>
              <div className="flex-1 space-y-4">
-                <p className="text-zinc-500 text-sm leading-relaxed">Choose a high-end cinematic portrait from your media library to represent your brand.</p>
+                <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">Select a high-resolution portrait from your master library. This image represents your professional identity on the About page.</p>
                 <button 
                   type="button" 
                   onClick={() => setShowPhotoPicker(true)}
                   className="px-6 py-3 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:bg-white hover:text-black transition-all flex items-center gap-2"
                 >
-                  <ImageIcon size={14} /> Open Media Library
+                  <ImageIcon size={14} /> Open Master Library
                 </button>
              </div>
           </div>
@@ -116,16 +118,41 @@ export default function AboutEditorPage() {
 
         {/* Step 3: Bio */}
         <div className="space-y-8">
-          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">03. The Story</h2>
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">03. The Narrative</h2>
           <div className="space-y-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Bio / Background</label>
+            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Professional Bio</label>
             <textarea 
               name="about_bio" 
               defaultValue={settings?.about_bio} 
               rows={8}
-              className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none leading-relaxed" 
+              className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none text-sm leading-loose" 
               required 
             />
+          </div>
+        </div>
+
+        {/* Step 4: Network */}
+        <div className="space-y-8">
+          <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">04. Professional Network</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Instagram URL</label>
+              <input 
+                name="instagram_url" 
+                defaultValue={settings?.instagram_url} 
+                placeholder="https://instagram.com/username"
+                className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Contact Email</label>
+              <input 
+                name="contact_email" 
+                defaultValue={settings?.contact_email} 
+                placeholder="contact@rcv-media.com"
+                className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" 
+              />
+            </div>
           </div>
         </div>
 
