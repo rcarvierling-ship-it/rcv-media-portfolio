@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useDropzone } from "react-dropzone";
 import { updatePhoto, deletePhoto, addPhoto } from "@/app/actions/photos";
-import { uploadToCloudinary } from "@/app/actions/upload";
+import { uploadToCloudinary, getCloudinarySignature } from "@/app/actions/upload";
 import { createClient } from "@/utils/supabase/client";
 
 export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: any[], albums: any[] }) {
@@ -101,35 +101,47 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     const auto_publish = formData.get("auto_publish") === "on";
 
     try {
-      const newPhotos: any[] = [];
+      // 1. Get secure signature from server
+      const signData = await getCloudinarySignature();
       
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
+        console.log(`Direct syncing file ${i + 1}/${files.length}: ${file.name}`);
         
-        // Create a single-file FormData
-        const singleUploadData = new FormData();
-        singleUploadData.append("file", file);
+        // 2. Prepare Direct Upload Payload
+        const directData = new FormData();
+        directData.append("file", file);
+        directData.append("api_key", signData.apiKey!);
+        directData.append("timestamp", signData.timestamp.toString());
+        directData.append("signature", signData.signature);
+        directData.append("folder", signData.folder);
         
-        // Upload to Cloudinary individually
-        const res = await uploadToCloudinary(singleUploadData);
+        // 3. Push Directly to Cloudinary Edge
+        const uploadResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`,
+          { method: "POST", body: directData }
+        );
         
-        // Save to Database
+        const res = await uploadResponse.json();
+        
+        if (res.error) {
+          throw new Error(res.error.message || "Cloudinary upload failed");
+        }
+        
+        // 4. Archive in Database
         const result = await addPhoto({
           title: file.name.split('.')[0],
           category: tag,
           album_id: album_id || null,
           is_featured: false,
           is_curated: auto_publish,
-          image_url: res.url,
+          image_url: res.secure_url,
           public_id: res.public_id,
           width: res.width,
           height: res.height,
         }) as any;
         
         if (result?.success) {
-          newPhotos.push(result.data);
-          // Update UI state progressively
           setPhotos(prev => [result.data, ...prev]);
         }
       }
@@ -137,8 +149,8 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
       setFiles([]);
       setIsUploadOpen(false);
     } catch (err: any) {
-      console.error("Batch upload failed:", err);
-      alert(`Upload failed: ${err.message || "The file might be too large or there was a server error."}`);
+      console.error("Direct sync failed:", err);
+      alert(`Sync failed: ${err.message || "There was a problem pushing your media to the edge."}`);
     } finally {
       setUploadLoading(false);
     }

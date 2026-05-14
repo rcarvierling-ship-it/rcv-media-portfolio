@@ -83,6 +83,23 @@ export async function uploadMultipleToCloudinary(formData: FormData) {
   return results;
 }
 
+export async function getCloudinarySignature() {
+  checkConfig();
+  const timestamp = Math.round(new Date().getTime() / 1000);
+  const signature = cloudinary.utils.api_sign_request(
+    { timestamp, folder: "rcv_media" },
+    process.env.CLOUDINARY_API_SECRET!
+  );
+
+  return {
+    signature,
+    timestamp,
+    cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    folder: "rcv_media",
+  };
+}
+
 export async function deleteFromCloudinary(publicId: string) {
   return new Promise<{ result: string }>((resolve, reject) => {
     cloudinary.uploader.destroy(publicId, (error, result) => {
