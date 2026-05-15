@@ -714,6 +714,30 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                 </div>
               )}
 
+              {item.linked_album_id && (
+                <div className="mb-12 p-8 bg-brand-accent/5 border border-brand-accent/20 rounded-sm">
+                  <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-8">Client Engagement</p>
+                  <div className="grid grid-cols-3 gap-8 text-center">
+                    <div>
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Portal Views</p>
+                      <p className="text-2xl font-black text-white">{albums.find(a => a.id === item.linked_album_id)?.vault_views || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Downloads</p>
+                      <p className="text-2xl font-black text-white">{albums.find(a => a.id === item.linked_album_id)?.download_count || 0}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-2">Last Viewed</p>
+                      <p className="text-[10px] font-black text-white uppercase tracking-widest">
+                        {albums.find(a => a.id === item.linked_album_id)?.last_viewed_at 
+                          ? new Date(albums.find(a => a.id === item.linked_album_id).last_viewed_at).toLocaleDateString()
+                          : 'Never'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="mb-12">
                 <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-4">Tactical Payment Notes</p>
                 <textarea 

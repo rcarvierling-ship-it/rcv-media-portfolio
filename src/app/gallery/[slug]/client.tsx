@@ -31,6 +31,7 @@ export function GalleryClient({ album }: { album: any }) {
     if (isAuthorized) {
       async function fetchPhotos() {
         setLoading(true);
+        trackEvent('vault_view');
         const { data } = await supabase
           .from("photos")
           .select("*")
@@ -60,7 +61,30 @@ export function GalleryClient({ album }: { album: any }) {
   const openLightbox = (index: number) => setSelectedImageIndex(index);
   const closeLightbox = () => setSelectedImageIndex(null);
 
-  const downloadImage = async (url: string, filename: string) => {
+  const trackEvent = async (type: 'vault_view' | 'photo_download', photoId?: string) => {
+    try {
+      await supabase.from('analytics_events').insert([{
+        event_type: type,
+        album_id: album.id,
+        photo_id: photoId,
+        metadata: { client_name: album.client_name }
+      }]);
+
+      if (type === 'vault_view') {
+        await supabase.from('albums').update({ 
+          last_viewed_at: new Date().toISOString(),
+          vault_views: (album.vault_views || 0) + 1 
+        }).eq('id', album.id);
+      } else if (type === 'photo_download') {
+        await supabase.rpc('increment_download_count', { album_id_param: album.id });
+      }
+    } catch (e) {
+      console.error("Tracking failed", e);
+    }
+  };
+
+  const downloadImage = async (url: string, filename: string, photoId?: string) => {
+    trackEvent('photo_download', photoId);
     const response = await fetch(url);
     const blob = await response.blob();
     const link = document.createElement('a');
@@ -180,7 +204,7 @@ export function GalleryClient({ album }: { album: any }) {
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-6">
                        <div className="flex justify-end">
                          <button 
-                           onClick={(e) => { e.stopPropagation(); downloadImage(photo.image_url, `${album.slug}-${index}.jpg`); }}
+                           onClick={(e) => { e.stopPropagation(); downloadImage(photo.image_url, `${album.slug}-${index}.jpg`, photo.id); }}
                            className="w-10 h-10 bg-white text-black flex items-center justify-center rounded-full hover:scale-110 transition-transform"
                          >
                            <Download size={18} />
@@ -240,7 +264,7 @@ export function GalleryClient({ album }: { album: any }) {
                   {selectedImageIndex + 1} / {photos.length}
                 </span>
                 <button 
-                  onClick={() => downloadImage(photos[selectedImageIndex].image_url, `${album.slug}-${selectedImageIndex}.jpg`)}
+                  onClick={() => downloadImage(photos[selectedImageIndex].image_url, `${album.slug}-${selectedImageIndex}.jpg`, photos[selectedImageIndex].id)}
                   className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs flex items-center gap-3 hover:bg-zinc-200 transition-all rounded-sm"
                 >
                   <Download size={16} /> Download High-Res
