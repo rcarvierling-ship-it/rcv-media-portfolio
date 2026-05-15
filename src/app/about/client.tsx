@@ -174,7 +174,7 @@ export function AboutClient({ data }: { data: any }) {
           </div>
           
           <div className="mt-32">
-             <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-900 italic">RCV.MEDIA // FOUNDED 2024</p>
+             <p className="text-[8px] font-black uppercase tracking-[1em] text-zinc-900 italic">RCV.MEDIA // FOUNDED 2026</p>
           </div>
         </div>
       </div>

@@ -47,11 +47,11 @@ export default async function AnalyticsPage() {
           <div className="flex gap-4">
              <div className="px-6 py-3 bg-zinc-900 border border-white/5 rounded-sm">
                 <span className="block text-[9px] font-black text-zinc-600 uppercase tracking-widest mb-1">Fiscal Year</span>
-                <span className="text-sm font-black text-white">2024</span>
+                <span className="text-sm font-black text-white">2026</span>
              </div>
              <div className="px-6 py-3 bg-brand-accent text-white rounded-sm">
                 <span className="block text-[9px] font-black text-white/60 uppercase tracking-widest mb-1">Status</span>
-                <span className="text-sm font-black uppercase">Growth Phase</span>
+                <span className="text-sm font-black uppercase">Scale Mode</span>
              </div>
           </div>
        </header>
