@@ -32,6 +32,7 @@ function BookingContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
   
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [minDays, setMinDays] = useState(21);
@@ -56,11 +57,21 @@ function BookingContent() {
       const { data: bData } = await supabase.from("blocked_dates").select("date");
       if (bData) setBlockedDates(bData.map(d => d.date));
 
-      const { data: sData } = await supabase.from("site_settings").select("booking_min_advance_days, booking_max_advance_days, booking_is_active").limit(1).single();
+      const { data: sData } = await supabase
+        .from("site_settings")
+        .select(`
+          booking_min_advance_days, 
+          booking_max_advance_days, 
+          booking_is_active,
+          active_campaign:campaigns(*)
+        `)
+        .limit(1)
+        .single();
       if (sData) {
         if (sData.booking_min_advance_days !== null) setMinDays(sData.booking_min_advance_days);
         if (sData.booking_max_advance_days !== null) setMaxDays(sData.booking_max_advance_days);
         if (sData.booking_is_active !== null) setIsActive(sData.booking_is_active);
+        if (sData.active_campaign) setActiveCampaign(sData.active_campaign);
       }
       setLoadingConfig(false);
     }
@@ -98,6 +109,24 @@ function BookingContent() {
       <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <AnimatePresence>
+          {activeCampaign && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-12 p-8 bg-brand-accent/10 border border-brand-accent/20 rounded-sm flex flex-col md:flex-row justify-between items-center gap-6"
+            >
+               <div className="flex items-center gap-6 text-center md:text-left">
+                  <div className="w-12 h-12 bg-brand-accent text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]"><Zap size={24} /></div>
+                  <div>
+                     <h3 className="text-xl font-black uppercase tracking-tighter text-white">{activeCampaign.title} Mode Active</h3>
+                     <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">Promotion applies to all campaign bookings</p>
+                  </div>
+               </div>
+               <Link href={`/campaign/${activeCampaign.slug}`} className="px-8 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all">View Details</Link>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <header className="mb-20 text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}

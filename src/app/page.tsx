@@ -9,6 +9,7 @@ import { trackEvent } from "@/utils/analytics";
 
 export default function HomePage() {
   const [featuredPhotos, setFeaturedPhotos] = useState<any[]>([]);
+  const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [heroSetting, setHeroSetting] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -18,12 +19,18 @@ export default function HomePage() {
       
       const { data: settingsData } = await supabase
         .from("site_settings")
-        .select("*")
+        .select(`
+          *,
+          active_campaign:campaigns(*)
+        `)
         .limit(1)
         .single();
         
       if (settingsData) {
         setHeroSetting(settingsData);
+        if (settingsData.active_campaign) {
+          setActiveCampaign(settingsData.active_campaign);
+        }
       }
 
       const { data: photosData } = await supabase
@@ -56,6 +63,29 @@ export default function HomePage() {
     <div className="w-full bg-zinc-950 min-h-screen font-sans selection:bg-white selection:text-black">
       {/* Global Noise Texture */}
       <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
+
+      {/* SEASONAL ALERT BANNER */}
+      <AnimatePresence>
+        {activeCampaign && (
+          <motion.div 
+            initial={{ y: -100 }} 
+            animate={{ y: 0 }} 
+            className="fixed top-0 left-0 right-0 z-[200] bg-brand-accent text-white px-6 py-3 overflow-hidden"
+          >
+             <div className="max-w-[3200px] mx-auto flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                   <span className="px-2 py-0.5 bg-white text-black text-[8px] font-black uppercase tracking-widest rounded-sm animate-pulse">Active Season</span>
+                   <p className="text-[10px] font-black uppercase tracking-[0.2em]">{activeCampaign.title} is now open for booking</p>
+                </div>
+                <Link href={`/campaign/${activeCampaign.slug}`} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group">
+                   Claim Offer <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                </Link>
+             </div>
+             {/* Animated Progress/Scanning line */}
+             <div className="absolute bottom-0 left-0 h-[1px] bg-white/40 animate-scan w-full" />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 1. EDITORIAL SPLIT HERO */}
       <section className="relative w-full min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-[3200px] mx-auto gap-12 overflow-hidden">
@@ -92,14 +122,23 @@ export default function HomePage() {
              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
              className="flex flex-col sm:flex-row gap-4"
            >
-             <Link
-               href="/portfolio"
-               onClick={() => trackEvent('book_click', { location: 'hero_portfolio' })}
-               className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none"
-             >
-               <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
-               <span className="relative z-10 group-hover:text-white transition-colors duration-500">View Portfolio</span>
-             </Link>
+             {activeCampaign ? (
+               <Link
+                 href={`/campaign/${activeCampaign.slug}`}
+                 className="group relative px-10 py-5 bg-brand-accent text-white font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none shadow-[0_0_30px_rgba(59,130,246,0.3)] animate-pulse"
+               >
+                 <span className="relative z-10">Claim {activeCampaign.title} Offer</span>
+               </Link>
+             ) : (
+               <Link
+                 href="/portfolio"
+                 onClick={() => trackEvent('book_click', { location: 'hero_portfolio' })}
+                 className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none"
+               >
+                 <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
+                 <span className="relative z-10 group-hover:text-white transition-colors duration-500">View Portfolio</span>
+               </Link>
+             )}
              <Link
                href="/curated"
                className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:border-brand-accent transition-all rounded-sm text-center border border-white/10 flex-1 sm:flex-none"

@@ -393,7 +393,12 @@ export function PipelineClient({
         )}
 
         {activeView === "campaigns" && (
-          <CampaignManager initialCampaigns={campaigns} supabase={supabase} />
+          <CampaignManager 
+            initialCampaigns={campaigns} 
+            supabase={supabase} 
+            siteSettings={siteSettings}
+            onUpdateSettings={(updates: any) => setSiteSettings({ ...siteSettings, ...updates })}
+          />
         )}
 
         {activeView === "archive" && (
@@ -1352,9 +1357,10 @@ function InspirationBoard({ initialBoard, supabase }: { initialBoard: any[], sup
   );
 }
 
-function CampaignManager({ initialCampaigns, supabase }: { initialCampaigns: any[], supabase: any }) {
+function CampaignManager({ initialCampaigns, supabase, siteSettings, onUpdateSettings }: { initialCampaigns: any[], supabase: any, siteSettings: any, onUpdateSettings: (updates: any) => void }) {
   const [campaigns, setCampaigns] = useState(initialCampaigns);
   const [isAdding, setIsAdding] = useState(false);
+  const [isUpdatingGlobal, setIsUpdatingGlobal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -1368,6 +1374,19 @@ function CampaignManager({ initialCampaigns, supabase }: { initialCampaigns: any
     email_templates: [] as string[],
     message_templates: [] as string[]
   });
+
+  const handleSetGlobal = async (campaignId: string) => {
+    setIsUpdatingGlobal(true);
+    const { error } = await supabase
+      .from('site_settings')
+      .update({ active_campaign_id: campaignId || null })
+      .eq('id', siteSettings.id);
+    
+    if (!error) {
+      onUpdateSettings({ active_campaign_id: campaignId || null });
+    }
+    setIsUpdatingGlobal(false);
+  };
 
   const handleSave = async () => {
     if (editingId) {
@@ -1393,8 +1412,37 @@ function CampaignManager({ initialCampaigns, supabase }: { initialCampaigns: any
     });
   };
 
+  const activeCampaign = campaigns.find(c => c.id === siteSettings.active_campaign_id);
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      {/* GLOBAL MODE SWITCH */}
+      <div className="premium-card p-10 bg-brand-accent/5 border border-brand-accent/20 rounded-sm flex flex-col md:flex-row justify-between items-center gap-8">
+         <div className="flex items-center gap-6">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${activeCampaign ? 'bg-brand-accent text-white shadow-[0_0_30px_rgba(59,130,246,0.3)]' : 'bg-zinc-900 text-zinc-700'}`}>
+               <Zap size={28} />
+            </div>
+            <div>
+               <h3 className="text-xl font-black uppercase tracking-tighter text-white leading-none mb-1">Global Seasonal Mode</h3>
+               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Currently Active: <span className="text-brand-accent">{activeCampaign?.title || 'Standard Operations'}</span></p>
+            </div>
+         </div>
+         <div className="flex items-center gap-4">
+            <select 
+              className="bg-black border border-white/10 p-4 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent rounded-sm min-w-[250px]"
+              value={siteSettings.active_campaign_id || ''}
+              onChange={(e) => handleSetGlobal(e.target.value)}
+              disabled={isUpdatingGlobal}
+            >
+               <option value="">Off (Standard Mode)</option>
+               {campaigns.filter(c => c.is_active).map(c => (
+                 <option key={c.id} value={c.id}>{c.title}</option>
+               ))}
+            </select>
+            {isUpdatingGlobal && <Loader2 className="animate-spin text-brand-accent" size={16} />}
+         </div>
+      </div>
+
       <div className="flex justify-between items-end">
         <div className="space-y-2">
           <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Seasonal Campaigns</h2>
