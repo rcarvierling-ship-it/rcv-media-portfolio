@@ -18,6 +18,7 @@ import {
   acceptInquiryAsBooking,
   deliverGallery,
   updatePricingPackage,
+  replyToInquiry,
   updateSiteIdentity
 } from "@/app/actions/booking";
 import { createContractFromBooking } from "@/app/actions/contracts";
@@ -64,6 +65,8 @@ export function PipelineClient({
   const [newBlockDate, setNewBlockDate] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [creatingContractId, setCreatingContractId] = useState<string | null>(null);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyMessage, setReplyMessage] = useState("");
   
   const router = useRouter();
   const supabase = createClient();
@@ -141,6 +144,19 @@ export function PipelineClient({
   const handleSaveSettings = async () => {
     await updateSiteIdentity(siteSettings.id, siteSettings);
     alert("Operational Guardrails Updated.");
+  };
+
+  const handleReply = async (inquiryId: string) => {
+    if (!replyMessage.trim()) return;
+    setIsProcessing(inquiryId);
+    const res = await replyToInquiry(inquiryId, replyMessage);
+    if (res.success) {
+      setInquiries(prev => prev.map(i => i.id === inquiryId ? { ...i, status: 'replied' } : i));
+      setReplyingTo(null);
+      setReplyMessage("");
+      alert("Intelligence Dispatched: Reply sent.");
+    }
+    setIsProcessing(null);
   };
 
   // --- RENDERING ---
@@ -288,22 +304,43 @@ export function PipelineClient({
                           <p className="text-zinc-400 text-sm italic leading-relaxed">"{inquiry.message}"</p>
                         </div>
                       </div>
+
+                      {replyingTo === inquiry.id && (
+                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-white/5">
+                           <textarea 
+                             autoFocus
+                             placeholder="Write your response..."
+                             className="w-full bg-black border border-brand-accent/30 rounded-sm p-6 text-zinc-300 text-sm outline-none focus:border-brand-accent min-h-[150px] font-medium leading-relaxed shadow-[0_0_30px_rgba(59,130,246,0.05)]"
+                             value={replyMessage}
+                             onChange={(e) => setReplyMessage(e.target.value)}
+                           />
+                           <div className="flex gap-3">
+                              <button 
+                                onClick={() => handleReply(inquiry.id)}
+                                disabled={isProcessing === inquiry.id}
+                                className="flex-1 py-4 bg-brand-accent text-white font-black uppercase text-[10px] tracking-widest hover:brightness-110 transition-all rounded-sm flex items-center justify-center gap-3"
+                              >
+                                {isProcessing === inquiry.id ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} Dispatch Intelligence
+                              </button>
+                              <button 
+                                onClick={() => setReplyingTo(null)}
+                                className="px-10 py-4 bg-zinc-900 text-zinc-500 font-black uppercase text-[10px] tracking-widest hover:text-white transition-all rounded-sm"
+                              >
+                                Cancel
+                              </button>
+                           </div>
+                        </motion.div>
+                      )}
                     </div>
                     <div className="flex flex-row md:flex-col gap-3 justify-center min-w-[200px]">
                       <button 
-                        onClick={async () => {
-                          setIsProcessing(inquiry.id);
-                          const res = await acceptInquiryAsBooking(inquiry.id);
-                          if (res.success) {
-                            setInquiries(prev => prev.map(i => i.id === inquiry.id ? { ...i, status: 'accepted' } : i));
-                            router.refresh();
-                          }
-                          setIsProcessing(null);
+                        onClick={() => {
+                          setReplyingTo(inquiry.id);
+                          setReplyMessage(`Hi ${inquiry.name},\n\nThanks for reaching out regarding ${inquiry.subject || 'your inquiry'}. `);
                         }}
-                        disabled={isProcessing === inquiry.id}
-                        className="px-8 py-5 bg-brand-accent text-white font-black uppercase text-[10px] tracking-widest hover:bg-brand-accent/90 transition-all rounded-sm flex items-center justify-center gap-3"
+                        className={`px-8 py-5 font-black uppercase text-[10px] tracking-widest transition-all rounded-sm flex items-center justify-center gap-3 ${replyingTo === inquiry.id ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' : 'bg-brand-accent text-white hover:bg-brand-accent/90'}`}
                       >
-                        {isProcessing === inquiry.id ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle2 size={14} />} Confirm Lead
+                        <Mail size={14} /> Reply
                       </button>
                       <button 
                         onClick={async () => {
