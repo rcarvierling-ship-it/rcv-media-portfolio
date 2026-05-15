@@ -14,12 +14,18 @@ function BookingContent() {
     name: searchParams.get("name") || "",
     email: searchParams.get("email") || "",
     phone: searchParams.get("phone") || "",
-    pastClient: searchParams.get("past_client") === "true"
+    pastClient: searchParams.get("past_client") === "true",
+    campaign: searchParams.get("campaign") || "",
+    promoPrice: searchParams.get("price") || "",
+    promoPackage: searchParams.get("package") || ""
   };
 
   useEffect(() => {
-    trackEvent('booking_started');
-  }, []);
+    if (prefill.promoPackage) {
+      setSelectedPackage(prefill.promoPackage);
+    }
+    trackEvent('booking_started', { campaign: prefill.campaign });
+  }, [prefill.promoPackage, prefill.campaign]);
   const [packages, setPackages] = useState<any[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -111,52 +117,65 @@ function BookingContent() {
         </header>
 
         {/* 1. DYNAMIC PRICING PACKAGES */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-          {packages.length === 0 && !loadingConfig ? (
-            <div className="md:col-span-3 text-center p-20 border border-dashed border-zinc-800 text-zinc-600 font-bold uppercase tracking-widest">
-              No packages currently active.
-            </div>
-          ) : (
-            packages.map((pkg, idx) => (
-              <motion.div
-                key={pkg.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-                onClick={() => {
-                  setSelectedPackage(pkg.name);
-                  trackEvent('package_select', { package_name: pkg.name, location: 'booking_page' });
-                }}
-                className={`premium-card p-6 md:p-10 rounded-2xl border transition-all cursor-pointer group ${
-                  selectedPackage === pkg.name 
-                    ? 'border-brand-accent bg-brand-accent/5 ring-1 ring-brand-accent' 
-                    : 'border-white/5 hover:border-white/20'
-                }`}
-              >
-                <div className="flex justify-between items-start mb-8">
-                  <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{pkg.name}</h3>
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pkg.accent_color }} />
-                </div>
-                <div className="text-5xl font-black text-white mb-8 tracking-tighter">{pkg.price}</div>
-                <ul className="space-y-4 mb-10">
-                  {pkg.features?.map((f: string) => (
-                    <li key={f} className="text-zinc-400 text-sm flex items-center gap-3">
-                      <span className="w-1 h-1 bg-zinc-700 rounded-full" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-                <div className={`text-[10px] font-black uppercase tracking-widest text-center py-4 border rounded-sm transition-all ${
-                  selectedPackage === pkg.name 
-                    ? 'bg-brand-accent border-brand-accent text-white' 
-                    : 'border-white/10 text-zinc-500 group-hover:border-white/30 group-hover:text-white'
-                }`}>
-                  {selectedPackage === pkg.name ? 'Selected' : 'Select Package'}
-                </div>
-              </motion.div>
-            ))
-          )}
-        </div>
+        {!prefill.promoPackage && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
+            {packages.length === 0 && !loadingConfig ? (
+              <div className="md:col-span-3 text-center p-20 border border-dashed border-zinc-800 text-zinc-600 font-bold uppercase tracking-widest">
+                No packages currently active.
+              </div>
+            ) : (
+              packages.map((pkg, idx) => (
+                <motion.div
+                  key={pkg.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.1 }}
+                  onClick={() => {
+                    setSelectedPackage(pkg.name);
+                    trackEvent('package_select', { package_name: pkg.name, location: 'booking_page' });
+                  }}
+                  className={`premium-card p-6 md:p-10 rounded-2xl border transition-all cursor-pointer group ${
+                    selectedPackage === pkg.name 
+                      ? 'border-brand-accent bg-brand-accent/5 ring-1 ring-brand-accent' 
+                      : 'border-white/5 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-8">
+                    <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{pkg.name}</h3>
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pkg.accent_color }} />
+                  </div>
+                  <div className="text-5xl font-black text-white mb-8 tracking-tighter">{pkg.price}</div>
+                  <ul className="space-y-4 mb-10">
+                    {pkg.features?.map((f: string) => (
+                      <li key={f} className="text-zinc-400 text-sm flex items-center gap-3">
+                        <span className="w-1 h-1 bg-zinc-700 rounded-full" />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <div className={`text-[10px] font-black uppercase tracking-widest text-center py-4 border rounded-sm transition-all ${
+                    selectedPackage === pkg.name 
+                      ? 'bg-brand-accent border-brand-accent text-white' 
+                      : 'border-white/10 text-zinc-500 group-hover:border-white/30 group-hover:text-white'
+                  }`}>
+                    {selectedPackage === pkg.name ? 'Selected' : 'Select Package'}
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        )}
+
+        {prefill.promoPackage && (
+          <div className="max-w-xl mx-auto mb-16">
+             <div className="premium-card p-10 bg-brand-accent/5 border border-brand-accent/20 rounded-sm text-center">
+                <span className="text-brand-accent text-[8px] font-black uppercase tracking-widest mb-4 block">Securing Promotional Offer</span>
+                <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-2 leading-none italic">{prefill.promoPackage}</h2>
+                <p className="text-2xl font-black text-white mb-6">{prefill.promoPrice}</p>
+                <button onClick={() => window.location.href = '/book'} className="text-[8px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-all underline underline-offset-4">Change to standard package</button>
+             </div>
+          </div>
+        )}
 
         {/* 2. BOOKING FORM */}
         <div className="max-w-4xl mx-auto">
@@ -186,7 +205,7 @@ function BookingContent() {
                 <input 
                   type="hidden" 
                   name="total_amount" 
-                  value={packages.find(p => p.name === selectedPackage)?.price.replace(/[^0-9.]/g, '') || "0"} 
+                  value={prefill.promoPrice ? prefill.promoPrice.replace(/[^0-9.]/g, '') : (packages.find(p => p.name === selectedPackage)?.price.replace(/[^0-9.]/g, '') || "0")} 
                 />
 
                 {/* Step 1: Client Info */}

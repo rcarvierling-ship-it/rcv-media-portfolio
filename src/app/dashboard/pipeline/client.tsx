@@ -9,7 +9,7 @@ import {
   Inbox as InboxIcon, CheckCircle2, Camera, Scissors, ShieldCheck,
   Archive, Settings, LayoutGrid, X, AlertCircle, Quote, MapPin, 
   Image as ImageIcon, Link as LinkIcon, Lock, CheckCircle, Send,
-  ChevronRight, Save, DollarSign as DollarSignIcon, Zap, Copy, Lightbulb
+  ChevronRight, Save, DollarSign as DollarSignIcon, Zap, Copy, Lightbulb, Megaphone
 } from "lucide-react";
 import { 
   updateBookingPipeline, 
@@ -59,7 +59,8 @@ export function PipelineClient({
   blockedDates: initialBlockedDates,
   albums,
   marketingVault,
-  inspirationBoard
+  inspirationBoard,
+  campaigns: initialCampaigns
 }: { 
   initialPipeline: any[], 
   inquiries: any[],
@@ -69,15 +70,17 @@ export function PipelineClient({
   blockedDates: any[],
   albums: any[],
   marketingVault: any[],
-  inspirationBoard: any[]
+  inspirationBoard: any[],
+  campaigns: any[]
 }) {
-  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "marketing_vault" | "inspiration_board" | "settings">("command_center");
+  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "marketing_vault" | "inspiration_board" | "campaigns" | "settings">("command_center");
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [packages, setPackages] = useState(initialPackages);
   const [siteSettings, setSiteSettings] = useState(initialSiteSettings);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
   const [vault, setVault] = useState(marketingVault);
+  const [campaigns, setCampaigns] = useState(initialCampaigns);
   
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [isBlocking, setIsBlocking] = useState(false);
@@ -221,7 +224,9 @@ export function PipelineClient({
            className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'settings' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
          >
            <Settings size={14} /> Ops Settings
-         </button><button onClick={() => setActiveView("inspiration_board")} className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === "inspiration_board" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5"}`}><Lightbulb size={14} /> Inspiration</button></div><AnimatePresence mode="wait">
+         </button><button onClick={() => setActiveView("inspiration_board")} className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === "inspiration_board" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5"}`}><Lightbulb size={14} /> Inspiration</button>
+<button onClick={() => setActiveView("campaigns")} className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === "campaigns" ? "bg-brand-accent text-white shadow-[0_0_20px_rgba(59,130,246,0.3)]" : "bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5"}`}><Megaphone size={14} /> Campaigns</button>
+</div><AnimatePresence mode="wait">
         {activeView === "command_center" && (
           <motion.div key="command_center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12">
              <CommandCenter 
@@ -385,6 +390,10 @@ export function PipelineClient({
 
         {activeView === "inspiration_board" && (
           <InspirationBoard initialBoard={inspirationBoard} supabase={supabase} />
+        )}
+
+        {activeView === "campaigns" && (
+          <CampaignManager initialCampaigns={campaigns} supabase={supabase} />
         )}
 
         {activeView === "archive" && (
@@ -1339,6 +1348,189 @@ function InspirationBoard({ initialBoard, supabase }: { initialBoard: any[], sup
           <p className="text-zinc-600 font-black uppercase tracking-widest text-[10px]">No references found in this category.</p>
         </div>
       )}
+    </motion.div>
+  );
+}
+
+function CampaignManager({ initialCampaigns, supabase }: { initialCampaigns: any[], supabase: any }) {
+  const [campaigns, setCampaigns] = useState(initialCampaigns);
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    slug: '',
+    description: '',
+    promo_price: '',
+    booking_deadline: '',
+    is_active: true,
+    available_dates: [] as string[],
+    instagram_captions: [] as string[],
+    email_templates: [] as string[],
+    message_templates: [] as string[]
+  });
+
+  const handleSave = async () => {
+    if (editingId) {
+      const { data, error } = await supabase.from('campaigns').update(formData).eq('id', editingId).select();
+      if (!error && data) {
+        setCampaigns(campaigns.map(c => c.id === editingId ? data[0] : c));
+        setEditingId(null);
+      }
+    } else {
+      const { data, error } = await supabase.from('campaigns').insert([formData]).select();
+      if (!error && data) {
+        setCampaigns([data[0], ...campaigns]);
+        setIsAdding(false);
+      }
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '', slug: '', description: '', promo_price: '',
+      booking_deadline: '', is_active: true, available_dates: [],
+      instagram_captions: [], email_templates: [], message_templates: []
+    });
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      <div className="flex justify-between items-end">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Seasonal Campaigns</h2>
+          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">Propaganda & Conversion Strategy</p>
+        </div>
+        <button 
+          onClick={() => { setIsAdding(true); resetForm(); }}
+          className="px-8 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+        >
+          Launch New Campaign
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {campaigns.map((c) => (
+          <div key={c.id} className="premium-card p-10 bg-zinc-900/20 border border-white/5 rounded-sm relative group">
+            <div className={`absolute top-0 right-0 px-4 py-1 text-[8px] font-black uppercase tracking-widest rounded-bl-sm ${c.is_active ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-500'}`}>
+              {c.is_active ? 'Active' : 'Draft'}
+            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">{c.title}</h3>
+            <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-8">{c.promo_price} Promo</p>
+            
+            <div className="space-y-4 mb-8">
+               <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Deadline</span>
+                  <span className="text-[10px] font-black text-white">{c.booking_deadline || 'Open'}</span>
+               </div>
+               <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Route</span>
+                  <span className="text-[10px] font-black text-zinc-400">/campaign/{c.slug}</span>
+               </div>
+            </div>
+
+            <div className="flex gap-2">
+               <button 
+                 onClick={() => { setEditingId(c.id); setFormData(c); }}
+                 className="flex-1 py-3 border border-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-sm"
+               >
+                 Modify Intel
+               </button>
+               <button className="px-4 py-3 border border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-sm">
+                 <Copy size={14} />
+               </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {(isAdding || editingId) && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-4xl bg-zinc-900 border border-white/10 p-12 rounded-sm shadow-2xl relative overflow-y-auto max-h-[90vh]">
+                <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="absolute top-8 right-8 text-zinc-500 hover:text-white"><X size={24} /></button>
+                
+                <div className="mb-12">
+                   <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Campaign Deployment</span>
+                   <h2 className="text-5xl font-black uppercase tracking-tighter text-white leading-none mb-4">{editingId ? 'Edit Campaign' : 'New Campaign'}</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-12 mb-12">
+                   <div className="space-y-8">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Campaign Title</label>
+                         <input type="text" className="w-full bg-black border border-white/5 p-4 text-white text-lg font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">URL Slug</label>
+                         <div className="flex items-center gap-4 bg-black border border-white/5 p-4 rounded-sm">
+                            <span className="text-zinc-600 font-bold">/campaign/</span>
+                            <input type="text" className="bg-transparent text-white font-bold outline-none w-full" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
+                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-8">
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Promo Price</label>
+                            <input type="text" className="w-full bg-black border border-white/5 p-4 text-white font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.promo_price} onChange={(e) => setFormData({ ...formData, promo_price: e.target.value })} />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Booking Deadline</label>
+                            <input type="date" className="w-full bg-black border border-white/5 p-4 text-white font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.booking_deadline} onChange={(e) => setFormData({ ...formData, booking_deadline: e.target.value })} />
+                         </div>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Strategic Description</label>
+                         <textarea className="w-full bg-black border border-white/5 p-4 text-white text-sm outline-none focus:border-brand-accent rounded-sm min-h-[100px]" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                      </div>
+                   </div>
+
+                   <div className="space-y-8">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest text-brand-accent">Intelligence Assets</label>
+                         <div className="space-y-4">
+                            <div className="p-4 bg-black/40 border border-white/5 rounded-sm">
+                               <p className="text-[9px] font-black uppercase text-zinc-500 mb-4 tracking-widest">Instagram Captions</p>
+                               <textarea 
+                                 className="w-full bg-transparent text-zinc-400 text-xs outline-none min-h-[80px]" 
+                                 placeholder="Add options separated by line breaks..."
+                                 value={formData.instagram_captions.join('\n')}
+                                 onChange={(e) => setFormData({ ...formData, instagram_captions: e.target.value.split('\n') })}
+                               />
+                            </div>
+                            <div className="p-4 bg-black/40 border border-white/5 rounded-sm">
+                               <p className="text-[9px] font-black uppercase text-zinc-500 mb-4 tracking-widest">Email Templates</p>
+                               <textarea 
+                                 className="w-full bg-transparent text-zinc-400 text-xs outline-none min-h-[80px]" 
+                                 placeholder="Email body templates..."
+                                 value={formData.email_templates.join('\n\n---\n\n')}
+                                 onChange={(e) => setFormData({ ...formData, email_templates: e.target.value.split('\n\n---\n\n') })}
+                               />
+                            </div>
+                         </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                         <div 
+                           onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                           className={`w-12 h-7 rounded-full relative transition-colors cursor-pointer ${formData.is_active ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+                         >
+                            <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${formData.is_active ? 'left-6' : 'left-1'}`} />
+                         </div>
+                         <span className="text-[10px] font-black uppercase tracking-widest text-white">Live Status</span>
+                      </div>
+                   </div>
+                </div>
+
+                <div className="flex gap-4">
+                   <button onClick={handleSave} className="flex-1 py-5 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-zinc-200 transition-all rounded-sm">
+                      Deploy Campaign
+                   </button>
+                   <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="px-12 py-5 bg-zinc-800 text-white font-black uppercase text-[11px] tracking-widest hover:bg-zinc-700 transition-all rounded-sm">
+                      Abort
+                   </button>
+                </div>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }
