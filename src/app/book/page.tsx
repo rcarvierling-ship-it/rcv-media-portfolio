@@ -1,13 +1,22 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { submitBooking } from "@/app/actions/booking";
 import { createClient } from "@/utils/supabase/client";
 import { InteractiveCalendar } from "@/components/booking/InteractiveCalendar";
 import { trackEvent } from "@/utils/analytics";
 
-export default function BookPage() {
+function BookingContent() {
+  const searchParams = useSearchParams();
+  const prefill = {
+    name: searchParams.get("name") || "",
+    email: searchParams.get("email") || "",
+    phone: searchParams.get("phone") || "",
+    pastClient: searchParams.get("past_client") === "true"
+  };
+
   useEffect(() => {
     trackEvent('booking_started');
   }, []);
@@ -186,17 +195,17 @@ export default function BookPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Full Name</label>
-                      <input name="name" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="name" type="text" required defaultValue={prefill.name} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Email Address</label>
-                      <input name="email" type="email" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="email" type="email" required defaultValue={prefill.email} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
-                      <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="phone" type="tel" required defaultValue={prefill.phone} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                 </div>
@@ -228,8 +237,8 @@ export default function BookPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">How did you hear about RCV.Media?</label>
-                    <select name="lead_source" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 bg-zinc-950 appearance-none">
-                      <option value="" disabled selected>Select an option</option>
+                    <select name="lead_source" required defaultValue={prefill.pastClient ? "Past client" : ""} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 bg-zinc-950 appearance-none">
+                      <option value="" disabled>Select an option</option>
                       <option value="Instagram">Instagram</option>
                       <option value="Google">Google</option>
                       <option value="Friend/referral">Friend/referral</option>
@@ -258,5 +267,13 @@ export default function BookPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BookPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white font-black uppercase tracking-widest text-xs">Initializing...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 }

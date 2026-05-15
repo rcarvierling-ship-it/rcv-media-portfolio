@@ -15,16 +15,29 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   if (!album) return notFound();
 
   // Fetch photos for this album
-  // Note: We fetch them server-side. The VaultClient will hide them until unlocked.
   const { data: photos } = await supabase
     .from("photos")
     .select("*")
     .eq("album_id", album.id)
     .order("sort_order", { ascending: true });
 
+  // Fetch the linked booking to see if it needs inspiration
+  const { data: booking } = await supabase
+    .from("bookings")
+    .select("*, pricing_packages(*)")
+    .eq("linked_album_id", album.id)
+    .single();
+
+  const requiresInspiration = booking?.pricing_packages?.requires_inspiration || false;
+
   return (
     <div className="bg-zinc-950">
-      <VaultClient album={album} photos={photos || []} />
+      <VaultClient 
+        album={album} 
+        photos={photos || []} 
+        booking={booking} 
+        requiresInspiration={requiresInspiration}
+      />
     </div>
   );
 }

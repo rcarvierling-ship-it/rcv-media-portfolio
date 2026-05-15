@@ -545,11 +545,32 @@ export async function acceptInquiryAsBooking(inquiryId: string) {
     // 3. Mark inquiry as 'accepted'
     await supabase.from("inquiries").update({ status: 'accepted' }).eq("id", inquiryId);
     
-    revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/pipeline");
     return { success: true };
   } catch (error) {
     console.error("Accept inquiry error:", error);
+    return { success: false };
+  }
+}
+
+export async function submitInspiration(bookingId: string, data: any) {
+  try {
+    const supabase = await createClient();
+    
+    const { error } = await supabase
+      .from("booking_inspiration")
+      .upsert({
+        booking_id: bookingId,
+        ...data,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'booking_id' });
+
+    if (error) throw error;
+    
+    revalidatePath(`/gallery`);
+    return { success: true };
+  } catch (error) {
+    console.error("Submit inspiration error:", error);
     return { success: false };
   }
 }

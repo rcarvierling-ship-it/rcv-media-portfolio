@@ -493,6 +493,24 @@ export function PipelineClient({
                            <DollarSignIcon size={20} className="text-brand-accent" />
                            <input className="bg-transparent text-3xl font-black text-white outline-none w-full" value={pkg.price} onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, price: e.target.value } : p))} />
                         </div>
+                        <div className="space-y-4 mb-8">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Preparation Guide (Link)</label>
+                           <input 
+                             className="w-full bg-black/40 border border-white/5 p-4 rounded-sm text-white text-[10px] font-bold uppercase tracking-widest outline-none focus:border-brand-accent" 
+                             placeholder="Link to PDF or Web Guide..."
+                             value={pkg.prep_guide || ''} 
+                             onChange={(e) => setPackages(packages.map(p => p.id === pkg.id ? { ...p, prep_guide: e.target.value } : p))} 
+                           />
+                        </div>
+                        <div className="flex items-center gap-3 mb-8">
+                           <div 
+                             onClick={() => setPackages(packages.map(p => p.id === pkg.id ? { ...p, requires_inspiration: !p.requires_inspiration } : p))}
+                             className={`w-10 h-6 rounded-full relative transition-colors cursor-pointer ${pkg.requires_inspiration ? 'bg-brand-accent' : 'bg-zinc-800'}`}
+                           >
+                             <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${pkg.requires_inspiration ? 'left-5' : 'left-1'}`} />
+                           </div>
+                           <span className="text-[9px] font-black uppercase tracking-widest text-zinc-500">Requires Inspiration Board</span>
+                        </div>
                         <button onClick={() => handleSavePackage(pkg)} className="w-full py-4 bg-white/5 border border-white/10 text-white font-black uppercase text-[10px] tracking-widest hover:bg-brand-accent hover:text-white hover:border-brand-accent transition-all flex items-center justify-center gap-2">
                           <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-700" /> Save tier
                         </button>
@@ -566,7 +584,16 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
          <div className="flex justify-between items-start mb-6">
             <div className="cursor-pointer" onClick={() => setShowDetails(true)}>
                <h4 className="text-white font-black uppercase tracking-tight text-sm mb-1 group-hover:text-brand-accent transition-colors leading-none">{item.name}</h4>
-               <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{item.shoot_type || item.package_selected}</p>
+               <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-2">{item.shoot_type || item.package_selected}</p>
+               {item.tags && item.tags.length > 0 && (
+                 <div className="flex flex-wrap gap-1">
+                   {item.tags.map((tag: string) => (
+                     <span key={tag} className="text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 bg-zinc-900 border border-white/5 text-zinc-500 rounded-sm">
+                       {tag}
+                     </span>
+                   ))}
+                 </div>
+               )}
             </div>
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
                <button onClick={() => onDelete(item.id, 'cancelled')} className="p-2 text-zinc-700 hover:text-red-500 transition-all"><X size={14} /></button>
@@ -649,6 +676,32 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                   <div>
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Target Location</p>
                     <p className="text-lg font-bold text-white uppercase leading-none">{item.location || 'Tactical TBD'}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Client Intelligence Tags</p>
+                    <div className="flex flex-wrap gap-2">
+                       {[
+                         'Senior', 'Athlete', 'Parent', 'Team', 'Coach', 
+                         'Greek Life', 'Event', 'High School', 'College', 
+                         'Referral Source', 'High Value'
+                       ].map(tag => {
+                         const isActive = item.tags?.includes(tag);
+                         return (
+                           <button 
+                             key={tag}
+                             onClick={async () => {
+                               const newTags = isActive 
+                                 ? item.tags.filter((t: string) => t !== tag)
+                                 : [...(item.tags || []), tag];
+                               await onMove(item.id, stage.id, { tags: newTags });
+                             }}
+                             className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest rounded-sm border transition-all ${isActive ? 'bg-brand-accent border-brand-accent text-white shadow-[0_0_10px_rgba(59,130,246,0.2)]' : 'bg-transparent border-white/5 text-zinc-600 hover:border-white/20'}`}
+                           >
+                             {tag}
+                           </button>
+                         );
+                       })}
+                    </div>
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Lead Origin</p>
@@ -788,6 +841,17 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                   placeholder="Internal notes on payment, discounts, or special arrangements..."
                   value={item.payment_notes || ''}
                   onChange={async (e) => await onMove(item.id, stage.id, { payment_notes: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-12 border-t border-brand-accent/20 pt-8">
+                <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-4">Client Portal Dashboard Notes</p>
+                <p className="text-[9px] text-zinc-600 uppercase font-black mb-4 tracking-widest">These notes appear directly in the client's portal.</p>
+                <textarea 
+                  className="w-full bg-zinc-950 border border-brand-accent/10 p-6 rounded-sm text-white text-sm outline-none focus:border-brand-accent min-h-[120px] font-medium"
+                  placeholder="e.g. Please bring two outfit options, one casual and one professional..."
+                  value={item.client_notes || ''}
+                  onChange={async (e) => await onMove(item.id, stage.id, { client_notes: e.target.value })}
                 />
               </div>
 
