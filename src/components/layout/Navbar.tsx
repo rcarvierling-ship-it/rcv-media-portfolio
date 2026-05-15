@@ -7,6 +7,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { useState, useEffect } from "react";
 import { Menu, X } from "lucide-react";
+import { trackEvent } from "@/utils/analytics";
 
 function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
@@ -82,6 +83,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center">
             <Link 
               href="/book"
+              onClick={() => trackEvent('book_click', { location: 'navbar' })}
               className="px-6 py-3 bg-white text-black text-[11px] font-black uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all hover:scale-105 transform duration-300 rounded-sm"
             >
               Book a Shoot
@@ -135,6 +137,7 @@ export function Navbar() {
               >
                 <Link 
                   href="/book"
+                  onClick={() => trackEvent('book_click', { location: 'mobile_nav' })}
                   className="w-full py-6 bg-white text-black text-center block text-sm font-black uppercase tracking-[0.3em] rounded-sm shadow-[0_0_50px_rgba(255,255,255,0.1)]"
                 >
                   Book a Shoot

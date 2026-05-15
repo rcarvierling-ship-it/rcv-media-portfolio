@@ -4,7 +4,13 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Check, ArrowRight, HelpCircle } from "lucide-react";
 
+import { useState, useEffect } from "react";
+import { trackEvent } from "@/utils/analytics";
+
 export function PricingClient({ packages }: { packages: any[] }) {
+  useEffect(() => {
+    trackEvent('pricing_view');
+  }, []);
   return (
     <div className="min-h-screen bg-black pt-32 pb-24 relative overflow-hidden">
       {/* Background Ambience */}
@@ -67,6 +73,7 @@ export function PricingClient({ packages }: { packages: any[] }) {
 
               <Link
                 href={`/book?package=${encodeURIComponent(pkg.name)}`}
+                onClick={() => trackEvent('package_select', { package_name: pkg.name })}
                 className="w-full py-5 border border-white/5 bg-white/5 text-white font-black uppercase tracking-widest text-[10px] rounded-sm hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3 group/btn"
               >
                 Initiate Session <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />

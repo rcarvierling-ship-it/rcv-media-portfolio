@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
+import { trackEvent } from "@/utils/analytics";
 
 export default function HomePage() {
   const [featuredPhotos, setFeaturedPhotos] = useState<any[]>([]);
@@ -93,6 +94,7 @@ export default function HomePage() {
            >
              <Link
                href="/portfolio"
+               onClick={() => trackEvent('book_click', { location: 'hero_portfolio' })}
                className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none"
              >
                <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
@@ -106,6 +108,7 @@ export default function HomePage() {
              </Link>
              <Link
                href="/book"
+               onClick={() => trackEvent('book_click', { location: 'hero_main' })}
                className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-colors rounded-sm text-center border border-white/10 flex-1 sm:flex-none"
              >
                Book a Shoot
@@ -277,7 +280,12 @@ export default function HomePage() {
               { num: "05", title: "Graduation", desc: "Cap & gown sessions that celebrate your achievement." },
               { num: "06", title: "Media Days", desc: "High-volume team media day experiences and headshots." }
             ].map((cat, i) => (
-              <Link key={cat.num} href={`/portfolio?category=${cat.title.toLowerCase()}`} className="group block h-[400px]">
+              <Link 
+                key={cat.num} 
+                href={`/portfolio?category=${cat.title.toLowerCase()}`} 
+                onClick={() => trackEvent('portfolio_view', { category: cat.title })}
+                className="group block h-[400px]"
+              >
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
@@ -417,6 +425,7 @@ export default function HomePage() {
           >
             <Link
               href="/book"
+              onClick={() => trackEvent('book_click', { location: 'footer_cta' })}
               className="px-14 py-6 bg-white text-black font-black uppercase tracking-widest text-sm rounded-sm hover:bg-zinc-200 transition-all hover:scale-105 transform duration-300"
             >
               Book a Shoot

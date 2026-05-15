@@ -5,8 +5,12 @@ import { useState, useEffect } from "react";
 import { submitBooking } from "@/app/actions/booking";
 import { createClient } from "@/utils/supabase/client";
 import { InteractiveCalendar } from "@/components/booking/InteractiveCalendar";
+import { trackEvent } from "@/utils/analytics";
 
 export default function BookPage() {
+  useEffect(() => {
+    trackEvent('booking_started');
+  }, []);
   const [packages, setPackages] = useState<any[]>([]);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>("");
@@ -66,6 +70,7 @@ export default function BookPage() {
       setSelectedPackage(null);
       setSelectedDate("");
       (e.target as HTMLFormElement).reset();
+      trackEvent('booking_completed', { package: selectedPackage });
     } else {
       setError(result.error || "Failed to submit booking.");
     }
@@ -109,7 +114,10 @@ export default function BookPage() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.1 }}
-                onClick={() => setSelectedPackage(pkg.name)}
+                onClick={() => {
+                  setSelectedPackage(pkg.name);
+                  trackEvent('package_select', { package_name: pkg.name, location: 'booking_page' });
+                }}
                 className={`premium-card p-6 md:p-10 rounded-2xl border transition-all cursor-pointer group ${
                   selectedPackage === pkg.name 
                     ? 'border-brand-accent bg-brand-accent/5 ring-1 ring-brand-accent' 

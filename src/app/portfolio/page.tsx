@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
 
+import { trackEvent } from "@/utils/analytics";
+
 const categories = ["All", "Seniors", "Portraits", "Sports", "Events", "Graduation", "Media Days"];
 
 function PortfolioContent() {
@@ -23,6 +25,7 @@ function PortfolioContent() {
       const match = categories.find(c => c.toLowerCase() === initialCategory.toLowerCase());
       if (match) setActiveCategory(match);
     }
+    trackEvent('portfolio_view');
   }, [initialCategory]);
 
   useEffect(() => {
