@@ -36,6 +36,20 @@ export default async function AnalyticsPage() {
     .in("status", ["signed", "paid"]);
 
   const conversionRate = totalLeads ? ((signedContracts || 0) / totalLeads * 100).toFixed(1) : "0";
+  
+  // 4. Fetch Lead Source Distribution
+  const { data: leadSources } = await supabase
+    .from("bookings")
+    .select("lead_source");
+
+  const sourceCounts = leadSources?.reduce((acc: any, b) => {
+    const src = b.lead_source || 'Unknown';
+    acc[src] = (acc[src] || 0) + 1;
+    return acc;
+  }, {}) || {};
+
+  const sortedSources = Object.entries(sourceCounts)
+    .sort((a: any, b: any) => b[1] - a[1]);
 
   return (
     <div className="space-y-16 pb-32">
@@ -157,6 +171,27 @@ export default async function AnalyticsPage() {
                    <h4 className="text-2xl font-black uppercase tracking-tighter mb-2">Elite Status</h4>
                    <p className="text-[11px] font-medium leading-relaxed opacity-80 mb-8 italic">"Your performance metrics are in the top 5% of regional media agencies. Keep pushing the narrative."</p>
                    <OptimizeWorkflowButton />
+                </div>
+
+                {/* Lead Origins */}
+                <div className="p-8 bg-zinc-900/40 border border-white/5 rounded-sm space-y-8">
+                   <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500">Lead Origins</h3>
+                   <div className="space-y-6">
+                      {sortedSources.slice(0, 5).map(([source, count]: any) => (
+                        <div key={source} className="space-y-2">
+                          <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-white">
+                            <span>{source}</span>
+                            <span className="text-zinc-600">{count} Leads</span>
+                          </div>
+                          <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-brand-accent transition-all duration-1000" 
+                              style={{ width: `${(count / (totalLeads || 1) * 100)}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                   </div>
                 </div>
              </div>
           </div>

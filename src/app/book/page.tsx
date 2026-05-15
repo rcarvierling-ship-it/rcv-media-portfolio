@@ -219,6 +219,19 @@ export default function BookPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">How did you hear about RCV.Media?</label>
+                    <select name="lead_source" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 bg-zinc-950 appearance-none">
+                      <option value="" disabled selected>Select an option</option>
+                      <option value="Instagram">Instagram</option>
+                      <option value="Google">Google</option>
+                      <option value="Friend/referral">Friend/referral</option>
+                      <option value="Past client">Past client</option>
+                      <option value="School/team">School/team</option>
+                      <option value="Website">Website</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Additional Details</label>
                     <textarea name="message" rows={4} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none" placeholder="Tell me more about the shoot..." />
                   </div>

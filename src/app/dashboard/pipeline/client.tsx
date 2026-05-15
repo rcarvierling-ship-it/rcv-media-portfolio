@@ -621,6 +621,10 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Target Location</p>
                     <p className="text-lg font-bold text-white uppercase leading-none">{item.location || 'Tactical TBD'}</p>
                   </div>
+                  <div>
+                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Lead Origin</p>
+                    <p className="text-sm font-black text-brand-accent uppercase tracking-widest">{item.lead_source || 'Unknown'}</p>
+                  </div>
                 </div>
 
                 <div className="space-y-8 bg-black/40 p-8 border border-white/5 rounded-sm">

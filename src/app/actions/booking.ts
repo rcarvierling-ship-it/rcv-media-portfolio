@@ -15,6 +15,7 @@ export async function submitBooking(formData: FormData) {
     const event_date = formData.get("event_date") as string;
     const event_time = formData.get("event_time") as string;
     const location = formData.get("location") as string;
+    const lead_source = formData.get("lead_source") as string;
     const message = formData.get("message") as string;
 
     if (!name || !email || !shoot_type || !event_date) {
@@ -39,6 +40,7 @@ export async function submitBooking(formData: FormData) {
           event_date,
           event_time,
           location,
+          lead_source,
           message,
           total_amount: total_amount || 0,
           pipeline_stage: 'lead'
@@ -83,6 +85,10 @@ export async function submitBooking(formData: FormData) {
                   <div style="margin-bottom: 15px;">
                     <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Location</p>
                     <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${location || "Not Specified"}</p>
+                  </div>
+                  <div style="margin-bottom: 15px;">
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Lead Source</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${lead_source || "Not Specified"}</p>
                   </div>
                 </div>
 
