@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import { Camera, User, Trophy, Calendar, GraduationCap, Users, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -57,6 +59,33 @@ const services = [
 ];
 
 export function ServicesClient() {
+  const [serviceData, setServiceData] = useState(services);
+  const supabase = createClient();
+
+  useEffect(() => {
+    async function fetchServiceImages() {
+      const updatedServices = await Promise.all(
+        services.map(async (service) => {
+          const { data } = await supabase
+            .from("photos")
+            .select("image_url")
+            .ilike("category", `%${service.title}%`)
+            .eq("is_curated", true)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .single();
+          
+          if (data?.image_url) {
+            return { ...service, image: data.image_url };
+          }
+          return service;
+        })
+      );
+      setServiceData(updatedServices);
+    }
+    fetchServiceImages();
+  }, []);
+
   return (
     <div className="min-h-screen bg-black pt-32 pb-24 relative overflow-hidden">
       {/* Background Ambience */}
@@ -83,7 +112,7 @@ export function ServicesClient() {
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-10">
-          {services.map((service, i) => (
+          {serviceData.map((service, i) => (
             <motion.div
               key={service.id}
               initial={{ opacity: 0, y: 30 }}
@@ -96,7 +125,7 @@ export function ServicesClient() {
                   src={service.image} 
                   alt={service.title} 
                   fill 
-                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                  className="object-cover object-[center_20%] transition-transform duration-1000 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
