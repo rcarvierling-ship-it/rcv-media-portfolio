@@ -34,6 +34,22 @@ const STAGE_ICONS: Record<string, any> = {
   delivered: ShieldCheck,
 };
 
+const getTurnaroundStatus = (shootDate: string, promisedDate: string | null, stage: string) => {
+  if (stage === 'delivered') return { label: 'Delivered', color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+  if (!promisedDate) return { label: 'On Track', color: 'text-zinc-500', bg: 'bg-zinc-500/10' };
+
+  const promised = new Date(promisedDate);
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  
+  const diffTime = promised.getTime() - now.getTime();
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return { label: 'Overdue', color: 'text-red-500', bg: 'bg-red-500/10', days: Math.abs(diffDays) };
+  if (diffDays <= 3) return { label: 'Due Soon', color: 'text-amber-500', bg: 'bg-amber-500/10', days: diffDays };
+  return { label: 'On Track', color: 'text-blue-500', bg: 'bg-blue-500/10', days: diffDays };
+};
+
 export function PipelineClient({ 
   initialPipeline, 
   inquiries: initialInquiries, 
@@ -559,9 +575,19 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
          </div>
 
          <div className="space-y-4 mb-8">
-            <div className="flex items-center gap-3 text-zinc-400">
-               <Calendar size={12} className="text-zinc-700" />
-               <span className="text-[10px] font-bold uppercase tracking-widest">{new Date(item.event_date).toLocaleDateString()}</span>
+            <div className="flex items-center justify-between">
+               <div className="flex items-center gap-3 text-zinc-400">
+                  <Calendar size={12} className="text-zinc-700" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">{new Date(item.event_date).toLocaleDateString()}</span>
+               </div>
+               {(() => {
+                 const turnaround = getTurnaroundStatus(item.event_date, item.promised_delivery_date, stage.id);
+                 return (
+                   <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${turnaround.bg} ${turnaround.color}`}>
+                     {turnaround.label} {turnaround.days !== undefined && `(${turnaround.days}d)`}
+                   </span>
+                 );
+               })()}
             </div>
             <div className="flex items-center gap-3 text-brand-accent">
                <DollarSign size={12} className="text-brand-accent/50" />
@@ -627,6 +653,20 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                   <div>
                     <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Lead Origin</p>
                     <p className="text-sm font-black text-brand-accent uppercase tracking-widest">{item.lead_source || 'Unknown'}</p>
+                  </div>
+                  <div className="pt-4 border-t border-white/5">
+                    <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3 italic">Turnaround Logistics</p>
+                    <div className="space-y-4">
+                      <div>
+                        <label className="text-[8px] font-black text-zinc-700 uppercase tracking-widest mb-1 block">Promised Delivery</label>
+                        <input 
+                          type="date"
+                          className="w-full bg-black border border-white/5 px-4 py-2 text-white text-[10px] font-bold outline-none focus:border-brand-accent rounded-sm"
+                          value={item.promised_delivery_date || ''}
+                          onChange={async (e) => await onMove(item.id, stage.id, { promised_delivery_date: e.target.value })}
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
 
