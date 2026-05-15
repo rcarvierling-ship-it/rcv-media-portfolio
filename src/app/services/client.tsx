@@ -58,7 +58,10 @@ const services = [
   }
 ];
 
+export function ServicesClient() {
+  const [serviceData, setServiceData] = useState(services);
   const [brandImage, setBrandImage] = useState("https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop");
+  const supabase = createClient();
 
   useEffect(() => {
     async function fetchPageData() {
