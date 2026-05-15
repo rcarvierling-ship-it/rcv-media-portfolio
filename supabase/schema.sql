@@ -63,6 +63,7 @@ CREATE TABLE public.site_settings (
   booking_min_advance_days INTEGER DEFAULT 21,
   booking_max_advance_days INTEGER DEFAULT 180,
   booking_is_active BOOLEAN DEFAULT true,
+  monthly_revenue_goal DECIMAL(10, 2) DEFAULT 2000.00,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

@@ -367,6 +367,18 @@ export function PipelineClient({
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-12">
                    <div className="space-y-6">
+                      <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Monthly Revenue Goal ($)</label>
+                      <div className="flex items-center gap-8">
+                         <input 
+                           type="number" 
+                           value={siteSettings.monthly_revenue_goal} 
+                           onChange={(e) => setSiteSettings({ ...siteSettings, monthly_revenue_goal: parseFloat(e.target.value) })}
+                           className="bg-zinc-950 border border-white/5 rounded-sm px-6 py-4 text-white text-2xl font-black focus:border-brand-accent outline-none w-full"
+                         />
+                      </div>
+                   </div>
+
+                   <div className="space-y-6">
                       <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">Min. Advance Notice (Days)</label>
                       <div className="flex items-center gap-8">
                          <input 
@@ -692,6 +704,30 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: CommandCenterP
   const endOfWeek = new Date(today);
   endOfWeek.setDate(today.getDate() + 7);
 
+  const currentMonth = today.getMonth();
+  const currentYear = today.getFullYear();
+
+  const monthlyBookings = activeBookings.filter((b: any) => {
+    const d = new Date(b.event_date);
+    return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+  });
+
+  const monthlyRevenue = monthlyBookings.reduce((sum: number, b: any) => sum + Number(b.total_amount), 0);
+  const revenueGoal = siteSettings.monthly_revenue_goal || 2000;
+  const avgBookingValue = activeBookings.length > 0 
+    ? activeBookings.reduce((sum: number, b: any) => sum + Number(b.total_amount), 0) / activeBookings.length 
+    : 0;
+
+  const packageRevenue = activeBookings.reduce((acc: any, b: any) => {
+    const pkg = b.shoot_type || b.package_selected || 'Custom';
+    acc[pkg] = (acc[pkg] || 0) + Number(b.total_amount);
+    return acc;
+  }, {});
+
+  const bestPackage = Object.entries(packageRevenue).sort((a: any, b: any) => b[1] - a[1])[0] || ['None', 0];
+
+  const bookingsNeeded = Math.ceil(Math.max(0, revenueGoal - monthlyRevenue) / (avgBookingValue || 1));
+
   const pulse = {
     todayShoots: activeBookings.filter((b: any) => {
       const d = new Date(b.event_date);
@@ -737,6 +773,41 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: CommandCenterP
             <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 leading-tight block">{card.label}</span>
           </div>
         ))}
+      </div>
+
+      {/* Revenue Intelligence */}
+      <div className="premium-card p-10 border border-white/5 bg-brand-accent/5 rounded-sm relative overflow-hidden">
+         <div className="absolute top-0 right-0 p-8 opacity-5"><DollarSign size={120} /></div>
+         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
+            <div>
+               <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-accent mb-4">Revenue Intelligence</h3>
+               <div className="flex items-baseline gap-4">
+                  <span className="text-5xl font-black text-white tracking-tighter">${monthlyRevenue.toLocaleString()}</span>
+                  <span className="text-zinc-500 font-bold uppercase tracking-widest text-[11px]">of ${revenueGoal.toLocaleString()} goal</span>
+               </div>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-12 border-l border-white/10 pl-12">
+               <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-2">Bookings Needed</p>
+                  <p className="text-xl font-black text-white">{bookingsNeeded} shots</p>
+               </div>
+               <div>
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-2">Avg. Project</p>
+                  <p className="text-xl font-black text-white">${Math.round(avgBookingValue).toLocaleString()}</p>
+               </div>
+               <div className="hidden md:block">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-2">Best Tier</p>
+                  <p className="text-xl font-black text-brand-accent truncate max-w-[120px]">{bestPackage[0]}</p>
+               </div>
+            </div>
+         </div>
+         {/* Progress Bar */}
+         <div className="mt-10 h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <div 
+               className="h-full bg-brand-accent shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all duration-1000" 
+               style={{ width: `${Math.min(100, (monthlyRevenue / revenueGoal) * 100)}%` }} 
+            />
+         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
