@@ -8,7 +8,9 @@ export type AnalyticsEventType =
   | 'booking_started' 
   | 'booking_completed'
   | 'vault_view'
-  | 'photo_download';
+  | 'photo_download'
+  | 'team_booking_started'
+  | 'team_booking_completed';
 
 export const trackEvent = async (type: AnalyticsEventType, metadata: any = {}) => {
   const supabase = createClient();
