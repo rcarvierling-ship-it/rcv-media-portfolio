@@ -52,7 +52,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         file,
         category: "Sports",
         album_id: "",
-        is_curated: true,
+        is_curated: false,
         is_featured: false,
         preview: URL.createObjectURL(file)
       }));
