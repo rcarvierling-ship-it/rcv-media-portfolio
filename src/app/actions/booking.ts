@@ -18,6 +18,12 @@ export async function submitBooking(formData: FormData) {
     const lead_source = formData.get("lead_source") as string;
     const message = formData.get("message") as string;
 
+    const team_name = formData.get("team_name") as string;
+    const estimated_count = formData.get("estimated_count") ? parseInt(formData.get("estimated_count") as string) : null;
+    const budget = formData.get("budget") as string;
+    const coach_name = formData.get("coach_name") as string;
+    const booking_type = (formData.get("booking_type") as string) || "standard";
+
     if (!name || !email || !shoot_type || !event_date) {
       return { success: false, error: "Missing required fields." };
     }
@@ -43,7 +49,12 @@ export async function submitBooking(formData: FormData) {
           lead_source,
           message,
           total_amount: total_amount || 0,
-          pipeline_stage: 'lead'
+          pipeline_stage: 'lead',
+          team_name,
+          estimated_count,
+          budget,
+          coach_name,
+          booking_type
         },
       ]);
 
@@ -90,6 +101,24 @@ export async function submitBooking(formData: FormData) {
                     <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Lead Source</p>
                     <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${lead_source || "Not Specified"}</p>
                   </div>
+                  ${team_name ? `
+                    <div style="margin-bottom: 15px;">
+                      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Team / Org</p>
+                      <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${team_name}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Coach / Contact</p>
+                      <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${coach_name || "N/A"}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Est. Headcount</p>
+                      <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${estimated_count || "N/A"}</p>
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                      <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Budget</p>
+                      <p style="font-size: 14px; font-weight: 700; margin: 5px 0;">${budget || "N/A"}</p>
+                    </div>
+                  ` : ""}
                 </div>
 
                 ${message ? `
