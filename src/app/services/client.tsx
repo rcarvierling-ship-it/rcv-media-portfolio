@@ -58,12 +58,11 @@ const services = [
   }
 ];
 
-export function ServicesClient() {
-  const [serviceData, setServiceData] = useState(services);
-  const supabase = createClient();
+  const [brandImage, setBrandImage] = useState("https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop");
 
   useEffect(() => {
-    async function fetchServiceImages() {
+    async function fetchPageData() {
+      // 1. Fetch Service Images
       const updatedServices = await Promise.all(
         services.map(async (service) => {
           const { data } = await supabase
@@ -82,8 +81,19 @@ export function ServicesClient() {
         })
       );
       setServiceData(updatedServices);
+
+      // 2. Fetch Brand Image from Site Settings
+      const { data: settings } = await supabase
+        .from("site_settings")
+        .select("about_image_url")
+        .limit(1)
+        .single();
+      
+      if (settings?.about_image_url) {
+        setBrandImage(settings.about_image_url);
+      }
     }
-    fetchServiceImages();
+    fetchPageData();
   }, []);
 
   return (
@@ -184,7 +194,7 @@ export function ServicesClient() {
               </div>
               <div className="relative aspect-video lg:aspect-square rounded-sm overflow-hidden border border-white/5">
                  <Image 
-                   src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=2071&auto=format&fit=crop" 
+                   src={brandImage} 
                    alt="Reese Vierling" 
                    fill 
                    className="object-cover"
