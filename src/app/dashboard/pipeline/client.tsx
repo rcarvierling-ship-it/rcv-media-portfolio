@@ -510,7 +510,7 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
               <div className="mb-12">
                 <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Project Dossier</span>
                 <h2 className="text-5xl font-black uppercase tracking-tighter text-white leading-none mb-4">{item.name}</h2>
-                <p className="text-zinc-500 text-[11px] font-black uppercase tracking-widest">{item.email} • {item.phone || 'No Phone'}</p>
+                <p className="text-zinc-500 text-[11px] font-black uppercase tracking-widest">{item.email} • {item.phone || 'No Phone'} {item.instagram_handle ? `• ${item.instagram_handle}` : ''}</p>
               </div>
 
               <div className="grid grid-cols-2 gap-16 mb-12">

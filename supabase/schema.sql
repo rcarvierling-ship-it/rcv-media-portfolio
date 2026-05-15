@@ -126,6 +126,7 @@ CREATE TABLE public.bookings (
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT,
+  instagram_handle TEXT,
   shoot_type TEXT NOT NULL,
   package_selected TEXT,
   event_date DATE NOT NULL,
@@ -234,11 +235,15 @@ TRUNCATE public.pricing_packages;
 
 INSERT INTO public.pricing_packages (name, price, features, accent_color, sort_order)
 VALUES 
-('Single Game', '', ARRAY['1.5 Hours Coverage', '25+ Edited Photos', 'Digital Gallery', 'Standard Turnaround'], '#2563EB', 1),
-('Athlete Session', '', ARRAY['3 Hours Coverage', 'Portrait Session + Action Coverage', '50+ Edited Photos', '48-Hour Turnaround'], '#7C3AED', 2),
-('Tournament Coverage', '', ARRAY['Full-Day Coverage', 'Unlimited Photo Coverage', '100+ Edited Photos', 'Priority Delivery'], '#DC2626', 3),
-('Team Media Day', '', ARRAY['2 Hours Coverage', 'Individual Player Photos', 'Team Photos', 'Social Media Ready Edits'], '#10B981', 4),
-('Extended Coverage', '', ARRAY['4 Hours Coverage', '60+ Edited Photos', 'Multiple Locations or Games', 'Cinematic Color Grade'], '#F59E0B', 5);
+('Sports Shoot', '$80', ARRAY['Up to 2 hours coverage', '25+ edited photos', 'Online gallery', 'Standard turnaround'], '#2563EB', 1),
+('Single Game', '$125', ARRAY['Up to 2.5 hours coverage', '40+ edited photos', 'Online gallery', 'Action + detail shots', 'Standard turnaround'], '#10B981', 2),
+('Portrait Session', '$125', ARRAY['45–60 minute session', '1 location', '20+ edited photos', 'Online gallery'], '#7C3AED', 3),
+('Cap & Gown Session', '$100', ARRAY['30–45 minute session', '1 location', '15+ edited photos', 'Online gallery'], '#D97706', 4),
+('Athlete Session', '$175', ARRAY['1.5–2 hours coverage', 'Portraits + action photos', '35+ edited photos', 'Online gallery', 'Social media ready edits'], '#9333EA', 5),
+('Senior Session', '$180', ARRAY['1 hour session', '1 location', '25+ edited photos', 'Online gallery', 'Outfit change if time allows'], '#DB2777', 6),
+('Team Media Day', '$250', ARRAY['Up to 2 hours coverage', 'Individual player photos', 'Team photos', '50+ edited photos', 'Social media ready edits'], '#16A34A', 7),
+('Event Coverage', 'Starting at $250', ARRAY['Up to 2 hours coverage', '50+ edited photos', 'Online gallery', 'Standard turnaround'], '#EA580C', 8),
+('Tournament / Extended Coverage', 'Starting at $400', ARRAY['Full-day or extended coverage', '100+ edited photos', 'Online gallery', 'Priority delivery', 'Multiple games or locations'], '#DC2626', 9);
 -- General Inquiries Table
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

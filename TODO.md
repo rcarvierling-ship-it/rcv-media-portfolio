@@ -25,13 +25,13 @@ Main brand line:
 
 ### 1. Website Content
 
-- [ ] Update homepage copy to clearly explain what RCV.Media offers
-- [ ] Make homepage more image-first and less text-heavy
+- [x] Update homepage copy to clearly explain what RCV.Media offers
+- [x] Make homepage more image-first and less text-heavy
 - [ ] Add strong CTA buttons:
   - View Portfolio
   - View Pricing
   - Book a Shoot
-- [ ] Remove all video-related wording:
+- [x] Remove all video-related wording:
   - videography
   - video
   - highlight reel
@@ -42,13 +42,13 @@ Main brand line:
 ### 2. Portfolio
 
 - [ ] Upload best 30–50 photos
-- [ ] Add categories:
+- [x] Add categories:
   - Seniors
   - Portraits
   - Sports
   - Events
   - Graduation
-- [ ] Make portfolio filterable by category
+- [x] Make portfolio filterable by category
 - [ ] Make sure lightbox works on mobile
 - [ ] Mark best photos as featured/curated
 
@@ -69,7 +69,7 @@ Main brand line:
 
 ### 4. Pricing Page
 
-- [ ] Add/update pricing packages:
+- [x] Add/update pricing packages:
 
 | Package | Price | Accent |
 |---|---:|---|
@@ -128,9 +128,9 @@ Main brand line:
 
 ### 8. SEO
 
-- [ ] Homepage title:
+- [x] Homepage title:
   - RCV.Media | Seniors, Portraits, Sports & Events
-- [ ] Homepage description:
+- [x] Homepage description:
   - RCV.Media is a photography brand by Reese Vierling specializing in seniors, portraits, sports, events, graduation sessions, and team media days.
 - [ ] Add Open Graph image
 - [ ] Add sitemap

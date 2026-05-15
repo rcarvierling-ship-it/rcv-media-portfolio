@@ -185,10 +185,14 @@ export default function BookPage() {
                       <input name="email" type="email" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
                       <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Instagram Handle</label>
+                      <input name="instagram_handle" type="text" placeholder="@username" className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                 </div>
