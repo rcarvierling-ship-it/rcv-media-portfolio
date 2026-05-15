@@ -188,7 +188,7 @@ export function PipelineClient({
                pipeline={pipeline} 
                inquiries={inquiries} 
                onMove={handleMove}
-               onAccept={async (id) => {
+               onAccept={async (id: string) => {
                  setIsProcessing(id);
                  const res = await acceptInquiryAsBooking(id);
                  if (res.success) {
@@ -675,7 +675,14 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
   );
 }
 
-function CommandCenter({ pipeline, inquiries, onMove, onAccept }: any) {
+interface CommandCenterProps {
+  pipeline: any[];
+  inquiries: any[];
+  onMove: (id: string, stage: string, updates?: any) => Promise<void>;
+  onAccept: (id: string) => Promise<void>;
+}
+
+function CommandCenter({ pipeline, inquiries, onMove, onAccept }: CommandCenterProps) {
   const allBookings = pipeline.flatMap((s: any) => s.items);
   const activeBookings = allBookings.filter((b: any) => b.status !== 'cancelled');
 
