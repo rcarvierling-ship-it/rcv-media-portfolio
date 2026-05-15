@@ -65,8 +65,8 @@ export default function TeamBookingPage() {
           >
             <Trophy size={32} />
           </motion.div>
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 text-white italic">Team Operations</h1>
-          <p className="text-zinc-500 font-black text-xs uppercase tracking-[0.4em]">Media Days • Championships • Organizational Logistics</p>
+          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4 text-white italic">Team & Group Booking</h1>
+          <p className="text-zinc-500 font-black text-xs uppercase tracking-[0.4em]">Professional photography for your team, organization, or large group.</p>
         </header>
 
         <AnimatePresence mode="wait">
@@ -75,9 +75,9 @@ export default function TeamBookingPage() {
                <div className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-8">
                   <Shield size={40} />
                </div>
-               <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4 italic">Intel Received</h2>
-               <p className="text-zinc-500 text-lg mb-10 max-w-md mx-auto leading-relaxed">Your organization's request has been prioritized. Our team will review the logistics and reach out via encrypted channel shortly.</p>
-               <button onClick={() => setSuccess(false)} className="px-12 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm">Submit Another Brief</button>
+               <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4 italic">Request Received</h2>
+               <p className="text-zinc-500 text-lg mb-10 max-w-md mx-auto leading-relaxed">Thanks for reaching out! We'll review your details and get back to you shortly.</p>
+               <button onClick={() => setSuccess(false)} className="px-12 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-sm">Send Another Request</button>
             </motion.div>
           ) : (
             <motion.form onSubmit={handleSubmit} className="space-y-16">
@@ -87,7 +87,7 @@ export default function TeamBookingPage() {
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
                   <span className="w-8 h-8 bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 text-[10px] font-black rounded-sm italic">01</span>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Organizational Intelligence</h2>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Team Details</h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -117,12 +117,12 @@ export default function TeamBookingPage() {
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
                   <span className="w-8 h-8 bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 text-[10px] font-black rounded-sm italic">02</span>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Mission Profile</h2>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Shoot Details</h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Booking Objective</label>
+                     <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">What are you looking for?</label>
                      <select name="package_selected" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent/50 rounded-sm appearance-none">
                         <option value="Media Day">Media Day (Portraits + Hype)</option>
                         <option value="Event Coverage">Event Coverage (Action + Candid)</option>
@@ -137,7 +137,7 @@ export default function TeamBookingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Desired Assets / Deliverables</label>
+                   <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Anything else we should know?</label>
                   <textarea name="message" rows={3} className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm outline-none focus:border-brand-accent/50 rounded-sm resize-none" placeholder="e.g. 50 digital portraits, 1 hype reel clip, printed banners..." />
                 </div>
               </div>
@@ -146,7 +146,7 @@ export default function TeamBookingPage() {
               <div className="space-y-10">
                 <div className="flex items-center gap-4">
                   <span className="w-8 h-8 bg-zinc-900 border border-white/5 flex items-center justify-center text-zinc-500 text-[10px] font-black rounded-sm italic">03</span>
-                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Field Logistics</h2>
+                  <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Contact & Location</h2>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -160,14 +160,14 @@ export default function TeamBookingPage() {
                         <input name="phone" type="tel" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm font-bold outline-none focus:border-brand-accent/50 rounded-sm" />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Mission Location</label>
+                         <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Where is the shoot?</label>
                         <input name="location" type="text" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm font-bold outline-none focus:border-brand-accent/50 rounded-sm" placeholder="Stadium / School Gym / Office" />
                       </div>
                       <input type="hidden" name="name" value="Team/Org Contact" />
                    </div>
                    
                    <div className="space-y-4">
-                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Preferred Mission Date</label>
+                       <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Preferred Date</label>
                       <InteractiveCalendar 
                         onDateSelect={setSelectedDate}
                         blockedDates={blockedDates}
@@ -179,12 +179,12 @@ export default function TeamBookingPage() {
                 </div>
               </div>
 
-              <button 
+               <button 
                 type="submit" 
                 disabled={isSubmitting || !selectedDate}
                 className="w-full py-8 bg-brand-accent text-white font-black uppercase tracking-[0.5em] text-xs rounded-sm hover:brightness-110 transition-all disabled:opacity-50 shadow-[0_0_50px_rgba(59,130,246,0.2)]"
               >
-                {isSubmitting ? 'Deploying...' : 'Submit Strategic Brief'}
+                {isSubmitting ? 'Sending...' : 'Send Request'}
               </button>
             </motion.form>
           )}

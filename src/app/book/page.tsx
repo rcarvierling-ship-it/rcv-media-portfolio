@@ -1,14 +1,17 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect, Suspense } from "react";
 import { submitBooking } from "@/app/actions/booking";
 import { createClient } from "@/utils/supabase/client";
 import { InteractiveCalendar } from "@/components/booking/InteractiveCalendar";
 import { trackEvent } from "@/utils/analytics";
+import { Zap, Users } from "lucide-react";
+import Link from "next/link";
 
 function BookingContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const prefill = {
     name: searchParams.get("name") || "",
@@ -160,6 +163,11 @@ function BookingContent() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.1 }}
                   onClick={() => {
+                    const isTeamPackage = pkg.name.toLowerCase().includes('team') || pkg.name.toLowerCase().includes('media day');
+                    if (isTeamPackage) {
+                      router.push('/book/teams');
+                      return;
+                    }
                     setSelectedPackage(pkg.name);
                     trackEvent('package_select', { package_name: pkg.name, location: 'booking_page' });
                   }}
@@ -192,6 +200,15 @@ function BookingContent() {
                 </motion.div>
               ))
             )}
+          </div>
+        )}
+
+        {!prefill.promoPackage && (
+          <div className="text-center mb-24">
+             <Link href="/book/teams" className="inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-brand-accent transition-all group">
+                <Users size={14} className="group-hover:scale-110 transition-transform" />
+                Looking for team or group bookings? <span className="underline underline-offset-4">Click here</span>
+             </Link>
           </div>
         )}
 
