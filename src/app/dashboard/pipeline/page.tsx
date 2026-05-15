@@ -65,6 +65,11 @@ export default async function PipelinePage() {
     .select("*")
     .order("created_at", { ascending: false });
 
+  const { data: inspirationBoard } = await supabase
+    .from("inspiration_board")
+    .select("*")
+    .order("created_at", { ascending: false });
+
   return (
     <div className="h-full flex flex-col space-y-8 pb-32">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-8">
@@ -93,6 +98,7 @@ export default async function PipelinePage() {
         blockedDates={blockedDates || []}
         albums={albums || []}
         marketingVault={marketingVault || []}
+        inspirationBoard={inspirationBoard || []}
       />
     </div>
   );

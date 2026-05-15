@@ -9,7 +9,7 @@ import {
   Inbox as InboxIcon, CheckCircle2, Camera, Scissors, ShieldCheck,
   Archive, Settings, LayoutGrid, X, AlertCircle, Quote, MapPin, 
   Image as ImageIcon, Link as LinkIcon, Lock, CheckCircle, Send,
-  ChevronRight, Save, DollarSign as DollarSignIcon, Zap, Copy
+  ChevronRight, Save, DollarSign as DollarSignIcon, Zap, Copy, Lightbulb
 } from "lucide-react";
 import { 
   updateBookingPipeline, 
@@ -42,7 +42,8 @@ export function PipelineClient({
   siteSettings: initialSiteSettings,
   blockedDates: initialBlockedDates,
   albums,
-  marketingVault
+  marketingVault,
+  inspirationBoard
 }: { 
   initialPipeline: any[], 
   inquiries: any[],
@@ -51,9 +52,10 @@ export function PipelineClient({
   siteSettings: any,
   blockedDates: any[],
   albums: any[],
-  marketingVault: any[]
+  marketingVault: any[],
+  inspirationBoard: any[]
 }) {
-  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "marketing_vault" | "settings">("command_center");
+  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "marketing_vault" | "inspiration_board" | "settings">("command_center");
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [packages, setPackages] = useState(initialPackages);
@@ -366,6 +368,10 @@ export function PipelineClient({
 
         {activeView === "marketing_vault" && (
           <MarketingVault initialVault={vault} supabase={supabase} />
+        )}
+
+        {activeView === "inspiration_board" && (
+          <InspirationBoard initialBoard={inspirationBoard} supabase={supabase} />
         )}
 
         {activeView === "archive" && (
@@ -1105,6 +1111,133 @@ function MarketingVault({ initialVault, supabase }: { initialVault: any[], supab
           </div>
         ))}
       </div>
+    </motion.div>
+  );
+}
+function InspirationBoard({ initialBoard, supabase }: { initialBoard: any[], supabase: any }) {
+  const [board, setBoard] = useState(initialBoard);
+  const [filter, setFilter] = useState('all');
+  const [isAdding, setIsAdding] = useState(false);
+  const [newItem, setNewItem] = useState({ category: 'Senior poses', title: '', image_url: '' });
+
+  const categories = [
+    { id: 'all', label: 'All References' },
+    { id: 'Senior poses', label: 'Senior Poses' },
+    { id: 'Cap & gown poses', label: 'Cap & Gown' },
+    { id: 'Athlete portraits', label: 'Athlete Portraits' },
+    { id: 'Basketball shots', label: 'Basketball' },
+    { id: 'Volleyball shots', label: 'Volleyball' },
+    { id: 'Couples/friends', label: 'Couples/Friends' },
+    { id: 'Events', label: 'Events' },
+  ];
+
+  const filtered = filter === 'all' ? board : board.filter(b => b.category === filter);
+
+  const handleAdd = async () => {
+    const { data, error } = await supabase.from('inspiration_board').insert([newItem]).select();
+    if (!error && data) {
+      setBoard([data[0], ...board]);
+      setIsAdding(false);
+      setNewItem({ category: 'Senior poses', title: '', image_url: '' });
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from('inspiration_board').delete().eq('id', id);
+    if (!error) {
+      setBoard(board.filter(b => b.id !== id));
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      <div className="flex justify-between items-end">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Inspiration Board</h2>
+          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">Visual Benchmarks & Posing Strategy</p>
+        </div>
+        <button 
+          onClick={() => setIsAdding(!isAdding)}
+          className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-sm hover:scale-105 transition-all"
+        >
+          {isAdding ? 'Close' : 'Add Inspiration'}
+        </button>
+      </div>
+
+      <AnimatePresence>
+        {isAdding && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+            <div className="p-8 bg-zinc-900 border border-white/5 rounded-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Category</label>
+                <select 
+                  className="w-full bg-black border border-white/5 px-4 py-3 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent rounded-sm"
+                  value={newItem.category}
+                  onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                >
+                  {categories.filter(c => c.id !== 'all').map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-[9px] font-black text-zinc-600 uppercase tracking-widest">Image URL</label>
+                <input 
+                  type="text"
+                  placeholder="Direct image link..."
+                  className="w-full bg-black border border-white/5 px-4 py-3 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent rounded-sm"
+                  value={newItem.image_url}
+                  onChange={(e) => setNewItem({ ...newItem, image_url: e.target.value })}
+                />
+              </div>
+              <button 
+                onClick={handleAdd}
+                className="w-full py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all"
+              >
+                Save to Board
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="flex flex-wrap gap-2">
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            onClick={() => setFilter(cat.id)}
+            className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all border ${filter === cat.id ? 'bg-white text-black border-white' : 'bg-white/5 text-zinc-500 border-white/5 hover:border-white/20'}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-6 space-y-6">
+        {filtered.map((item) => (
+          <div key={item.id} className="relative group break-inside-avoid bg-zinc-900 rounded-sm overflow-hidden">
+            <img src={item.image_url} alt={item.title} className="w-full grayscale group-hover:grayscale-0 transition-all duration-700" />
+            <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-all p-6 flex flex-col justify-between">
+              <div className="flex justify-end">
+                <button 
+                  onClick={() => handleDelete(item.id)}
+                  className="w-8 h-8 bg-red-500/10 text-red-500 flex items-center justify-center rounded-full hover:bg-red-500 hover:text-white transition-all"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <div>
+                <span className="inline-block px-2 py-1 bg-brand-accent text-white text-[8px] font-black uppercase tracking-widest mb-2">{item.category}</span>
+                <p className="text-white text-[10px] font-black uppercase tracking-widest">{item.title || 'Inspiration Reference'}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="py-40 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+          <p className="text-zinc-600 font-black uppercase tracking-widest text-[10px]">No references found in this category.</p>
+        </div>
+      )}
     </motion.div>
   );
 }
