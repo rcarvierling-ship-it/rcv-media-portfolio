@@ -365,7 +365,7 @@ export function PipelineClient({
         )}
 
         {activeView === "marketing_vault" && (
-          <MarketingVault initialVault={vault} />
+          <MarketingVault initialVault={vault} supabase={supabase} />
         )}
 
         {activeView === "archive" && (
@@ -959,7 +959,7 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
   );
 }
 
-function MarketingVault({ initialVault }: { initialVault: any[] }) {
+function MarketingVault({ initialVault, supabase }: { initialVault: any[], supabase: any }) {
   const [vault, setVault] = useState(initialVault);
   const [filter, setFilter] = useState('all');
   const [copyStatus, setCopyStatus] = useState<string | null>(null);
