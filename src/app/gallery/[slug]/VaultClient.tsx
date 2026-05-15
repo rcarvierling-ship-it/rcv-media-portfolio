@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { validateVaultAccess, submitInspiration } from "@/app/actions/booking";
 import { CldUploadButton } from "next-cloudinary";
+import { createClient } from "@/utils/supabase/client";
 
 export function VaultClient({ 
   album, 
@@ -21,6 +22,7 @@ export function VaultClient({
   booking?: any, 
   requiresInspiration?: boolean 
 }) {
+  const supabase = createClient();
   const [passcode, setPasscode] = useState("");
   const [isUnlocked, setIsUnlocked] = useState(!album.is_private);
   const [isValidating, setIsValidating] = useState(false);
