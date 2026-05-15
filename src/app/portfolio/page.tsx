@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
 
-const categories = ["All", "Sports", "Basketball", "Volleyball", "Football", "Soccer", "Portraits", "Lifestyle", "Events", "Cinematic"];
+const categories = ["All", "Seniors", "Portraits", "Sports", "Events", "Graduation", "Media Days"];
 
 function PortfolioContent() {
   const searchParams = useSearchParams();

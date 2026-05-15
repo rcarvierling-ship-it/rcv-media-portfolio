@@ -14,7 +14,7 @@ export function Footer() {
               Capture <br/>The Moment.
             </h2>
             <p className="text-zinc-500 max-w-sm font-light leading-relaxed mb-8 text-lg">
-              Premium sports, lifestyle, and event photography built for athletes, brands, and moments that move fast.
+              Portraits, seniors, sports, and events — captured with energy and style. Built for athletes, graduates, and brands.
             </p>
             <Link 
               href="/book"

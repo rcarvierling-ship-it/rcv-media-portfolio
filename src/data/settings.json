@@ -4,15 +4,15 @@
     "updatedAt": "2026-01-18T00:00:00.000Z",
     "status": "published",
     "version": 1,
-    "heroTitle": "Capturing light, emotion, and the moments in between.",
-    "heroDescription": "Reese Vierling (RCV.Media) — Senior Frontend Engineer & Creative Developer specializing in interactive web applications and 3D experiences.",
+    "heroTitle": "Portraits, seniors, sports, and events — captured with energy and style.",
+    "heroDescription": "RCV.Media by Reese Vierling — Premium photography for seniors, portraits, sports, and events.",
     "footerText": "© 2026 RCV.Media. All rights reserved.",
     "email": "info@rcv-media.com",
     "instagram": "https://www.instagram.com/rcv.media/",
     "homepageSections": [],
     "seo": {
-        "defaultTitle": "RCV.Media | Reese Vierling",
-        "defaultDescription": "A highly interactive portfolio website showcasing a decade of visual excellence.",
+        "defaultTitle": "RCV.Media | Portraits, Seniors, Sports & Events",
+        "defaultDescription": "Premium photography for seniors, portraits, sports, and events — captured with energy and style by Reese Vierling.",
         "ogImage": "/og-image.jpg"
     }
 }

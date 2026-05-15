@@ -4,7 +4,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "The Narrative | RCV.Media",
-  description: "Exploring the visual intelligence and cinematic storytelling of Reese Vierling.",
+  description: "Exploring the visual narrative and cinematic storytelling of Reese Vierling at RCV.Media.",
 };
 
 export default async function AboutPage() {

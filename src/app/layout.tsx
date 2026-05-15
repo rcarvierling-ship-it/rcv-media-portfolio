@@ -8,8 +8,8 @@ import { ThemeInjector } from "@/components/layout/ThemeInjector";
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "RCV.Media | Premium Photography",
-  description: "Sports and Lifestyle Photography by Reese Vierling",
+  title: "RCV.Media | Portraits, Seniors, Sports & Events",
+  description: "Portraits, seniors, sports, and events — captured with energy and style by Reese Vierling.",
 };
 
 export default function RootLayout({

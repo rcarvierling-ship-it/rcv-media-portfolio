@@ -63,7 +63,7 @@ export default function HomePage() {
         <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-8 md:pt-0">
            {/* Vertical Label */}
            <div className="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] font-black tracking-[0.3em] uppercase text-zinc-600 hidden xl:block">
-             RCV.MEDIA // SPORTS PHOTOGRAPHY
+             RCV.MEDIA // PORTRAITS & SPORTS
            </div>
 
            <motion.div 
@@ -86,7 +86,7 @@ export default function HomePage() {
              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
              className="text-lg md:text-xl text-zinc-400 font-light max-w-md leading-relaxed mb-12"
            >
-             Premium sports, lifestyle, and event photography engineered for athletes, brands, and moments that move fast.
+             Portraits, seniors, sports, and events — captured with energy and style. Engineered for athletes, graduates, and moments that matter.
            </motion.p>
 
            <motion.div 
@@ -166,15 +166,17 @@ export default function HomePage() {
         <div className="flex whitespace-nowrap animate-marquee py-2">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="flex items-center gap-8 px-4">
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Seniors</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Portraits</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Tournament Coverage</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Events</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Graduation</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Media Days</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
           ))}
@@ -182,15 +184,17 @@ export default function HomePage() {
         <div className="flex whitespace-nowrap animate-marquee py-2" aria-hidden="true">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="flex items-center gap-8 px-4">
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports Photography</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Seniors</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Athlete Portraits</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Portraits</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Tournament Coverage</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Team Media Days</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Events</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Louisville KY</span>
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Graduation</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Media Days</span>
               <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
             </div>
           ))}
@@ -270,12 +274,12 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { num: "01", title: "Sports", desc: "High-octane action and game-winning moments." },
-              { num: "02", title: "Basketball", desc: "Hardwood coverage from tip-off to the final buzzer." },
-              { num: "03", title: "Volleyball", desc: "Court-side intensity and dynamic vertical plays." },
-              { num: "04", title: "Portraits", desc: "Bold, cinematic athlete profiles and editorial shots." },
-              { num: "05", title: "Lifestyle", desc: "Brand narratives and off-court authentic moments." },
-              { num: "06", title: "Events", desc: "Comprehensive tournament and media day coverage." }
+              { num: "01", title: "Seniors", desc: "Premium high school and college senior portraits." },
+              { num: "02", title: "Portraits", desc: "Bold, cinematic profiles and editorial studio shots." },
+              { num: "03", title: "Sports", desc: "High-octane action and game-winning moments." },
+              { num: "04", title: "Events", desc: "Comprehensive tournament and corporate event coverage." },
+              { num: "05", title: "Graduation", desc: "Cap & gown sessions that celebrate your achievement." },
+              { num: "06", title: "Media Days", desc: "High-volume team media day experiences and headshots." }
             ].map((cat, i) => (
               <Link key={cat.num} href={`/portfolio?category=${cat.title.toLowerCase()}`} className="group block h-[400px]">
                 <motion.div 
@@ -319,7 +323,7 @@ export default function HomePage() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent">The Moment</span>
                 </h2>
                 <p className="text-zinc-400 font-light text-lg leading-relaxed mb-10">
-                  Delivering imagery that demands attention. From the intensity of a championship game to the sleek aesthetic of a media day.
+                  Delivering imagery that demands attention. From the intensity of a championship game to the milestone of a graduation day.
                 </p>
                 <Link
                   href="/book"
@@ -333,11 +337,11 @@ export default function HomePage() {
             {/* Scrolling Right Column (Stacked Cards) */}
             <div className="lg:w-2/3 flex flex-col gap-6">
               {[
-                { num: "01", title: "Game Day Coverage", desc: "Start-to-finish storytelling of the match, focusing on peak action, crowd emotion, and pivotal plays." },
-                { num: "02", title: "Athlete Portraits", desc: "Studio-quality lighting and cinematic direction brought to any location to build powerful athlete brands." },
-                { num: "03", title: "Team Media Days", desc: "High-volume, premium quality headshots, dramatic poses, and team content scaled for entire rosters." },
-                { num: "04", title: "Tournament Coverage", desc: "Multi-day endurance shooting covering multiple courts, brackets, and championship ceremonies." },
-                { num: "05", title: "Lifestyle Content", desc: "Off-court editorial imagery for apparel brands, sponsorships, and social media campaigns." }
+                { num: "01", title: "Senior Sessions", desc: "Creative and cinematic portraiture for high school and college seniors looking for something beyond the ordinary." },
+                { num: "02", title: "Portrait Sessions", desc: "Professional headshots and artistic portraits designed to capture personality and style with premium lighting." },
+                { num: "03", title: "Sports Coverage", desc: "Start-to-finish storytelling of the match, focusing on peak action, crowd emotion, and pivotal game-winning plays." },
+                { num: "04", title: "Cap & Gown", desc: "Commemorate your achievement with high-end graduation sessions at your campus or preferred location." },
+                { num: "05", title: "Team Media Days", desc: "High-volume, premium quality headshots, dramatic poses, and team content scaled for entire rosters." }
               ].map((service, i) => (
                 <motion.div 
                   key={service.num}

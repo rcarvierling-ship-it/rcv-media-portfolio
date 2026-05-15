@@ -121,7 +121,7 @@ export function AboutClient({ data }: { data: any }) {
                    <span className="text-[10px] font-black uppercase tracking-widest text-white">Surgical Composition</span>
                 </div>
                 <p className="text-[11px] text-zinc-500 font-bold uppercase leading-relaxed tracking-wider">
-                   Every frame is a tactical decision. I hunt for the geometry and emotion that defines the elite sports experience.
+                   Every frame is a tactical decision. I hunt for the geometry and emotion that defines the premium visual experience.
                 </p>
              </div>
           </div>
