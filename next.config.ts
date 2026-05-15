@@ -23,6 +23,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/albums',
+        destination: '/client-galleries',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
