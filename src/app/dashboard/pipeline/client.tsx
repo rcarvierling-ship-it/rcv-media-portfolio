@@ -212,6 +212,7 @@ export function PipelineClient({
              <CommandCenter 
                pipeline={pipeline} 
                inquiries={inquiries} 
+               siteSettings={siteSettings}
                onMove={handleMove}
                onAccept={async (id: string) => {
                  setIsProcessing(id);
@@ -740,11 +741,12 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
 interface CommandCenterProps {
   pipeline: any[];
   inquiries: any[];
+  siteSettings: any;
   onMove: (id: string, stage: string, updates?: any) => Promise<void>;
   onAccept: (id: string) => Promise<void>;
 }
 
-function CommandCenter({ pipeline, inquiries, onMove, onAccept }: CommandCenterProps) {
+function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: CommandCenterProps) {
   const allBookings = pipeline.flatMap((s: any) => s.items);
   const activeBookings = allBookings.filter((b: any) => b.status !== 'cancelled');
 
