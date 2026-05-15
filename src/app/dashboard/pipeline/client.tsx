@@ -346,15 +346,15 @@ export function PipelineClient({
                       </button>
                       <button 
                         onClick={async () => {
-                          const { error } = await supabase.from("inquiries").update({ status: 'archived' }).eq("id", inquiry.id);
+                          const { error } = await supabase.from("inquiries").delete().eq("id", inquiry.id);
                           if (!error) {
-                            setInquiries(prev => prev.map(i => i.id === inquiry.id ? { ...i, status: 'archived' } : i));
+                            setInquiries(prev => prev.filter(i => i.id !== inquiry.id));
                             router.refresh();
                           }
                         }}
-                        className="px-8 py-5 bg-white/5 text-zinc-500 font-black uppercase text-[10px] tracking-widest border border-white/5 hover:bg-white/10 hover:text-white transition-all rounded-sm"
+                        className="px-8 py-5 bg-white/5 text-red-500/50 font-black uppercase text-[10px] tracking-widest border border-white/5 hover:bg-red-500/10 hover:text-red-500 transition-all rounded-sm"
                       >
-                        Archive
+                        Delete
                       </button>
                     </div>
                   </div>
@@ -372,7 +372,7 @@ export function PipelineClient({
           <motion.div key="archive" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12 max-w-5xl">
             <div className="grid grid-cols-1 gap-4">
                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6">Strategic Archive</h3>
-               {archivedBookings.length === 0 && inquiries.filter(i => i.status === 'archived').length === 0 && (
+               {archivedBookings.length === 0 && (
                  <div className="text-center py-20 bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
                    <Archive className="mx-auto text-zinc-800 mb-4" size={40} />
                    <p className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Archive is empty.</p>
@@ -390,15 +390,6 @@ export function PipelineClient({
                     </div>
                   ))}
 
-                  {inquiries.filter(i => i.status === 'archived').map((inquiry) => (
-                    <div key={inquiry.id} className="p-8 bg-zinc-950 border border-white/5 rounded-sm flex justify-between items-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
-                      <div>
-                        <h4 className="text-xl font-black uppercase tracking-tight text-white mb-1">{inquiry.name}</h4>
-                        <p className="text-[10px] text-zinc-500 font-black uppercase tracking-widest">{inquiry.subject} • {new Date(inquiry.created_at).toLocaleDateString()}</p>
-                      </div>
-                      <button onClick={async () => { await supabase.from("inquiries").update({ status: 'new' }).eq("id", inquiry.id); router.refresh(); }} className="px-8 py-3 border border-white/5 text-zinc-500 hover:text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/5 transition-all">Restore Inquiry</button>
-                    </div>
-                  ))}
                </div>
             </div>
           </motion.div>
