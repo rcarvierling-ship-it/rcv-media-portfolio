@@ -150,7 +150,7 @@ export function PipelineClient({
            onClick={() => setActiveView('command_center')}
            className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'command_center' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
          >
-           <ShieldCheck size={14} /> Command Center
+           <ShieldCheck size={14} /> Today's Pulse
          </button>
          <button 
            onClick={() => setActiveView('pipeline')}
@@ -679,40 +679,48 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: any) {
   const allBookings = pipeline.flatMap((s: any) => s.items);
   const activeBookings = allBookings.filter((b: any) => b.status !== 'cancelled');
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  const endOfWeek = new Date(today);
+  endOfWeek.setDate(today.getDate() + 7);
+
   const pulse = {
+    todayShoots: activeBookings.filter((b: any) => {
+      const d = new Date(b.event_date);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime() === today.getTime();
+    }),
+    weekShoots: activeBookings.filter((b: any) => {
+      const d = new Date(b.event_date);
+      d.setHours(0, 0, 0, 0);
+      return d > today && d <= endOfWeek;
+    }),
+    pendingInquiries: inquiries.filter((i: any) => i.status === 'new'),
+    editing: activeBookings.filter((b: any) => b.pipeline_stage === 'editing'),
+    unpaid: activeBookings.filter((b: any) => !b.final_paid && b.pipeline_stage !== 'lead'),
+    
     attention: [
       ...inquiries.filter((i: any) => i.status === 'new').map((i: any) => ({ ...i, type: 'inquiry', action: getInquiryAction(i) })),
       ...activeBookings.filter((b: any) => {
         const next = getNextAction(b);
-        return next.label === 'Prep for Shoot' || next.label === 'Shoot Session' || next.label === 'Confirm Date/Time' || next.label === 'Reply to Inquiry';
+        return next.category === 'action' && next.label !== 'Wait for Shoot Day';
       }).map((b: any) => ({ ...b, type: 'booking', action: getNextAction(b) }))
-    ].sort((a, b) => (a.action.priority || 99) - (b.action.priority || 99)),
-
-    booked: activeBookings.filter((b: any) => {
-      const created = new Date(b.created_at);
-      const diff = (new Date().getTime() - created.getTime()) / (1000 * 3600 * 24);
-      return diff <= 7;
-    }),
-
-    contracts: activeBookings.filter((b: any) => b.contract_status === 'unsigned' && b.pipeline_stage !== 'lead'),
-    editing: activeBookings.filter((b: any) => b.pipeline_stage === 'editing'),
-    delivery: activeBookings.filter((b: any) => b.pipeline_stage === 'editing'),
-    unpaid: activeBookings.filter((b: any) => !b.final_paid && b.pipeline_stage !== 'lead'),
-    reviews: activeBookings.filter((b: any) => b.pipeline_stage === 'delivered' && !b.review_requested)
+    ].sort((a, b) => (a.action.priority || 99) - (b.action.priority || 99))
   };
 
   const statCards = [
-    { label: 'Attention Needed', count: pulse.attention.length, icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-500/10' },
-    { label: 'New Bookings', count: pulse.booked.length, icon: Plus, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { label: 'Contracts Due', count: pulse.contracts.length, icon: Lock, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { label: 'In Editing', count: pulse.editing.length, icon: Scissors, color: 'text-purple-500', bg: 'bg-purple-500/10' },
-    { label: 'Unpaid Balances', count: pulse.unpaid.length, icon: DollarSign, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { label: 'Review Requests', count: pulse.reviews.length, icon: Quote, color: 'text-zinc-400', bg: 'bg-zinc-400/10' },
+    { label: "Today's Shoots", count: pulse.todayShoots.length, icon: Camera, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+    { label: "This Week", count: pulse.weekShoots.length, icon: Calendar, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { label: "New Inquiries", count: pulse.pendingInquiries.length, icon: Mail, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+    { label: "In Editing", count: pulse.editing.length, icon: Scissors, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+    { label: "Payments Due", count: pulse.unpaid.length, icon: DollarSign, color: 'text-red-500', bg: 'bg-red-500/10' },
   ];
 
   return (
     <div className="space-y-16">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+      {/* Top Level Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
         {statCards.map((card) => (
           <div key={card.label} className="premium-card p-6 border border-white/5 bg-zinc-900/20 rounded-sm">
             <div className={`w-10 h-10 rounded-lg ${card.bg} flex items-center justify-center mb-4`}>
@@ -724,35 +732,38 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: any) {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        {/* ACTION CENTER */}
+        <div className="lg:col-span-2 space-y-8">
            <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <h3 className="text-sm font-black uppercase tracking-widest text-white">Immediate Next Actions</h3>
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{pulse.attention.length} Tasks</span>
+              <h3 className="text-sm font-black uppercase tracking-widest text-white italic">Action Center</h3>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Immediate Tasks</span>
            </div>
+           
            <div className="space-y-4">
               {pulse.attention.length === 0 ? (
-                <div className="py-12 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
-                   <CheckCircle className="mx-auto text-zinc-800 mb-2" size={24} />
-                   <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">All clear</p>
+                <div className="py-20 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+                   <ShieldCheck className="mx-auto text-zinc-800 mb-2" size={32} />
+                   <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600">Tactical Advantage Secured</p>
                 </div>
               ) : (
-                pulse.attention.slice(0, 5).map((item: any) => (
-                  <div key={item.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex items-center justify-between group hover:border-brand-accent/20 transition-all">
-                     <div className="flex items-center gap-6">
-                        <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-zinc-600 group-hover:text-brand-accent group-hover:bg-brand-accent/10 transition-all">
-                           {item.type === 'inquiry' ? <Mail size={16} /> : <Calendar size={16} />}
+                pulse.attention.map((item: any) => (
+                  <div key={item.id} className="p-8 bg-zinc-950 border border-white/5 rounded-sm flex items-center justify-between group hover:border-brand-accent/20 transition-all relative overflow-hidden">
+                     {item.action.category === 'action' && <div className="absolute top-0 left-0 w-1 h-full bg-brand-accent" />}
+                     <div className="flex items-center gap-8">
+                        <div className="w-12 h-12 rounded-full bg-zinc-900 flex items-center justify-center text-zinc-600 group-hover:text-brand-accent group-hover:bg-brand-accent/10 transition-all">
+                           {item.type === 'inquiry' ? <Mail size={20} /> : <Clock size={20} />}
                         </div>
                         <div>
-                           <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{item.name}</p>
-                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{item.action.label}</p>
+                           <p className="text-white font-black uppercase tracking-tight text-lg leading-none mb-1">{item.name}</p>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-brand-accent">{item.action.label}</p>
                         </div>
                      </div>
                      <button 
                        onClick={() => item.type === 'inquiry' ? onAccept(item.id) : onMove(item.id, item.pipeline_stage)}
-                       className="p-3 bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10 rounded-sm transition-all"
+                       className="px-6 py-4 bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10 text-[10px] font-black uppercase tracking-widest rounded-sm transition-all flex items-center gap-2"
                      >
-                        <ChevronRight size={16} />
+                        Execute <ArrowRight size={14} />
                      </button>
                   </div>
                 ))
@@ -760,30 +771,57 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: any) {
            </div>
         </div>
 
-        <div className="space-y-8">
-           <div className="flex items-center justify-between border-b border-white/5 pb-4">
-              <h3 className="text-sm font-black uppercase tracking-widest text-white">Accounts Receivable</h3>
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{pulse.unpaid.length} Pending</span>
+        {/* SIDEBAR INTEL */}
+        <div className="space-y-12">
+           {/* TODAY'S SCHEDULE */}
+           <div className="space-y-6">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 pb-2">Today's Sessions</h3>
+              <div className="space-y-3">
+                 {pulse.todayShoots.length === 0 ? (
+                   <p className="text-[10px] font-bold text-zinc-800 italic uppercase">Clear Skies</p>
+                 ) : (
+                   pulse.todayShoots.map((b: any) => (
+                     <div key={b.id} className="p-4 bg-brand-accent/5 border border-brand-accent/10 rounded-sm">
+                        <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{b.name}</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-brand-accent">{b.event_time || 'Time TBD'} • {b.location || 'Location TBD'}</p>
+                     </div>
+                   ))
+                 )}
+              </div>
            </div>
-           <div className="space-y-4">
-              {pulse.unpaid.length === 0 ? (
-                <div className="py-12 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
-                   <DollarSign className="mx-auto text-zinc-800 mb-2" size={24} />
-                   <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Zero Balances Due</p>
-                </div>
-              ) : (
-                pulse.unpaid.slice(0, 5).map((item: any) => (
-                  <div key={item.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex items-center justify-between">
-                     <div>
-                        <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{item.name}</p>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Total: ${Number(item.total_amount).toLocaleString()}</p>
+
+           {/* THIS WEEK */}
+           <div className="space-y-6">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 pb-2">Upcoming This Week</h3>
+              <div className="space-y-3">
+                 {pulse.weekShoots.length === 0 ? (
+                   <p className="text-[10px] font-bold text-zinc-800 italic uppercase">No upcoming sessions</p>
+                 ) : (
+                   pulse.weekShoots.map((b: any) => (
+                     <div key={b.id} className="p-4 bg-zinc-900/40 border border-white/5 rounded-sm">
+                        <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{b.name}</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{new Date(b.event_date).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })}</p>
                      </div>
-                     <div className="text-right">
-                        <span className="text-brand-accent text-sm font-black tracking-tighter">UNPAID</span>
+                   ))
+                 )}
+              </div>
+           </div>
+
+           {/* ACCOUNTS RECEIVABLE */}
+           <div className="space-y-6">
+              <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-600 border-b border-white/5 pb-2">Pending Balances</h3>
+              <div className="space-y-3">
+                 {pulse.unpaid.length === 0 ? (
+                   <p className="text-[10px] font-bold text-zinc-800 italic uppercase">All accounts balanced</p>
+                 ) : (
+                   pulse.unpaid.slice(0, 3).map((b: any) => (
+                     <div key={b.id} className="flex justify-between items-center px-2">
+                        <span className="text-[11px] font-bold text-zinc-400 uppercase tracking-tight">{b.name}</span>
+                        <span className="text-[11px] font-black text-red-500 tracking-tighter">${(Number(b.total_amount) - (b.deposit_paid ? Number(b.deposit_amount || 0) : 0)).toLocaleString()}</span>
                      </div>
-                  </div>
-                ))
-              )}
+                   ))
+                 )}
+              </div>
            </div>
         </div>
       </div>
