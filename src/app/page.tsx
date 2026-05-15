@@ -61,10 +61,6 @@ export default function HomePage() {
         
         {/* Left Side: Dramatic Typography */}
         <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-8 md:pt-0">
-           {/* Vertical Label */}
-           <div className="absolute -left-12 top-1/2 -translate-y-1/2 -rotate-90 text-[9px] font-black tracking-[0.3em] uppercase text-zinc-600 hidden xl:block">
-             RCV.MEDIA // PORTRAITS & SPORTS
-           </div>
 
            <motion.div 
              initial={{ opacity: 0, y: 40 }}
