@@ -184,27 +184,27 @@ export default function HomePage() {
         {/* Right Side: Stacked Photo Collage */}
         <div className="w-full md:w-1/2 relative h-[50vh] sm:h-[60vh] md:h-[80vh]">
            <motion.div 
-             initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
-             animate={{ opacity: 1, scale: 1, rotate: 0 }}
-             transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-             className="absolute top-0 right-0 w-4/5 h-4/5 premium-placeholder rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-0 bg-court-grid"
-           >
-              {heroImage ? (
-                <Image src={heroImage} alt="Hero image" fill className="object-cover opacity-80" priority />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-tr from-zinc-900 to-black opacity-80" />
-              )}
-           </motion.div>
+              initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-0 right-0 w-4/5 h-4/5 premium-placeholder rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-0 bg-court-grid"
+            >
+               {heroImage ? (
+                 <Image src={heroImage} alt="Hero image" fill className="object-cover object-[center_15%] opacity-80" priority />
+               ) : (
+                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-black opacity-80" />
+               )}
+            </motion.div>
 
-           <motion.div 
-             initial={{ opacity: 0, x: 50, y: 50 }}
-             animate={{ opacity: 1, x: 0, y: 0 }}
-             transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-             className="absolute bottom-0 left-0 w-2/3 h-2/3 premium-card rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-10 flex items-center justify-center bg-court-grid"
-           >
-              {featuredPhotos[0]?.image_url ? (
-                 <Image src={featuredPhotos[0].image_url} alt="Featured" fill className="object-cover opacity-90" />
-              ) : (
+            <motion.div 
+              initial={{ opacity: 0, x: 50, y: 50 }}
+              animate={{ opacity: 1, x: 0, y: 0 }}
+              transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute bottom-0 left-0 w-2/3 h-2/3 premium-card rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-10 flex items-center justify-center bg-court-grid"
+            >
+               {featuredPhotos[0]?.image_url ? (
+                  <Image src={featuredPhotos[0].image_url} alt="Featured" fill className="object-cover object-[center_15%] opacity-90" />
+               ) : (
                  <div className="text-center p-6">
                     <span className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-600 block mb-2">RCV.MEDIA</span>
                     <span className="text-xl font-black uppercase text-zinc-800">Visuals</span>
@@ -278,22 +278,34 @@ export default function HomePage() {
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:h-[800px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:min-h-[900px]">
             {/* Left Huge Card: NEWEST FEATURED GALLERY */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="lg:col-span-8 premium-placeholder rounded-sm overflow-hidden group relative h-[500px] lg:h-full bg-court-grid"
+              className="lg:col-span-8 premium-placeholder rounded-sm overflow-hidden group relative h-[600px] lg:h-full bg-court-grid"
             >
                {newestGallery ? (
                  <>
-                   <Image src={newestGallery.photos?.[0]?.image_url || "/placeholder.jpg"} alt={newestGallery.title} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                   <Image 
+                     src={newestGallery.photos?.[0]?.image_url || "/placeholder.jpg"} 
+                     alt={newestGallery.title} 
+                     fill 
+                     className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
+                     priority
+                   />
                    <Link href={`/gallery/${newestGallery.slug}`} className="absolute inset-0 z-20" />
                  </>
                ) : featuredPhotos[0]?.image_url ? (
-                 <Image src={featuredPhotos[0].image_url} alt="Hero Feature" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                 <Image 
+                    src={featuredPhotos[0].image_url} 
+                    alt="Hero Feature" 
+                    fill 
+                    className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
+                    priority
+                 />
                ) : (
                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-black" />
                )}
@@ -316,15 +328,25 @@ export default function HomePage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ duration: 0.8, delay: 0.2 }}
-                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
+                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[400px] bg-court-grid"
                >
                  {trendingGallery ? (
                    <>
-                     <Image src={trendingGallery.photos?.[0]?.image_url || "/placeholder.jpg"} alt={trendingGallery.title} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                     <Image 
+                       src={trendingGallery.photos?.[0]?.image_url || "/placeholder.jpg"} 
+                       alt={trendingGallery.title} 
+                       fill 
+                       className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
+                     />
                      <Link href={`/gallery/${trendingGallery.slug}`} className="absolute inset-0 z-20" />
                    </>
                  ) : featuredPhotos[1]?.image_url ? (
-                   <Image src={featuredPhotos[1].image_url} alt="Trending" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                   <Image 
+                     src={featuredPhotos[1].image_url} 
+                     alt="Trending" 
+                     fill 
+                     className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
+                   />
                  ) : (
                    <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
                  )}
@@ -341,10 +363,15 @@ export default function HomePage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ duration: 0.8, delay: 0.4 }}
-                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
+                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[400px] bg-court-grid"
                >
                  {featuredPhotos[2]?.image_url ? (
-                   <Image src={featuredPhotos[2].image_url} alt="Recent" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                   <Image 
+                     src={featuredPhotos[2].image_url} 
+                     alt="Recent" 
+                     fill 
+                     className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
+                   />
                  ) : (
                    <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
                  )}
