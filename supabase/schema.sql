@@ -136,7 +136,10 @@ CREATE TABLE public.bookings (
   status TEXT DEFAULT 'pending', -- pending, confirmed, cancelled
   pipeline_stage TEXT DEFAULT 'lead', -- lead, confirmed, shooting, editing, delivered
   payment_status TEXT DEFAULT 'pending', -- pending, paid
-  total_amount DECIMAL(10, 2) DEFAULT 0,
+  total_amount DECIMAL(10, 2) DEFAULT 0, -- Quoted Amount
+  deposit_amount DECIMAL(10, 2) DEFAULT 0,
+  payment_method TEXT, -- Venmo, Zelle, Cash, etc.
+  payment_notes TEXT,
   linked_album_id UUID REFERENCES public.albums(id) ON DELETE SET NULL,
   contract_status TEXT DEFAULT 'unsigned', -- unsigned, signed
   deposit_paid BOOLEAN DEFAULT false,

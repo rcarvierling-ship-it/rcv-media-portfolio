@@ -571,43 +571,79 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
 
                 <div className="space-y-8 bg-black/40 p-8 border border-white/5 rounded-sm">
                    <div>
-                      <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-3">Project Valuation</p>
-                      <div className="flex items-center gap-4">
-                        <span className="text-4xl font-black text-white tracking-tighter">${Number(item.total_amount).toLocaleString()}</span>
-                        <div className="flex flex-col gap-1">
-                          <button 
-                            onClick={async () => await onMove(item.id, stage.id, { deposit_paid: !item.deposit_paid })}
-                            className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.deposit_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
-                          >
-                            Deposit {item.deposit_paid ? 'Paid' : 'Due'}
-                          </button>
-                          <button 
-                            onClick={async () => await onMove(item.id, stage.id, { final_paid: !item.final_paid })}
-                            className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.final_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
-                          >
-                            Final {item.final_paid ? 'Paid' : 'Due'}
-                          </button>
+                      <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-3">Financial Intelligence</p>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                           <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Quoted</span>
+                           <input 
+                             type="number" 
+                             className="bg-transparent text-right font-black text-white text-xl outline-none border-b border-white/5 focus:border-brand-accent w-24"
+                             value={Number(item.total_amount)}
+                             onChange={async (e) => await onMove(item.id, stage.id, { total_amount: parseFloat(e.target.value) })}
+                           />
+                        </div>
+                        <div className="flex justify-between items-center">
+                           <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Deposit</span>
+                           <div className="flex items-center gap-3">
+                             <input 
+                               type="number" 
+                               className="bg-transparent text-right font-bold text-white text-sm outline-none border-b border-white/5 focus:border-brand-accent w-16"
+                               value={Number(item.deposit_amount || 0)}
+                               onChange={async (e) => await onMove(item.id, stage.id, { deposit_amount: parseFloat(e.target.value) })}
+                             />
+                             <button 
+                               onClick={async () => await onMove(item.id, stage.id, { deposit_paid: !item.deposit_paid })}
+                               className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.deposit_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                             >
+                               {item.deposit_paid ? 'Paid' : 'Due'}
+                             </button>
+                           </div>
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                           <span className="text-[10px] font-black text-brand-accent uppercase tracking-widest">Final Due</span>
+                           <div className="flex items-center gap-3">
+                             <span className="text-xl font-black text-white tracking-tighter">${(Number(item.total_amount) - (item.deposit_paid ? Number(item.deposit_amount || 0) : 0)).toLocaleString()}</span>
+                             <button 
+                               onClick={async () => await onMove(item.id, stage.id, { final_paid: !item.final_paid })}
+                               className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.final_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                             >
+                               {item.final_paid ? 'Paid' : 'Due'}
+                             </button>
+                           </div>
                         </div>
                       </div>
                    </div>
-                   <div className="flex justify-between items-end">
+                   
+                   <div className="space-y-4">
                       <div>
-                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Contract</p>
-                        <button 
-                          onClick={async () => await onMove(item.id, stage.id, { contract_status: item.contract_status === 'signed' ? 'unsigned' : 'signed' })}
-                          className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.contract_status === 'signed' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
-                        >
-                          {item.contract_status === 'signed' ? 'Signed' : 'Unsigned'}
-                        </button>
+                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-2">Payment Method</p>
+                        <input 
+                          type="text"
+                          placeholder="Venmo, Zelle, Cash..."
+                          className="w-full bg-zinc-950 border border-white/5 px-4 py-2 text-[10px] font-bold text-white uppercase tracking-widest outline-none focus:border-brand-accent rounded-sm"
+                          value={item.payment_method || ''}
+                          onChange={async (e) => await onMove(item.id, stage.id, { payment_method: e.target.value })}
+                        />
                       </div>
-                      <div>
-                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Review</p>
-                        <button 
-                          onClick={async () => await onMove(item.id, stage.id, { review_requested: !item.review_requested })}
-                          className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.review_requested ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
-                        >
-                          {item.review_requested ? 'Requested' : 'Send Req'}
-                        </button>
+                      <div className="flex justify-between items-end">
+                        <div>
+                          <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Contract</p>
+                          <button 
+                            onClick={async () => await onMove(item.id, stage.id, { contract_status: item.contract_status === 'signed' ? 'unsigned' : 'signed' })}
+                            className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.contract_status === 'signed' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                          >
+                            {item.contract_status === 'signed' ? 'Signed' : 'Unsigned'}
+                          </button>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Review</p>
+                          <button 
+                            onClick={async () => await onMove(item.id, stage.id, { review_requested: !item.review_requested })}
+                            className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.review_requested ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                          >
+                            {item.review_requested ? 'Requested' : 'Send Req'}
+                          </button>
+                        </div>
                       </div>
                    </div>
                 </div>
@@ -619,6 +655,16 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                   <p className="text-zinc-400 text-sm leading-relaxed italic font-medium">"{item.message}"</p>
                 </div>
               )}
+
+              <div className="mb-12">
+                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-4">Tactical Payment Notes</p>
+                <textarea 
+                  className="w-full bg-black/40 border border-white/5 p-6 rounded-sm text-zinc-400 text-sm outline-none focus:border-brand-accent min-h-[100px] font-medium"
+                  placeholder="Internal notes on payment, discounts, or special arrangements..."
+                  value={item.payment_notes || ''}
+                  onChange={async (e) => await onMove(item.id, stage.id, { payment_notes: e.target.value })}
+                />
+              </div>
 
               <button onClick={() => setShowDetails(false)} className="w-full py-5 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-zinc-200 transition-all rounded-sm">Close Intel</button>
             </motion.div>
