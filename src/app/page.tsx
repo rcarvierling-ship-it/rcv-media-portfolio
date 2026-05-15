@@ -13,10 +13,14 @@ export default function HomePage() {
   const [heroSetting, setHeroSetting] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  const [newestGallery, setNewestGallery] = useState<any>(null);
+  const [trendingGallery, setTrendingGallery] = useState<any>(null);
+
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient();
       
+      // 1. Fetch site settings and active campaign
       const { data: settingsData } = await supabase
         .from("site_settings")
         .select(`
@@ -33,6 +37,30 @@ export default function HomePage() {
         }
       }
 
+      // 2. Fetch Newest Featured Gallery
+      const { data: newestData } = await supabase
+        .from("albums")
+        .select("*, photos(*)")
+        .eq("is_private", false)
+        .eq("is_featured", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (newestData) setNewestGallery(newestData);
+
+      // 3. Fetch Trending Gallery
+      const { data: trendingData } = await supabase
+        .from("albums")
+        .select("*, photos(*)")
+        .eq("is_private", false)
+        .order("view_count", { ascending: false })
+        .limit(1)
+        .single();
+      
+      if (trendingData) setTrendingGallery(trendingData);
+
+      // 4. Fetch Curated Photos
       const { data: photosData } = await supabase
         .from("photos")
         .select(`
@@ -43,12 +71,10 @@ export default function HomePage() {
         `)
         .eq("is_featured", true)
         .eq("is_curated", true)
-        .order("sort_order", { ascending: true })
         .order("created_at", { ascending: false });
         
       if (photosData) {
-        // Filter out photos from private albums
-        const publicPhotos = photosData.filter(p => !p.albums || p.albums.is_private === false).slice(0, 6);
+        const publicPhotos = photosData.filter(p => !p.albums || p.albums.is_private === false).slice(0, 12);
         setFeaturedPhotos(publicPhotos);
       }
       
@@ -253,7 +279,7 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:h-[800px]">
-            {/* Left Huge Card */}
+            {/* Left Huge Card: NEWEST FEATURED GALLERY */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -261,42 +287,73 @@ export default function HomePage() {
               transition={{ duration: 0.8 }}
               className="lg:col-span-8 premium-placeholder rounded-sm overflow-hidden group relative h-[500px] lg:h-full bg-court-grid"
             >
-               {featuredPhotos[0]?.image_url ? (
+               {newestGallery ? (
+                 <>
+                   <Image src={newestGallery.photos?.[0]?.image_url || "/placeholder.jpg"} alt={newestGallery.title} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                   <Link href={`/gallery/${newestGallery.slug}`} className="absolute inset-0 z-20" />
+                 </>
+               ) : featuredPhotos[0]?.image_url ? (
                  <Image src={featuredPhotos[0].image_url} alt="Hero Feature" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
                ) : (
                  <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-black" />
                )}
                
                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-               <div className="absolute bottom-10 left-10">
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2 border border-white/20 px-3 py-1 rounded-full w-fit backdrop-blur-md">Featured Gallery</span>
-                  <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">RCV Frame</h3>
+               <div className="absolute bottom-10 left-10 z-10">
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2 border border-white/20 px-3 py-1 rounded-full w-fit backdrop-blur-md flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse" />
+                    Latest Release
+                 </span>
+                  <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">{newestGallery?.title || "RCV Frame"}</h3>
                </div>
             </motion.div>
 
-            {/* Right Stacked Cards */}
+            {/* Right Stacked Cards: TRENDING & RECENT */}
             <div className="lg:col-span-4 flex flex-col gap-4 h-full">
-               {[1, 2].map((i) => (
-                 <motion.div 
-                   key={i}
-                   initial={{ opacity: 0, y: 30 }}
-                   whileInView={{ opacity: 1, y: 0 }}
-                   viewport={{ once: true }}
-                   transition={{ duration: 0.8, delay: i * 0.2 }}
-                   className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
-                 >
-                   {featuredPhotos[i]?.image_url ? (
-                     <Image src={featuredPhotos[i].image_url} alt="Editorial Feature" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
-                   ) : (
-                     <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
-                   )}
-                   <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
-                   <div className="absolute bottom-6 left-6">
-                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-1">{featuredPhotos[i]?.category || "Editorial"}</span>
-                     <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Master Archive</h3>
-                   </div>
-                 </motion.div>
-               ))}
+               {/* TRENDING CARD */}
+               <motion.div 
+                 initial={{ opacity: 0, y: 30 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.8, delay: 0.2 }}
+                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
+               >
+                 {trendingGallery ? (
+                   <>
+                     <Image src={trendingGallery.photos?.[0]?.image_url || "/placeholder.jpg"} alt={trendingGallery.title} fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                     <Link href={`/gallery/${trendingGallery.slug}`} className="absolute inset-0 z-20" />
+                   </>
+                 ) : featuredPhotos[1]?.image_url ? (
+                   <Image src={featuredPhotos[1].image_url} alt="Trending" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                 ) : (
+                   <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
+                 )}
+                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
+                 <div className="absolute bottom-6 left-6 z-10">
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-accent block mb-1">Trending Collection</span>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{trendingGallery?.title || "Master Archive"}</h3>
+                 </div>
+               </motion.div>
+
+               {/* RECENT CURATED CARD */}
+               <motion.div 
+                 initial={{ opacity: 0, y: 30 }}
+                 whileInView={{ opacity: 1, y: 0 }}
+                 viewport={{ once: true }}
+                 transition={{ duration: 0.8, delay: 0.4 }}
+                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[300px] bg-court-grid"
+               >
+                 {featuredPhotos[2]?.image_url ? (
+                   <Image src={featuredPhotos[2].image_url} alt="Recent" fill className="object-cover transition-transform duration-[2s] group-hover:scale-[1.02]" />
+                 ) : (
+                   <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
+                 )}
+                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
+                 <div className="absolute bottom-6 left-6 z-10">
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-1">Recently Curated</span>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Visual Dossier</h3>
+                 </div>
+               </motion.div>
             </div>
           </div>
         </div>
