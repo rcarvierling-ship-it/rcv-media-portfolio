@@ -88,6 +88,7 @@ CREATE INDEX idx_albums_is_public ON public.albums (is_public);
 ALTER TABLE public.photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.albums ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.marketing_vault ENABLE ROW LEVEL SECURITY;
 
 -- ====================================================================
 -- 5. DEFINE RLS POLICIES
@@ -97,11 +98,13 @@ ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Public can view photos" ON public.photos FOR SELECT USING (true);
 CREATE POLICY "Public can view public albums" ON public.albums FOR SELECT USING (is_public = true);
 CREATE POLICY "Public can view site settings" ON public.site_settings FOR SELECT USING (true);
+CREATE POLICY "Public can view marketing vault" ON public.marketing_vault FOR SELECT USING (true);
 
 -- Policies for authenticated access (Admin: Create, Read, Update, Delete)
 CREATE POLICY "Admin full access photos" ON public.photos FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin full access albums" ON public.albums FOR ALL TO authenticated USING (true) WITH CHECK (true);
 CREATE POLICY "Admin full access site settings" ON public.site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Admin full access marketing vault" ON public.marketing_vault FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ====================================================================
 -- 6. SEED INITIAL DATA
@@ -155,6 +158,15 @@ CREATE TABLE public.blocked_dates (
   date DATE UNIQUE NOT NULL,
   reason TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create Marketing Vault Table
+CREATE TABLE public.marketing_vault (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  category TEXT NOT NULL, -- captions, hashtags, templates, copy
+  title TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
 -- Indexes

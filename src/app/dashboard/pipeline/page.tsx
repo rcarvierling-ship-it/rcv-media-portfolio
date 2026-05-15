@@ -56,10 +56,14 @@ export default async function PipelinePage() {
     .select("*")
     .order("created_at", { ascending: false });
 
-  // Calculate high-level stats
   const totalRevenue = activeBookings
     .filter(b => b.pipeline_stage !== 'lead')
     .reduce((acc, b) => acc + (Number(b.total_amount) || 0), 0);
+
+  const { data: marketingVault } = await supabase
+    .from("marketing_vault")
+    .select("*")
+    .order("created_at", { ascending: false });
 
   return (
     <div className="h-full flex flex-col space-y-8 pb-32">
@@ -88,6 +92,7 @@ export default async function PipelinePage() {
         siteSettings={siteSettings}
         blockedDates={blockedDates || []}
         albums={albums || []}
+        marketingVault={marketingVault || []}
       />
     </div>
   );

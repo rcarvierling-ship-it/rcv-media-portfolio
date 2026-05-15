@@ -48,14 +48,16 @@ export function PipelineClient({
   packages: any[],
   siteSettings: any,
   blockedDates: any[],
-  albums: any[]
+  albums: any[],
+  marketingVault: any[]
 }) {
-  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "settings">("command_center");
+  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "marketing_vault" | "settings">("command_center");
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [packages, setPackages] = useState(initialPackages);
   const [siteSettings, setSiteSettings] = useState(initialSiteSettings);
   const [blockedDates, setBlockedDates] = useState(initialBlockedDates);
+  const [vault, setVault] = useState(marketingVault);
   
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [isBlocking, setIsBlocking] = useState(false);
@@ -166,6 +168,12 @@ export function PipelineClient({
            {inquiries.filter(i => i.status === 'new').length > 0 && (
              <span className="absolute -top-1 -right-1 w-4 h-4 bg-brand-accent text-[8px] flex items-center justify-center rounded-full text-white">{inquiries.filter(i => i.status === 'new').length}</span>
            )}
+         </button>
+         <button 
+           onClick={() => setActiveView('marketing_vault')}
+           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'marketing_vault' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
+         >
+           <Zap size={14} /> Content Vault
          </button>
          <button 
            onClick={() => setActiveView('archive')}
@@ -315,6 +323,10 @@ export function PipelineClient({
               )}
             </div>
           </motion.div>
+        )}
+
+        {activeView === "marketing_vault" && (
+          <MarketingVault initialVault={vault} />
         )}
 
         {activeView === "archive" && (
@@ -904,5 +916,136 @@ function CommandCenter({ pipeline, inquiries, onMove, onAccept }: CommandCenterP
         </div>
       </div>
     </div>
+  );
+}
+
+function MarketingVault({ initialVault }: { initialVault: any[] }) {
+  const [vault, setVault] = useState(initialVault);
+  const [filter, setFilter] = useState('all');
+  const [copyStatus, setCopyStatus] = useState<string | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [newItem, setNewItem] = useState({ category: 'captions', title: '', content: '' });
+
+  const categories = [
+    { id: 'all', label: 'All Assets' },
+    { id: 'captions', label: 'Caption Ideas' },
+    { id: 'hashtags', label: 'Hashtag Sets' },
+    { id: 'templates', label: 'Instagram Templates' },
+    { id: 'promo', label: 'Promo Copy' },
+    { id: 'pricing', label: 'Pricing Guide Copy' },
+  ];
+
+  const filtered = filter === 'all' ? vault : vault.filter(v => v.category === filter);
+
+  const handleCopy = (content: string, id: string) => {
+    navigator.clipboard.writeText(content);
+    setCopyStatus(id);
+    setTimeout(() => setCopyStatus(null), 2000);
+  };
+
+  const handleAdd = async () => {
+    const { data, error } = await supabase.from('marketing_vault').insert([newItem]).select();
+    if (!error && data) {
+      setVault([data[0], ...vault]);
+      setIsAdding(false);
+      setNewItem({ category: 'captions', title: '', content: '' });
+    }
+  };
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      <div className="flex justify-between items-end">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Content Vault</h2>
+          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">Marketing Assets & Strategic Copy</p>
+        </div>
+        <button 
+          onClick={() => setIsAdding(!isAdding)}
+          className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-all rounded-sm"
+        >
+          {isAdding ? 'Close Intelligence' : 'Add New Asset'}
+        </button>
+      </div>
+
+      {isAdding && (
+        <div className="p-10 bg-zinc-950 border border-brand-accent/20 rounded-sm space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest">Category</label>
+              <select 
+                value={newItem.category}
+                onChange={(e) => setNewItem({ ...newItem, category: e.target.value })}
+                className="w-full bg-black/40 border border-white/5 p-4 rounded-sm text-white text-sm outline-none focus:border-brand-accent"
+              >
+                {categories.filter(c => c.id !== 'all').map(c => (
+                  <option key={c.id} value={c.id}>{c.label}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-4">
+              <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest">Asset Title</label>
+              <input 
+                type="text"
+                placeholder="e.g. Senior Session Caption"
+                value={newItem.title}
+                onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                className="w-full bg-black/40 border border-white/5 p-4 rounded-sm text-white text-sm outline-none focus:border-brand-accent font-medium"
+              />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <label className="block text-[10px] font-black text-zinc-600 uppercase tracking-widest">Asset Content</label>
+            <textarea 
+              placeholder="Paste copy, hashtags, or template details here..."
+              value={newItem.content}
+              onChange={(e) => setNewItem({ ...newItem, content: e.target.value })}
+              className="w-full bg-black/40 border border-white/5 p-6 rounded-sm text-zinc-300 text-sm outline-none focus:border-brand-accent min-h-[200px] font-medium leading-relaxed"
+            />
+          </div>
+          <button 
+            onClick={handleAdd}
+            className="w-full py-4 bg-brand-accent text-white font-black uppercase text-[11px] tracking-widest hover:brightness-110 transition-all rounded-sm"
+          >
+            Store Asset
+          </button>
+        </div>
+      )}
+
+      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide border-b border-white/5">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setFilter(cat.id)}
+            className={`px-6 py-2 rounded-full text-[9px] font-black uppercase tracking-widest transition-all whitespace-nowrap ${filter === cat.id ? 'bg-white text-black' : 'bg-zinc-900 text-zinc-500 hover:text-white'}`}
+          >
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {filtered.map((item) => (
+          <div key={item.id} className="premium-card bg-zinc-900/20 border border-white/5 rounded-sm p-8 flex flex-col group hover:border-brand-accent/20 transition-all">
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <p className="text-[8px] font-black uppercase tracking-[0.3em] text-brand-accent mb-1">{item.category}</p>
+                <h3 className="text-lg font-black uppercase tracking-tight text-white">{item.title}</h3>
+              </div>
+              <button 
+                onClick={() => handleCopy(item.content, item.id)}
+                className={`p-3 rounded-sm transition-all ${copyStatus === item.id ? 'bg-emerald-500/10 text-emerald-500' : 'bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10'}`}
+              >
+                {copyStatus === item.id ? <CheckCircle size={16} /> : <Copy size={16} />}
+              </button>
+            </div>
+            <div className="flex-1">
+              <p className="text-zinc-400 text-sm font-medium leading-relaxed whitespace-pre-wrap line-clamp-6 group-hover:line-clamp-none transition-all cursor-text" onClick={() => handleCopy(item.content, item.id)}>
+                {item.content}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
