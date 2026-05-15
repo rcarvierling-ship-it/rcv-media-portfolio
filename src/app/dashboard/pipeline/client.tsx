@@ -205,10 +205,7 @@ export function PipelineClient({
            className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'settings' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
          >
            <Settings size={14} /> Ops Settings
-         </button>
-      </div>
-
-      <AnimatePresence mode="wait">
+         </button><button onClick={() => setActiveView("inspiration_board")} className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === "inspiration_board" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5"}`}><Lightbulb size={14} /> Inspiration</button></div><AnimatePresence mode="wait">
         {activeView === "command_center" && (
           <motion.div key="command_center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12">
              <CommandCenter 
@@ -1161,10 +1158,7 @@ function InspirationBoard({ initialBoard, supabase }: { initialBoard: any[], sup
           className="px-8 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest rounded-sm hover:scale-105 transition-all"
         >
           {isAdding ? 'Close' : 'Add Inspiration'}
-        </button>
-      </div>
-
-      <AnimatePresence>
+        </button><button onClick={() => setActiveView("inspiration_board")} className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === "inspiration_board" ? "bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]" : "bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5"}`}><Lightbulb size={14} /> Inspiration</button></div><AnimatePresence>
         {isAdding && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
             <div className="p-8 bg-zinc-900 border border-white/5 rounded-sm grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
@@ -1241,3 +1235,4 @@ function InspirationBoard({ initialBoard, supabase }: { initialBoard: any[], sup
     </motion.div>
   );
 }
+
