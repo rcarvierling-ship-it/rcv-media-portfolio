@@ -9,7 +9,7 @@ import {
   Inbox as InboxIcon, CheckCircle2, Camera, Scissors, ShieldCheck,
   Archive, Settings, LayoutGrid, X, AlertCircle, Quote, MapPin, 
   Image as ImageIcon, Link as LinkIcon, Lock, CheckCircle, Send,
-  ChevronRight, Save, DollarSign as DollarSignIcon
+  ChevronRight, Save, DollarSign as DollarSignIcon, Zap
 } from "lucide-react";
 import { 
   updateBookingPipeline, 
