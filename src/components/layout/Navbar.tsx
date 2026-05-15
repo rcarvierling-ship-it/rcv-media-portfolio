@@ -14,11 +14,12 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 const navItems = [
   { path: "/portfolio", label: "Portfolio" },
-  { path: "/curated", label: "The Edit" },
-  { path: "/vault", label: "The Vault" },
+  { path: "/services", label: "Services" },
   { path: "/pricing", label: "Pricing" },
-  { path: "/contact", label: "Contact" },
+  { path: "/book", label: "Booking" },
+  { path: "/client-galleries", label: "Galleries" },
   { path: "/about", label: "About" },
+  { path: "/contact", label: "Contact" },
 ];
 
 export function Navbar() {
@@ -117,11 +118,11 @@ export function Navbar() {
                   <Link
                     href={item.path}
                     className={cn(
-                      "text-5xl font-black uppercase tracking-tighter transition-colors",
+                      "text-4xl md:text-5xl font-black uppercase tracking-tighter transition-colors",
                       pathname === item.path ? "text-white" : "text-zinc-700 hover:text-white"
                     )}
                   >
-                    {item.label}
+                    {item.label === "Booking" ? "Book a Shoot" : item.label}
                   </Link>
                 </motion.div>
               ))}

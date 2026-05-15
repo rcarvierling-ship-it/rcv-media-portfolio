@@ -23,6 +23,7 @@ import {
 import { createContractFromBooking } from "@/app/actions/contracts";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
+import { getNextAction, getInquiryAction, type NextAction } from "@/utils/workflow";
 
 const STAGE_ICONS: Record<string, any> = {
   lead: InboxIcon,
@@ -49,7 +50,7 @@ export function PipelineClient({
   blockedDates: any[],
   albums: any[]
 }) {
-  const [activeView, setActiveView] = useState<"pipeline" | "inquiries" | "archive" | "settings">("pipeline");
+  const [activeView, setActiveView] = useState<"command_center" | "pipeline" | "inquiries" | "archive" | "settings">("command_center");
   const [pipeline, setPipeline] = useState(initialPipeline);
   const [inquiries, setInquiries] = useState(initialInquiries);
   const [packages, setPackages] = useState(initialPackages);
@@ -75,24 +76,29 @@ export function PipelineClient({
     setCreatingContractId(null);
   };
 
-  const handleMove = async (id: string, currentStage: string) => {
+  const handleMove = async (id: string, currentStage: string, customUpdates?: any) => {
     const stages = initialPipeline.map(s => s.id);
     const currentIndex = stages.indexOf(currentStage);
-    const nextStage = stages[currentIndex + 1];
+    const nextStage = customUpdates ? currentStage : stages[currentIndex + 1];
 
     if (!nextStage) return;
 
     setUpdatingId(id);
-    const result = await updateBookingPipeline(id, { pipeline_stage: nextStage });
+    const updates = customUpdates || { pipeline_stage: nextStage };
+    const result = await updateBookingPipeline(id, updates);
     
     if (result.success) {
       setPipeline(prev => prev.map(stage => {
-        if (stage.id === currentStage) {
+        if (stage.id === currentStage && !customUpdates) {
           return { ...stage, items: stage.items.filter((i: any) => i.id !== id) };
         }
         if (stage.id === nextStage) {
-          const item = prev.find(s => s.id === currentStage)?.items.find((i: any) => i.id === id);
-          return { ...stage, items: [item, ...stage.items] };
+          if (customUpdates) {
+            return { ...stage, items: stage.items.map((i: any) => i.id === id ? { ...i, ...customUpdates } : i) };
+          } else {
+            const item = prev.find(s => s.id === currentStage)?.items.find((i: any) => i.id === id);
+            return { ...stage, items: [item, ...stage.items] };
+          }
         }
         return stage;
       }));
@@ -141,6 +147,12 @@ export function PipelineClient({
       {/* TACTICAL NAVIGATION */}
       <div className="flex flex-wrap gap-4 items-center">
          <button 
+           onClick={() => setActiveView('command_center')}
+           className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'command_center' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
+         >
+           <ShieldCheck size={14} /> Command Center
+         </button>
+         <button 
            onClick={() => setActiveView('pipeline')}
            className={`px-8 py-3 rounded-sm text-[10px] font-black uppercase tracking-[0.2em] transition-all flex items-center gap-3 ${activeView === 'pipeline' ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)]' : 'bg-zinc-900/50 text-zinc-500 hover:text-white border border-white/5'}`}
          >
@@ -170,6 +182,25 @@ export function PipelineClient({
       </div>
 
       <AnimatePresence mode="wait">
+        {activeView === "command_center" && (
+          <motion.div key="command_center" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-12">
+             <CommandCenter 
+               pipeline={pipeline} 
+               inquiries={inquiries} 
+               onMove={handleMove}
+               onAccept={async (id) => {
+                 setIsProcessing(id);
+                 const res = await acceptInquiryAsBooking(id);
+                 if (res.success) {
+                   setInquiries(prev => prev.map(i => i.id === id ? { ...i, status: 'accepted' } : i));
+                   router.refresh();
+                 }
+                 setIsProcessing(null);
+               }}
+             />
+          </motion.div>
+        )}
+
         {activeView === "pipeline" && (
           <motion.div 
             key="pipeline" 
@@ -444,6 +475,19 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
       >
          {isProcessing && (<div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center rounded-sm"><Loader2 className="animate-spin text-brand-accent" /></div>)}
          
+         {/* Next Action Badge */}
+         <div className="absolute top-0 right-0">
+           {(() => {
+             const next = getNextAction(item);
+             const colors: any = { action: 'bg-brand-accent', waiting: 'bg-zinc-800', ready: 'bg-emerald-600' };
+             return (
+               <div className={`${colors[next.category]} text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-sm text-white shadow-lg`}>
+                 {next.label}
+               </div>
+             );
+           })()}
+         </div>
+         
          <div className={`absolute top-0 left-0 w-1 h-full ${stage.color.replace('text-', 'bg-')}`} />
          
          <div className="flex justify-between items-start mb-6">
@@ -528,13 +572,43 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                 <div className="space-y-8 bg-black/40 p-8 border border-white/5 rounded-sm">
                    <div>
                       <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-3">Project Valuation</p>
-                      <p className="text-4xl font-black text-white tracking-tighter">${Number(item.total_amount).toLocaleString()}</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-4xl font-black text-white tracking-tighter">${Number(item.total_amount).toLocaleString()}</span>
+                        <div className="flex flex-col gap-1">
+                          <button 
+                            onClick={async () => await onMove(item.id, stage.id, { deposit_paid: !item.deposit_paid })}
+                            className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.deposit_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                          >
+                            Deposit {item.deposit_paid ? 'Paid' : 'Due'}
+                          </button>
+                          <button 
+                            onClick={async () => await onMove(item.id, stage.id, { final_paid: !item.final_paid })}
+                            className={`px-2 py-0.5 text-[7px] font-black uppercase rounded-full border ${item.final_paid ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                          >
+                            Final {item.final_paid ? 'Paid' : 'Due'}
+                          </button>
+                        </div>
+                      </div>
                    </div>
-                   <div>
-                      <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Payment Vector</p>
-                      <span className="px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border border-brand-accent/20 bg-brand-accent/5 text-brand-accent">
-                        {item.payment_status || 'Pending'}
-                      </span>
+                   <div className="flex justify-between items-end">
+                      <div>
+                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Contract</p>
+                        <button 
+                          onClick={async () => await onMove(item.id, stage.id, { contract_status: item.contract_status === 'signed' ? 'unsigned' : 'signed' })}
+                          className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.contract_status === 'signed' ? 'bg-blue-500/10 border-blue-500/20 text-blue-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                        >
+                          {item.contract_status === 'signed' ? 'Signed' : 'Unsigned'}
+                        </button>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-black text-zinc-600 uppercase tracking-widest mb-3">Review</p>
+                        <button 
+                          onClick={async () => await onMove(item.id, stage.id, { review_requested: !item.review_requested })}
+                          className={`px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${item.review_requested ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' : 'bg-zinc-800 border-white/5 text-zinc-600'}`}
+                        >
+                          {item.review_requested ? 'Requested' : 'Send Req'}
+                        </button>
+                      </div>
                    </div>
                 </div>
               </div>
@@ -552,5 +626,121 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function CommandCenter({ pipeline, inquiries, onMove, onAccept }: any) {
+  const allBookings = pipeline.flatMap((s: any) => s.items);
+  const activeBookings = allBookings.filter((b: any) => b.status !== 'cancelled');
+
+  const pulse = {
+    attention: [
+      ...inquiries.filter((i: any) => i.status === 'new').map((i: any) => ({ ...i, type: 'inquiry', action: getInquiryAction(i) })),
+      ...activeBookings.filter((b: any) => {
+        const next = getNextAction(b);
+        return next.label === 'Prep for Shoot' || next.label === 'Shoot Session' || next.label === 'Confirm Date/Time' || next.label === 'Reply to Inquiry';
+      }).map((b: any) => ({ ...b, type: 'booking', action: getNextAction(b) }))
+    ].sort((a, b) => (a.action.priority || 99) - (b.action.priority || 99)),
+
+    booked: activeBookings.filter((b: any) => {
+      const created = new Date(b.created_at);
+      const diff = (new Date().getTime() - created.getTime()) / (1000 * 3600 * 24);
+      return diff <= 7;
+    }),
+
+    contracts: activeBookings.filter((b: any) => b.contract_status === 'unsigned' && b.pipeline_stage !== 'lead'),
+    editing: activeBookings.filter((b: any) => b.pipeline_stage === 'editing'),
+    delivery: activeBookings.filter((b: any) => b.pipeline_stage === 'editing'),
+    unpaid: activeBookings.filter((b: any) => !b.final_paid && b.pipeline_stage !== 'lead'),
+    reviews: activeBookings.filter((b: any) => b.pipeline_stage === 'delivered' && !b.review_requested)
+  };
+
+  const statCards = [
+    { label: 'Attention Needed', count: pulse.attention.length, icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-500/10' },
+    { label: 'New Bookings', count: pulse.booked.length, icon: Plus, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { label: 'Contracts Due', count: pulse.contracts.length, icon: Lock, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { label: 'In Editing', count: pulse.editing.length, icon: Scissors, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+    { label: 'Unpaid Balances', count: pulse.unpaid.length, icon: DollarSign, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+    { label: 'Review Requests', count: pulse.reviews.length, icon: Quote, color: 'text-zinc-400', bg: 'bg-zinc-400/10' },
+  ];
+
+  return (
+    <div className="space-y-16">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        {statCards.map((card) => (
+          <div key={card.label} className="premium-card p-6 border border-white/5 bg-zinc-900/20 rounded-sm">
+            <div className={`w-10 h-10 rounded-lg ${card.bg} flex items-center justify-center mb-4`}>
+              <card.icon size={18} className={card.color} />
+            </div>
+            <span className="block text-3xl font-black text-white mb-1 tracking-tighter">{card.count}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 leading-tight block">{card.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-8">
+           <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 className="text-sm font-black uppercase tracking-widest text-white">Immediate Next Actions</h3>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{pulse.attention.length} Tasks</span>
+           </div>
+           <div className="space-y-4">
+              {pulse.attention.length === 0 ? (
+                <div className="py-12 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+                   <CheckCircle className="mx-auto text-zinc-800 mb-2" size={24} />
+                   <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">All clear</p>
+                </div>
+              ) : (
+                pulse.attention.slice(0, 5).map((item: any) => (
+                  <div key={item.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex items-center justify-between group hover:border-brand-accent/20 transition-all">
+                     <div className="flex items-center gap-6">
+                        <div className="w-10 h-10 rounded-full bg-zinc-900 flex items-center justify-center text-zinc-600 group-hover:text-brand-accent group-hover:bg-brand-accent/10 transition-all">
+                           {item.type === 'inquiry' ? <Mail size={16} /> : <Calendar size={16} />}
+                        </div>
+                        <div>
+                           <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{item.name}</p>
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">{item.action.label}</p>
+                        </div>
+                     </div>
+                     <button 
+                       onClick={() => item.type === 'inquiry' ? onAccept(item.id) : onMove(item.id, item.pipeline_stage)}
+                       className="p-3 bg-white/5 text-zinc-500 hover:text-white hover:bg-white/10 rounded-sm transition-all"
+                     >
+                        <ChevronRight size={16} />
+                     </button>
+                  </div>
+                ))
+              )}
+           </div>
+        </div>
+
+        <div className="space-y-8">
+           <div className="flex items-center justify-between border-b border-white/5 pb-4">
+              <h3 className="text-sm font-black uppercase tracking-widest text-white">Accounts Receivable</h3>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">{pulse.unpaid.length} Pending</span>
+           </div>
+           <div className="space-y-4">
+              {pulse.unpaid.length === 0 ? (
+                <div className="py-12 text-center bg-zinc-900/10 border border-dashed border-white/5 rounded-sm">
+                   <DollarSign className="mx-auto text-zinc-800 mb-2" size={24} />
+                   <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Zero Balances Due</p>
+                </div>
+              ) : (
+                pulse.unpaid.slice(0, 5).map((item: any) => (
+                  <div key={item.id} className="p-6 bg-zinc-950 border border-white/5 rounded-sm flex items-center justify-between">
+                     <div>
+                        <p className="text-white font-black uppercase tracking-tight text-sm leading-none mb-1">{item.name}</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Total: ${Number(item.total_amount).toLocaleString()}</p>
+                     </div>
+                     <div className="text-right">
+                        <span className="text-brand-accent text-sm font-black tracking-tighter">UNPAID</span>
+                     </div>
+                  </div>
+                ))
+              )}
+           </div>
+        </div>
+      </div>
+    </div>
   );
 }

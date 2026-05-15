@@ -138,6 +138,10 @@ CREATE TABLE public.bookings (
   payment_status TEXT DEFAULT 'pending', -- pending, paid
   total_amount DECIMAL(10, 2) DEFAULT 0,
   linked_album_id UUID REFERENCES public.albums(id) ON DELETE SET NULL,
+  contract_status TEXT DEFAULT 'unsigned', -- unsigned, signed
+  deposit_paid BOOLEAN DEFAULT false,
+  final_paid BOOLEAN DEFAULT false,
+  review_requested BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
