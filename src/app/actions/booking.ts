@@ -15,7 +15,6 @@ export async function submitBooking(formData: FormData) {
     const event_date = formData.get("event_date") as string;
     const event_time = formData.get("event_time") as string;
     const location = formData.get("location") as string;
-    const instagram_handle = formData.get("instagram_handle") as string;
     const message = formData.get("message") as string;
 
     if (!name || !email || !shoot_type || !event_date) {
@@ -40,7 +39,6 @@ export async function submitBooking(formData: FormData) {
           event_date,
           event_time,
           location,
-          instagram_handle,
           message,
           total_amount: total_amount || 0,
           pipeline_stage: 'lead'
@@ -70,7 +68,7 @@ export async function submitBooking(formData: FormData) {
                 <div style="margin-bottom: 30px;">
                   <p style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin-bottom: 5px;">Client Information</p>
                   <h2 style="font-size: 20px; font-weight: 700; margin: 0; color: #ffffff;">${name}</h2>
-                  <p style="margin: 5px 0; font-size: 14px; color: #a1a1aa;">${email} • ${phone || "No Phone"} ${instagram_handle ? `• ${instagram_handle}` : ""}</p>
+                  <p style="margin: 5px 0; font-size: 14px; color: #a1a1aa;">${email} • ${phone || "No Phone"}</p>
                 </div>
 
                 <div style="grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #18181b; padding-top: 20px;">

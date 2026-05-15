@@ -190,10 +190,6 @@ export default function BookPage() {
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
                       <input name="phone" type="tel" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Instagram Handle</label>
-                      <input name="instagram_handle" type="text" placeholder="@username" className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
-                    </div>
                   </div>
                 </div>
 

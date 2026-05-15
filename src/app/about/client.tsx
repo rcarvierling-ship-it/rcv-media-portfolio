@@ -49,10 +49,9 @@ export function AboutClient({ data }: { data: any }) {
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent hidden lg:block" />
           
           <div className="absolute bottom-12 left-12 right-12 flex justify-between items-end">
-             <div className="flex flex-col gap-2">
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-white italic">Founding Visionary</span>
-                <div className="h-px w-24 bg-brand-accent shadow-[0_0_15px_var(--accent-glow)]" />
-             </div>
+              <div className="flex flex-col gap-2">
+                 <div className="h-px w-24 bg-brand-accent shadow-[0_0_15px_var(--accent-glow)]" />
+              </div>
              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
                 <MapPin size={12} className="text-brand-accent" /> Louisville, KY // USA
              </div>
@@ -151,10 +150,10 @@ export function AboutClient({ data }: { data: any }) {
                    <div className="p-4 bg-zinc-900 rounded-full group-hover:bg-brand-accent transition-all">
                       <Mail size={20} className="text-white" />
                    </div>
-                   <div>
-                      <span className="block text-[8px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-1">Direct Comms</span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-white">Start a Project</span>
-                   </div>
+                    <div>
+                       <span className="block text-[8px] font-black uppercase tracking-[0.3em] text-zinc-600 mb-1">Official Contact</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-white">Start a Project</span>
+                    </div>
                 </a>
              </div>
 
