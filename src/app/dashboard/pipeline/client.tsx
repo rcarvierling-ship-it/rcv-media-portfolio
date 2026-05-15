@@ -41,7 +41,8 @@ export function PipelineClient({
   packages: initialPackages,
   siteSettings: initialSiteSettings,
   blockedDates: initialBlockedDates,
-  albums
+  albums,
+  marketingVault
 }: { 
   initialPipeline: any[], 
   inquiries: any[],
