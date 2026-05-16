@@ -90,7 +90,7 @@ export default function AlbumManager() {
         </div>
         <button 
           onClick={() => setIsCreating(true)}
-          className="px-6 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors flex items-center gap-2"
+          className="px-6 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 rounded-full shadow-brand-glow"
         >
           <FolderPlus size={14} /> New Album
         </button>
@@ -98,7 +98,7 @@ export default function AlbumManager() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {albums.map((album) => (
-          <div key={album.id} className="premium-card rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl overflow-hidden group">
+          <div key={album.id} className="premium-card rounded-2xl border border-white/5 bg-card backdrop-blur-xl overflow-hidden group shadow-premium hover:border-brand-accent/30 transition-all">
             <div className="aspect-[16/9] bg-zinc-800 relative">
                {album.cover_image_url ? (
                  <img src={album.cover_image_url} alt={album.title} className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
@@ -107,12 +107,12 @@ export default function AlbumManager() {
                     <ImageIcon size={40} />
                  </div>
                )}
-               <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
+               <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
                <div className="absolute top-4 right-4">
                   {album.is_private ? (
-                    <div className="px-3 py-1 bg-brand-accent rounded-full flex items-center gap-2">
-                       <Lock size={10} className="text-white" />
-                       <span className="text-[8px] font-black uppercase tracking-widest text-white">Private Vault</span>
+                    <div className="px-3 py-1 bg-brand-accent rounded-full flex items-center gap-2 shadow-brand-glow">
+                       <Lock size={10} className="text-black" />
+                       <span className="text-[8px] font-black uppercase tracking-widest text-black">Private Vault</span>
                     </div>
                   ) : (
                     <div className="px-3 py-1 bg-zinc-800 rounded-full flex items-center gap-2">
@@ -144,7 +144,7 @@ export default function AlbumManager() {
                 <div className="space-y-4 mb-8 pt-6 border-t border-white/5">
                    <div className="flex flex-col gap-2">
                       <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Vault Location</span>
-                      <div className="flex items-center justify-between p-3 bg-black/40 rounded-sm border border-white/5 group/url">
+                      <div className="flex items-center justify-between p-3 bg-secondary rounded-sm border border-white/5 group/url">
                          <span className="text-[10px] font-mono text-zinc-400 truncate max-w-[200px]">
                            {album.is_private ? `/vault/${album.slug}` : `/albums/${album.slug}`}
                          </span>
@@ -189,14 +189,14 @@ export default function AlbumManager() {
                 <div className="grid grid-cols-2 gap-3">
                    <Link 
                      href={`/dashboard/albums/${album.id}`}
-                     className="flex-1 py-3 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-zinc-700 transition-colors rounded-sm"
+                     className="flex-1 py-3 bg-secondary text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-zinc-700 transition-colors rounded-sm border border-white/5"
                    >
                      Manage Media
                    </Link>
                    <Link 
                      href={album.is_private ? `/vault/${album.slug}` : `/albums/${album.slug}`}
                      target="_blank"
-                     className="flex-1 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-brand-accent transition-all rounded-sm flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(37,99,235,0.2)]"
+                     className="flex-1 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest text-center hover:brightness-110 transition-all rounded-sm flex items-center justify-center gap-2 shadow-brand-glow"
                    >
                      View Live <ExternalLink size={10} />
                    </Link>
@@ -233,12 +233,12 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/90 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
+    <div className="fixed inset-0 bg-background/90 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-zinc-950 border border-white/10 p-10 w-full max-w-xl rounded-2xl"
+        className="bg-card border border-white/10 p-10 w-full max-w-xl rounded-[2.5rem] shadow-2xl"
       >
          <h2 className="text-3xl font-black uppercase tracking-tighter text-white mb-8">
            {album ? "Modify Vault" : "Create New Vault"}
@@ -248,17 +248,17 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Album Title</label>
-                 <input name="title" defaultValue={album?.title} required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
+                 <input name="title" defaultValue={album?.title} required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
               </div>
               <div className="space-y-2">
                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">URL Slug</label>
-                 <input name="slug" defaultValue={album?.slug} placeholder="athlete-name-event" required className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
+                 <input name="slug" defaultValue={album?.slug} placeholder="athlete-name-event" required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
               </div>
             </div>
 
             <div className="space-y-2">
                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Client Name</label>
-               <input name="client_name" defaultValue={album?.client_name} placeholder="e.g. LeBron James" className="w-full bg-zinc-900 border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm" />
+               <input name="client_name" defaultValue={album?.client_name} placeholder="e.g. LeBron James" className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
             </div>
 
             <div className="p-6 bg-zinc-900/50 rounded-xl border border-white/5 space-y-6">
@@ -275,7 +275,7 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
                    className="w-6 h-6 accent-brand-accent" 
                  />
               </div>
-              <div className="space-y-2">
+               <div className="space-y-2">
                  <div className="flex justify-between items-center">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Passcode</label>
                     {isPrivate && (
@@ -293,16 +293,16 @@ function AlbumModal({ album, onClose, onSave, generatePasscode }: any) {
                    value={passcode} 
                    onChange={(e) => setPasscode(e.target.value)}
                    placeholder="SECRET123" 
-                   className="w-full bg-black border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent/50 rounded-sm font-mono tracking-widest" 
+                   className="w-full bg-background border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full font-mono tracking-widest shadow-inner" 
                  />
               </div>
             </div>
 
             <div className="flex gap-4 pt-4">
-               <button type="submit" className="flex-1 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] hover:bg-zinc-200">
+               <button type="submit" className="flex-1 py-5 bg-brand-accent text-black font-black uppercase tracking-widest text-[10px] hover:brightness-110 transition-all rounded-full shadow-brand-glow">
                   {album ? "Save Changes" : "Establish Vault"}
                </button>
-               <button type="button" onClick={onClose} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800">
+               <button type="button" onClick={onClose} className="flex-1 py-5 bg-secondary text-white font-black uppercase tracking-widest text-[10px] hover:brightness-110 transition-all rounded-full border border-white/5">
                   Cancel
                </button>
             </div>

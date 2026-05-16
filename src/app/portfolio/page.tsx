@@ -74,35 +74,41 @@ function PortfolioContent() {
   };
 
   return (
-    <div className="pt-32 pb-24 safe-padding min-h-screen bg-zinc-950 relative">
-      <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
-      
-      <div className="max-w-7xl mx-auto relative z-10">
-        <header className="mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
+    <div className="pt-40 pb-24 safe-padding min-h-screen bg-background relative overflow-hidden">
+      {/* Background Ambience */}
+      <div className="absolute inset-0 z-0 opacity-20">
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-accent/20 blur-[200px] rounded-full" />
+        <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-zinc-900 blur-[200px] rounded-full" />
+      </div>
+
+      <div className="max-w-[3200px] mx-auto px-6 relative z-10">
+        <header className="mb-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-4xl md:text-8xl font-black uppercase tracking-tighter mb-12 text-white"
           >
-            Portfolio
-          </motion.h1>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-8 block border-l-4 border-brand-accent pl-6 uppercase">The Archive</span>
+            <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter text-foreground mb-12 leading-[0.8]">
+              Visual <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500 italic">Evidence.</span>
+            </h1>
+          </motion.div>
           
           {/* Filters */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
             className="flex flex-wrap gap-3"
           >
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setActiveCategory(category)}
-                className={`px-6 py-2 text-xs font-bold uppercase tracking-widest transition-all duration-300 rounded-full border ${
+                className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 rounded-full border ${
                   activeCategory === category 
-                    ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.3)]" 
-                    : "premium-glass text-zinc-400 hover:text-white border-white/10 hover:border-white/30"
+                    ? "bg-black text-white border-black shadow-xl scale-105" 
+                    : "bg-white text-zinc-400 border-border hover:border-brand-accent hover:text-black shadow-sm"
                 }`}
               >
                 {category}
@@ -112,36 +118,35 @@ function PortfolioContent() {
         </header>
 
         {loading ? (
-          <div className="h-64 flex items-center justify-center text-zinc-600 font-bold uppercase tracking-widest text-sm">Loading...</div>
+          <div className="h-64 flex items-center justify-center text-zinc-400 font-black uppercase tracking-widest text-[10px] animate-pulse">Syncing Visual Intel...</div>
         ) : photos.length === 0 ? (
           <motion.div 
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
-             className="w-full premium-card rounded-2xl p-16 flex flex-col items-center justify-center text-center border border-white/5 relative overflow-hidden"
+             className="w-full bg-white rounded-[3rem] p-32 flex flex-col items-center justify-center text-center border border-border shadow-premium relative overflow-hidden"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-zinc-900/50 to-black/50" />
             <div className="relative z-10">
-              <div className="w-16 h-16 mb-6 mx-auto rounded-full bg-white/5 flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-zinc-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div className="w-20 h-20 mb-8 mx-auto rounded-full bg-zinc-50 flex items-center justify-center border border-border">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-300"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <h3 className="text-2xl font-black uppercase text-white mb-4 tracking-tight">Gallery is empty</h3>
-              <p className="text-zinc-500 mb-8 max-w-md mx-auto">High-impact shots are currently being curated. Check back soon for the latest galleries.</p>
+              <h3 className="text-3xl font-black uppercase text-foreground mb-4 tracking-tighter italic">Gallery Depleted</h3>
+              <p className="text-zinc-400 mb-8 max-w-md mx-auto font-medium">Visual assets are currently under curation. <br/> Check back for updated intel.</p>
             </div>
           </motion.div>
         ) : filteredPhotos.length === 0 ? (
-           <div className="text-zinc-500 uppercase tracking-widest text-sm font-bold pt-8">No photos in this category.</div>
+           <div className="text-zinc-400 uppercase tracking-widest text-[10px] font-black pt-8">No operational assets in this sector.</div>
         ) : (
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-            <AnimatePresence>
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
+            <AnimatePresence mode="popLayout">
               {filteredPhotos.map((photo, index) => (
                 <motion.div
                   key={photo.id}
                   layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4 }}
-                  className="relative break-inside-avoid group cursor-pointer overflow-hidden bg-zinc-900 rounded-lg aspect-[4/5] sm:aspect-auto"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.6, ease: [0.23, 1, 0.32, 1] }}
+                  className="relative break-inside-avoid group cursor-pointer overflow-hidden bg-zinc-100 rounded-[2rem] border border-border shadow-premium hover:shadow-2xl transition-all"
                   onClick={() => openLightbox(index)}
                 >
                   <Image
@@ -149,12 +154,12 @@ function PortfolioContent() {
                     alt={photo.title || "Portfolio Image"}
                     width={photo.width || 1200}
                     height={photo.height || 1600}
-                    className="w-full h-full sm:h-auto object-cover transition-transform duration-1000 group-hover:scale-105"
+                    className="w-full h-full sm:h-auto object-cover transition-transform duration-[2s] group-hover:scale-110"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-8">
-                    <span className="text-xs text-zinc-400 uppercase tracking-widest mb-1 font-bold">{photo.category || "Highlight"}</span>
-                    <span className="text-xl font-black text-white uppercase tracking-tighter">RCV Media Frame</span>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700 flex flex-col justify-end p-10">
+                    <span className="text-[10px] text-brand-accent uppercase tracking-[0.3em] mb-2 font-black">Asset ID: {photo.id.slice(0, 8)}</span>
+                    <span className="text-3xl font-black text-white uppercase tracking-tighter italic">RCV Frame</span>
                   </div>
                 </motion.div>
               ))}
@@ -170,53 +175,78 @@ function PortfolioContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-zinc-950/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-12"
+            className="fixed inset-0 z-[1000] bg-background/95 backdrop-blur-2xl flex items-center justify-center p-4 md:p-12"
             onClick={closeLightbox}
           >
             <button 
-              className="absolute top-6 right-6 text-white/50 hover:text-white p-2 z-50 transition-colors"
+              className="absolute top-10 right-10 text-zinc-500 hover:text-white p-4 z-50 transition-all bg-card border border-white/5 rounded-full shadow-premium"
               onClick={closeLightbox}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
             </button>
 
             <button 
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-4 z-50 transition-colors"
+              className="absolute left-8 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white p-6 z-50 transition-all bg-card border border-white/5 rounded-full shadow-premium"
               onClick={prevImage}
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
             </button>
 
             <button 
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white p-4 z-50 transition-colors"
+              className="absolute right-8 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white p-6 z-50 transition-all bg-card border border-white/5 rounded-full shadow-premium"
               onClick={nextImage}
             >
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
             </button>
 
-            <div className="relative w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+            <div className="relative w-full h-full flex flex-col items-center justify-center gap-12" onClick={e => e.stopPropagation()}>
               <motion.div
                 key={selectedImageIndex}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="relative max-w-full max-h-full"
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                className="relative max-w-full max-h-[75vh]"
               >
                 <img
                   src={filteredPhotos[selectedImageIndex].image_url}
                   alt="Portfolio Image"
-                  className="max-w-full max-h-[85vh] object-contain shadow-2xl rounded-md"
+                  className="max-w-full max-h-[75vh] object-contain shadow-brand-glow rounded-[1.5rem] border border-white/10"
                 />
-                <div className="absolute -bottom-12 left-0 right-0 text-center text-white/70">
-                  <span className="font-black uppercase tracking-widest text-white">RCV.Media Archive</span>
-                  {filteredPhotos[selectedImageIndex].category && (
-                    <>
-                      <span className="mx-3 text-white/30">•</span>
-                      <span className="uppercase tracking-widest text-xs font-bold text-zinc-500">{filteredPhotos[selectedImageIndex].category}</span>
-                    </>
-                  )}
+              </motion.div>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="text-center"
+              >
+                <div className="flex flex-wrap justify-center gap-3 mb-6">
+                   {filteredPhotos[selectedImageIndex].iso && (
+                     <div className="px-5 py-2 bg-card border border-white/10 rounded-full text-[9px] font-black text-brand-accent uppercase tracking-widest shadow-lg">
+                        ISO {filteredPhotos[selectedImageIndex].iso}
+                     </div>
+                   )}
+                   {filteredPhotos[selectedImageIndex].aperture && (
+                     <div className="px-5 py-2 bg-card border border-white/10 rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">
+                        {filteredPhotos[selectedImageIndex].aperture.includes('f/') ? filteredPhotos[selectedImageIndex].aperture.toUpperCase() : `F/${filteredPhotos[selectedImageIndex].aperture}`}
+                     </div>
+                   )}
+                   {filteredPhotos[selectedImageIndex].shutter_speed && (
+                     <div className="px-5 py-2 bg-card border border-white/10 rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">
+                        {filteredPhotos[selectedImageIndex].shutter_speed}S
+                     </div>
+                   )}
+                   {filteredPhotos[selectedImageIndex].focal_length && (
+                     <div className="px-5 py-2 bg-card border border-white/10 rounded-full text-[9px] font-black text-white uppercase tracking-widest shadow-lg">
+                        {filteredPhotos[selectedImageIndex].focal_length}
+                     </div>
+                   )}
                 </div>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">Operational Evidence v4.0</p>
+                <h4 className="text-3xl font-black text-white uppercase tracking-tighter italic">
+                  {filteredPhotos[selectedImageIndex].title || "Visual Intelligence Archive"}
+                </h4>
               </motion.div>
             </div>
           </motion.div>
@@ -228,7 +258,7 @@ function PortfolioContent() {
 
 export default function PortfolioPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-zinc-950 flex items-center justify-center text-zinc-500 uppercase tracking-widest text-xs font-black">Syncing Portfolio...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-zinc-400 uppercase tracking-widest text-[10px] font-black animate-pulse">Syncing Archive...</div>}>
       <PortfolioContent />
     </Suspense>
   );

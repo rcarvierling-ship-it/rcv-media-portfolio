@@ -127,23 +127,19 @@ export function InteractiveCalendar({
                 disabled={d.isDisabled}
                 onClick={() => onDateSelect(d.dateStr!)}
                 className={`w-full h-full flex flex-col items-center justify-center rounded-sm text-sm font-bold transition-all relative group
-                  ${d.isDisabled ? 'opacity-20 cursor-not-allowed' : 'hover:bg-blue-600/20 hover:scale-105'}
-                  ${d.isSelected ? 'bg-blue-600 text-white border border-blue-400' : 'text-zinc-400'}
-                  ${d.isBlocked ? 'diagonal-strike' : ''}
+                  ${d.isDisabled ? 'opacity-20 cursor-not-allowed' : 'hover:bg-brand-accent/20 hover:scale-105'}
+                  ${d.isSelected ? 'bg-brand-accent text-black border border-brand-accent' : 'text-zinc-400'}
                 `}
               >
-                <span>{d.day}</span>
+                <span className="relative z-10">{d.day}</span>
                 {d.isSelected && (
                   <motion.div 
-                    layoutId="calendar-ring"
-                    className="absolute inset-0 border-2 border-blue-400 rounded-sm"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    layoutId="selectedDay"
+                    className="absolute inset-0 border-2 border-brand-accent rounded-sm"
                   />
                 )}
-                
-                {/* Rule hint on hover */}
-                {!d.isDisabled && !d.isSelected && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                {d.isToday && !d.isSelected && (
+                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-brand-accent rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                 )}
               </button>
             )}
@@ -153,7 +149,7 @@ export function InteractiveCalendar({
 
       <div className="mt-8 pt-6 border-t border-white/5 flex flex-wrap gap-6 justify-center">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-blue-600 rounded-sm" />
+          <div className="w-3 h-3 bg-brand-accent rounded-sm" />
           <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Selected</span>
         </div>
         <div className="flex items-center gap-2">

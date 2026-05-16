@@ -1,77 +1,144 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+import { 
+  LayoutDashboard, BarChart3, Library, 
+  Image as ImageIcon, Inbox, GitPullRequest, 
+  FileText, Tag, Settings, Layout, 
+  User, LogOut, ArrowUpRight, LayoutGrid
+} from "lucide-react";
+
+function cn(...inputs: (string | undefined | null | false)[]) {
+  return twMerge(clsx(inputs));
+}
+
+const navGroups = [
+  {
+    title: "Media Hub",
+    items: [
+      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { label: "Business Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+      { label: "Master Library", href: "/dashboard/media", icon: Library },
+      { label: "Curation Hub", href: "/dashboard/curated", icon: ImageIcon },
+      { label: "Albums", href: "/dashboard/albums", icon: Inbox },
+    ]
+  },
+  {
+    title: "Agency Ops",
+    items: [
+      { label: "Visual Intelligence", href: "/dashboard/visuals", icon: GitPullRequest },
+      { label: "Strategic Pipeline", href: "/dashboard/pipeline", icon: Tag },
+      { label: "Contract Engine", href: "/dashboard/contracts", icon: FileText },
+      { label: "Pricing Engine", href: "/dashboard/pricing", icon: Tag },
+      { label: "Vibe Settings", href: "/dashboard/settings", icon: Settings },
+    ]
+  },
+  {
+    title: "Platform Design",
+    items: [
+      { label: "Site Editor", href: "/dashboard/editor", icon: Layout },
+      { label: "About Mastery", href: "/dashboard/about", icon: User },
+    ]
+  }
+];
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
   return (
-    <div className="min-h-screen bg-black pt-20 overflow-x-hidden">
-      <div className="flex flex-col md:flex-row container-premium min-h-[calc(100vh-80px)] overflow-hidden">
-        {/* SIDEBAR / MOBILE NAV */}
-        <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-zinc-900 p-4 md:p-6 flex flex-wrap md:flex-col gap-3 md:gap-8 sticky top-20 bg-black z-40">
-          <div className="flex flex-wrap md:flex-col gap-4 md:gap-8 shrink-0">
-            <div>
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4 hidden md:block">Media Hub</h2>
-              <nav className="flex flex-wrap md:flex-col gap-2">
-                <Link href="/dashboard" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Overview
-                </Link>
-                <Link href="/dashboard/analytics" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Business Analytics
-                </Link>
-                <Link href="/dashboard/media" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Master Library
-                </Link>
-                <Link href="/dashboard/curated" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Curation Hub
-                </Link>
-                <Link href="/dashboard/albums" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Albums
-                </Link>
-              </nav>
-            </div>
-            
-            <div>
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4 hidden md:block">Agency Ops</h2>
-              <nav className="flex flex-wrap md:flex-col gap-2">
-                <Link href="/dashboard/visuals" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Visual Intelligence
-                </Link>
-                <Link href="/dashboard/pipeline" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Strategic Pipeline
-                </Link>
-                <Link href="/dashboard/contracts" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Contract Engine
-                </Link>
-                <Link href="/dashboard/pricing" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Pricing Engine
-                </Link>
-                <Link href="/dashboard/settings" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Vibe Settings
-                </Link>
-              </nav>
-            </div>
-
-            <div>
-              <h2 className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4 hidden md:block">Platform Design</h2>
-              <nav className="flex flex-wrap md:flex-col gap-2">
-                <Link href="/dashboard/editor" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Site Editor
-                </Link>
-                <Link href="/dashboard/about" className="text-zinc-300 hover:text-white transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  About Mastery
-                </Link>
-                <button className="text-left text-red-500 hover:text-red-400 transition-colors px-3 py-2 rounded-sm hover:bg-zinc-900 text-xs font-bold whitespace-nowrap">
-                  Sign Out
-                </button>
-              </nav>
-            </div>
+    <div className="min-h-screen bg-background pb-12 overflow-x-hidden">
+      {/* Concept Top Navigation (Pill Style) */}
+      <div className="pt-8 px-8 fixed top-0 left-0 right-0 z-50">
+        <header className="max-w-[3200px] mx-auto bg-dark-panel text-white rounded-full py-3 px-6 flex items-center justify-between shadow-premium backdrop-blur-xl border border-white/5">
+          <div className="flex items-center gap-10">
+             <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center shadow-brand-glow">
+                   <span className="text-black font-black text-xl italic">R</span>
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] hidden xl:block">RCV.Media Ops</span>
+             </div>
+             
+             <nav className="hidden lg:flex items-center gap-2">
+                {[
+                  { label: "Overview", href: "/dashboard" },
+                  { label: "Pipeline", href: "/dashboard/pipeline" },
+                  { label: "Archive", href: "/dashboard/media" },
+                  { label: "Contracts", href: "/dashboard/contracts" },
+                  { label: "Intelligence", href: "/dashboard/analytics" },
+                ].map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link 
+                      key={item.href} 
+                      href={item.href}
+                      className={cn(
+                        "px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                        isActive ? "bg-brand-accent text-black shadow-xl" : "text-zinc-400 hover:text-white"
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+             </nav>
           </div>
-        </aside>
 
-        {/* Main Content */}
-        <main className="flex-1 p-6 md:p-12 overflow-x-hidden">
+          <div className="flex items-center gap-6">
+             <div className="hidden xl:flex items-center gap-4 bg-white/5 border border-white/10 rounded-full px-6 py-2">
+                <LayoutGrid size={16} className="text-brand-accent" />
+                <input 
+                  type="text" 
+                  placeholder="System Search..." 
+                  className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest text-white w-40 placeholder:text-zinc-700" 
+                />
+             </div>
+             
+                 <div className="relative group">
+                    <button className="w-12 h-12 rounded-full bg-zinc-800 p-0.5 border border-white/10 relative group-hover:border-brand-accent transition-all">
+                       <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden">
+                          <User size={24} className="text-zinc-500" />
+                       </div>
+                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-accent rounded-full border-2 border-dark-panel flex items-center justify-center shadow-brand-glow">
+                          <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+                       </div>
+                    </button>
+                    
+                    <div className="absolute top-[calc(100%+1rem)] right-0 w-64 bg-dark-panel border border-white/5 rounded-[2rem] shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all p-4 z-[100] backdrop-blur-xl">
+                       <div className="p-6 border-b border-white/5 mb-2">
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Command Identity</p>
+                          <p className="text-sm font-black text-white italic">REESE VIERLING</p>
+                       </div>
+                       <div className="space-y-1">
+                          <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
+                             <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
+                             <span className="text-[9px] font-black uppercase tracking-widest">Operational Settings</span>
+                          </Link>
+                          <button 
+                            onClick={async () => {
+                              const { logout } = await import("@/app/actions/auth");
+                              await logout();
+                            }}
+                            className="w-full flex items-center gap-4 p-4 hover:bg-red-500/10 rounded-full text-zinc-400 hover:text-red-500 transition-all"
+                          >
+                             <LogOut size={16} />
+                             <span className="text-[9px] font-black uppercase tracking-widest">Terminate Session</span>
+                          </button>
+                       </div>
+                    </div>
+                 </div>
+          </div>
+        </header>
+      </div>
+
+      <div className="pt-32 px-8 max-w-[3200px] mx-auto">
+        <main className="w-full">
           {children}
         </main>
       </div>

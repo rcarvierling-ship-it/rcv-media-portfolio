@@ -33,21 +33,21 @@ export function VisualsClient({ stats }: { stats: any }) {
 
              <div className="space-y-4">
                 {stats.recentEvents.map((event: any, i: number) => (
-                  <motion.div
-                    key={event.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="premium-card bg-zinc-950 border border-white/5 p-5 rounded-xl flex items-center justify-between group hover:border-white/10 transition-all"
-                  >
+                   <motion.div
+                     key={event.id}
+                     initial={{ opacity: 0, x: -10 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     transition={{ delay: i * 0.05 }}
+                     className="premium-card bg-card border border-white/5 p-5 rounded-xl flex items-center justify-between group hover:border-brand-accent/30 transition-all shadow-premium"
+                   >
                      <div className="flex items-center gap-6">
                         <div className={`p-3 rounded-lg ${
-                           event.event_type === 'vault_view' ? 'bg-blue-500/10 text-blue-500' : 
+                           event.event_type === 'vault_view' ? 'bg-brand-accent/10 text-brand-accent' : 
                            event.event_type === 'photo_download' ? 'bg-emerald-500/10 text-emerald-500' : 
                            event.event_type === 'photo_hover' ? 'bg-orange-500/10 text-orange-500' :
-                           event.event_type === 'engagement_duration' ? 'bg-purple-500/10 text-purple-500' :
-                           'bg-zinc-800 text-zinc-400'
-                        }`}>
+                            event.event_type === 'engagement_duration' ? 'bg-brand-accent/20 text-brand-accent' :
+                            'bg-secondary text-zinc-500'
+                         }`}>
                            {event.event_type === 'vault_view' ? <Eye size={18} /> : 
                             event.event_type === 'photo_download' ? <Download size={18} /> :
                             event.event_type === 'photo_hover' ? <MousePointer2 size={18} /> :
@@ -67,18 +67,18 @@ export function VisualsClient({ stats }: { stats: any }) {
                            </p>
                         </div>
                      </div>
-                     <div className="text-right">
-                        <span className="block text-[8px] font-black uppercase tracking-widest text-zinc-800 mb-1">Timestamp</span>
-                        <span className="text-[10px] font-mono text-zinc-500">{new Date(event.created_at).toLocaleTimeString()}</span>
-                     </div>
+                      <div className="text-right">
+                         <span className="block text-[8px] font-black uppercase tracking-widest text-zinc-600 mb-1">Timestamp</span>
+                         <span className="text-[10px] font-mono text-zinc-500">{new Date(event.created_at).toLocaleTimeString()}</span>
+                      </div>
                   </motion.div>
                 ))}
 
-                {stats.recentEvents.length === 0 && (
-                  <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-2xl">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-700">Waiting for live engagement data...</p>
-                  </div>
-                )}
+                 {stats.recentEvents.length === 0 && (
+                   <div className="py-32 text-center border-2 border-dashed border-white/5 rounded-2xl bg-secondary">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Waiting for live engagement data...</p>
+                   </div>
+                 )}
              </div>
           </section>
 
@@ -97,7 +97,7 @@ export function VisualsClient({ stats }: { stats: any }) {
                   if (!photo) return null;
                   
                   return (
-                    <div key={photoId} className="premium-card bg-zinc-900/40 rounded-2xl border border-white/5 overflow-hidden">
+                     <div key={photoId} className="premium-card bg-card rounded-2xl border border-white/5 overflow-hidden shadow-premium">
                        <div className="relative aspect-video">
                           <Image src={photo.image_url} alt={photo.title} fill className="object-cover opacity-50 grayscale" />
                           
@@ -120,11 +120,11 @@ export function VisualsClient({ stats }: { stats: any }) {
                   );
                 })}
 
-                {Object.keys(photoHeatmaps).length === 0 && (
-                  <div className="col-span-2 py-24 text-center border-2 border-dashed border-white/5 rounded-2xl bg-zinc-900/10">
-                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-800 italic underline-offset-8 underline decoration-orange-500/20">Awaiting engagement heatmaps...</p>
-                  </div>
-                )}
+                 {Object.keys(photoHeatmaps).length === 0 && (
+                   <div className="col-span-2 py-24 text-center border-2 border-dashed border-white/5 rounded-2xl bg-secondary">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 italic underline-offset-8 underline decoration-brand-accent/20">Awaiting engagement heatmaps...</p>
+                   </div>
+                 )}
              </div>
           </section>
        </div>
@@ -136,19 +136,19 @@ export function VisualsClient({ stats }: { stats: any }) {
              <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-8 border-b border-white/5 pb-4">Conversion Flow</h3>
              
              <div className="space-y-8">
-                {[
-                  { label: 'Inquiries', value: 85, color: 'bg-zinc-800' },
-                  { label: 'Bookings', value: 62, color: 'bg-zinc-700' },
-                  { label: 'Contracts', value: 45, color: 'bg-zinc-500' },
-                  { label: 'Paid', value: 38, color: 'bg-brand-accent' },
-                ].map((bar) => (
+                 {[
+                   { label: 'Inquiries', value: 85, color: 'bg-zinc-800' },
+                   { label: 'Bookings', value: 62, color: 'bg-zinc-700' },
+                   { label: 'Contracts', value: 45, color: 'bg-zinc-600' },
+                   { label: 'Paid', value: 38, color: 'bg-brand-accent' },
+                 ].map((bar) => (
                   <div key={bar.label} className="space-y-3">
                      <div className="flex justify-between items-center text-[9px] font-black uppercase tracking-widest">
                         <span className="text-zinc-500">{bar.label}</span>
                         <span className="text-white">{bar.value}%</span>
                      </div>
-                     <div className="h-1.5 w-full bg-black rounded-full overflow-hidden border border-white/5">
-                        <motion.div 
+                      <div className="h-1.5 w-full bg-background rounded-full overflow-hidden border border-white/5">
+                         <motion.div 
                           initial={{ width: 0 }}
                           animate={{ width: `${bar.value}%` }}
                           transition={{ duration: 1, ease: "circOut" }}

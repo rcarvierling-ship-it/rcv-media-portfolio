@@ -76,11 +76,11 @@ export default function AboutEditorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">First Name</label>
-              <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" required />
+              <input name="about_title_first" defaultValue={settings?.about_title_first} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" required />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Last Name</label>
-              <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" required />
+              <input name="about_title_last" defaultValue={settings?.about_title_last} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" required />
             </div>
           </div>
         </div>
@@ -89,28 +89,28 @@ export default function AboutEditorPage() {
         <div className="space-y-8">
           <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500 border-b border-white/5 pb-4">02. Cinematic Portrait</h2>
           <div className="flex flex-col md:flex-row gap-8 items-start">
-             <div className="relative aspect-[3/4] w-48 rounded-xl overflow-hidden border border-white/10 bg-zinc-900 group shadow-2xl">
+             <div className="relative aspect-[3/4] w-48 rounded-[1.5rem] overflow-hidden border border-white/10 bg-background group shadow-2xl">
                 {settings?.about_image_url ? (
                   <Image src={settings.about_image_url} alt="Portrait" fill className="object-cover" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-700 font-black uppercase text-[8px] tracking-widest">No Image</div>
+                  <div className="w-full h-full flex items-center justify-center text-zinc-800 font-black uppercase text-[8px] tracking-widest">No Image</div>
                 )}
                 <button 
                   type="button"
                   onClick={() => setShowPhotoPicker(true)}
-                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white"
+                  className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white backdrop-blur-sm"
                 >
-                  Change Photo
+                   Adjust Persona
                 </button>
              </div>
-             <div className="flex-1 space-y-4">
-                <p className="text-zinc-500 text-xs leading-relaxed max-w-xs">Select a high-resolution portrait from your master library. This image represents your professional identity on the About page.</p>
+             <div className="flex-1 space-y-6">
+                <p className="text-zinc-500 text-[11px] font-medium leading-relaxed max-w-xs uppercase tracking-wide">Select a high-resolution portrait from your master library. This image represents your professional identity on the About page.</p>
                 <button 
                   type="button" 
                   onClick={() => setShowPhotoPicker(true)}
-                  className="px-6 py-3 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:bg-white hover:text-black transition-all flex items-center gap-2"
+                  className="px-8 py-4 bg-secondary border border-white/5 text-[10px] font-black uppercase tracking-widest text-white hover:brightness-110 transition-all flex items-center gap-2 rounded-full shadow-premium"
                 >
-                  <ImageIcon size={14} /> Open Master Library
+                  <ImageIcon size={14} className="text-brand-accent" /> Master Library Access
                 </button>
              </div>
           </div>
@@ -125,7 +125,7 @@ export default function AboutEditorPage() {
               name="about_bio" 
               defaultValue={settings?.about_bio} 
               rows={8}
-              className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none text-sm leading-loose" 
+              className="w-full bg-secondary border border-white/5 px-8 py-6 text-white outline-none rounded-[1.5rem] focus:border-brand-accent shadow-inner resize-none text-sm leading-loose font-medium" 
               required 
             />
           </div>
@@ -141,7 +141,7 @@ export default function AboutEditorPage() {
                 name="instagram_url" 
                 defaultValue={settings?.instagram_url} 
                 placeholder="https://instagram.com/username"
-                className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" 
+                className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" 
               />
             </div>
             <div className="space-y-2">
@@ -150,7 +150,7 @@ export default function AboutEditorPage() {
                 name="contact_email" 
                 defaultValue={settings?.contact_email} 
                 placeholder="contact@rcv-media.com"
-                className="w-full bg-zinc-900 border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" 
+                className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" 
               />
             </div>
           </div>
@@ -159,34 +159,34 @@ export default function AboutEditorPage() {
         <button 
           type="submit" 
           disabled={saving}
-          className="w-full py-6 bg-white text-black font-black uppercase tracking-widest text-sm rounded-sm hover:scale-[1.01] transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+          className="w-full py-6 bg-brand-accent text-black font-black uppercase tracking-widest text-sm rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow disabled:opacity-50"
         >
-          {saving ? 'Syncing...' : success ? <><Check size={18} /> Settings Updated</> : <><Save size={18} /> Update About Page</>}
+          {saving ? 'Syncing...' : success ? <><Check size={18} /> DNA Updated</> : <><Save size={18} /> Update About Page</>}
         </button>
       </form>
 
       {/* PHOTO PICKER MODAL */}
       {showPhotoPicker && (
-        <div className="fixed inset-0 bg-black/95 z-[500] flex items-center justify-center p-8 backdrop-blur-xl">
-           <div className="bg-zinc-950 border border-white/5 w-full max-w-5xl h-[80vh] flex flex-col rounded-2xl shadow-2xl overflow-hidden">
-              <div className="p-8 border-b border-white/5 flex justify-between items-center">
-                 <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Select Portrait</h2>
-                 <button onClick={() => setShowPhotoPicker(false)} className="text-zinc-500 hover:text-white transition-colors"><X /></button>
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-[500] flex items-center justify-center p-8">
+           <div className="bg-card border border-white/10 w-full max-w-5xl h-[80vh] flex flex-col rounded-[2.5rem] shadow-2xl overflow-hidden">
+              <div className="p-10 border-b border-white/5 flex justify-between items-center bg-zinc-900/20">
+                 <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">Select Portrait</h2>
+                 <button onClick={() => setShowPhotoPicker(false)} className="p-3 bg-secondary text-white hover:brightness-110 transition-all rounded-full border border-white/10"><X /></button>
               </div>
               <div className="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                  {photos.map(photo => (
-                   <div 
-                     key={photo.id} 
-                     onClick={() => selectImage(photo.image_url)}
-                     className={`relative aspect-square cursor-pointer group border-2 transition-all ${settings.about_image_url === photo.image_url ? 'border-brand-accent' : 'border-transparent hover:border-white/20'}`}
-                   >
-                      <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
-                      {settings.about_image_url === photo.image_url && (
-                        <div className="absolute inset-0 bg-brand-accent/20 flex items-center justify-center">
-                           <span className="text-[10px] font-black uppercase tracking-widest text-white bg-brand-accent px-3 py-1">Active</span>
-                        </div>
-                      )}
-                   </div>
+                    <div 
+                      key={photo.id} 
+                      onClick={() => selectImage(photo.image_url)}
+                      className={`relative aspect-square cursor-pointer group border-2 rounded-xl overflow-hidden transition-all ${settings.about_image_url === photo.image_url ? 'border-brand-accent shadow-brand-glow' : 'border-transparent hover:border-white/20'}`}
+                    >
+                       <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
+                       {settings.about_image_url === photo.image_url && (
+                         <div className="absolute inset-0 bg-brand-accent/20 flex items-center justify-center">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-black bg-brand-accent px-3 py-1">Active</span>
+                         </div>
+                       )}
+                    </div>
                  ))}
                  {photos.length === 0 && <p className="col-span-full text-center py-20 text-zinc-600 font-black uppercase tracking-widest text-xs">No photos in library yet.</p>}
               </div>

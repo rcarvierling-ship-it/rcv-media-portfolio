@@ -3,9 +3,9 @@ import { PipelineClient } from "./client";
 
 const STAGES = [
   { id: 'lead', label: 'Inquiry', color: 'text-zinc-500', bg: 'bg-zinc-500/10' },
-  { id: 'confirmed', label: 'Booking', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+  { id: 'confirmed', label: 'Booking', color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
   { id: 'shooting', label: 'Shoot Day', color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-  { id: 'editing', label: 'In Edit', color: 'text-purple-500', bg: 'bg-purple-500/10' },
+  { id: 'editing', label: 'In Edit', color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
   { id: 'delivered', label: 'Delivered', color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
 ];
 
@@ -77,19 +77,19 @@ export default async function PipelinePage() {
 
   return (
     <div className="h-full flex flex-col space-y-8 pb-32">
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-white/5 pb-8">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-border pb-10">
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2 italic">Strategic Pipeline</h1>
-          <p className="text-zinc-500 font-light tracking-[0.4em] uppercase text-[10px]">Agency Lead Flow & Contract Intelligence</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-3 italic">Strategic Pipeline</h1>
+          <p className="text-zinc-400 font-black tracking-[0.4em] uppercase text-[10px]">Agency Lead Flow & Contract Intelligence</p>
         </div>
-        <div className="flex gap-8">
+        <div className="flex gap-12">
            <div className="text-right">
-              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1">Projected Revenue</span>
-              <span className="text-2xl font-black text-brand-accent">${totalRevenue.toLocaleString()}</span>
+              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Projected Revenue</span>
+              <span className="text-3xl font-black text-brand-accent tracking-tighter shadow-brand-glow/20">${totalRevenue.toLocaleString()}</span>
            </div>
            <div className="text-right">
-              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-1">Active Projects</span>
-              <span className="text-2xl font-black text-white">{activeBookings.filter(b => b.pipeline_stage !== 'delivered').length}</span>
+              <span className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Active Projects</span>
+              <span className="text-3xl font-black text-foreground tracking-tighter">{activeBookings.filter(b => b.pipeline_stage !== 'delivered').length}</span>
            </div>
         </div>
       </header>

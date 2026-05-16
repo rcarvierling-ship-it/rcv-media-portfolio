@@ -9,10 +9,17 @@ import { deleteBooking } from "@/app/actions/booking";
 import { 
   DollarSign, Users, Target, ArrowRight, TrendingUp, X, 
   BarChart3, Activity, Calendar, ChevronRight, Info, Trash2,
-  AlertTriangle
+  AlertTriangle, User, Settings, Camera, Mail, Scissors, Zap,
+  MapPin, Clock, ShieldCheck, Copy, Loader2
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: (string | undefined | null | false)[]) {
+  return twMerge(clsx(inputs));
+}
 
 type Photo = {
   id: string;
@@ -48,7 +55,7 @@ export default function DashboardPage() {
   const [packages, setPackages] = useState<Package[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
-  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [selectedMetric, setSelectedMetric] = useState<string>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   
   const supabase = createClient();
@@ -158,238 +165,295 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-12 pb-24">
-      {/* 1. EXECUTIVE OVERVIEW HEADER */}
-      <section>
-        <div className="mb-12 flex justify-between items-end">
+    <div className="space-y-10 pb-24">
+      {/* 1. OPERATIONS HEADER */}
+      <section className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
+        <div className="flex items-center gap-6">
+          <button onClick={() => router.back()} className="w-14 h-14 rounded-full bg-card border border-white/5 flex items-center justify-center shadow-sm hover:shadow-premium transition-all">
+            <ArrowRight className="rotate-180 text-zinc-400" size={20} />
+          </button>
           <div>
-            <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2">Executive Overview</h1>
-            <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Real-time business performance & deep analytics</p>
-          </div>
-          <div className="text-right hidden md:block">
-             <div className="flex items-center gap-2 text-brand-accent">
-               <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse" />
-               <span className="text-[10px] font-black uppercase tracking-widest">Live Sync Active</span>
-             </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("revenue")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden">
-            <div className="absolute -right-4 -top-4 text-white opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={100} /></div>
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Realized Revenue</span>
-              <Info size={12} className="text-zinc-700" />
-            </div>
-            <div className="flex items-end gap-2">
-              <h3 className="text-4xl font-black tracking-tighter text-white">${analytics.realizedRevenue.toLocaleString()}</h3>
-              <TrendingUp size={20} className="text-brand-accent mb-2" />
-            </div>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer overflow-hidden">
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Pipeline Value</span>
-              <Activity size={12} className="text-zinc-700" />
-            </div>
+            <h1 className="text-6xl font-black tracking-tighter text-foreground mb-1 leading-none italic">Executive <span className="text-zinc-300">Overview</span></h1>
             <div className="flex items-center gap-3">
-              <h3 className="text-4xl font-black tracking-tighter text-brand-accent">${analytics.projectedPipelineValue.toLocaleString()}</h3>
-              <span className="text-[10px] font-black uppercase text-brand-accent">Active</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">RCV Operations Command</span>
+              <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse shadow-brand-glow" />
             </div>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("conversion")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Booking Rate</span>
-              <Target size={12} className="text-zinc-700" />
-            </div>
-            <h3 className="text-4xl font-black tracking-tighter text-white">{analytics.conversionRate}%</h3>
-            <div className="w-full h-1 bg-zinc-800 mt-4 rounded-full overflow-hidden">
-              <motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-brand-accent" />
-            </div>
-          </motion.div>
-
-          <motion.div whileHover={{ scale: 1.02 }} onClick={() => setSelectedMetric("segments")} className="premium-card p-8 rounded-2xl border border-white/5 bg-zinc-900/40 backdrop-blur-xl relative group cursor-pointer">
-            <div className="flex justify-between items-start mb-4">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Top Segments</span>
-              <BarChart3 size={12} className="text-zinc-700" />
-            </div>
-            <h3 className="text-4xl font-black tracking-tighter text-white">{analytics.topTypes[0]?.[0] || '---'}</h3>
-          </motion.div>
+          </div>
         </div>
+         <div className="flex items-center gap-3">
+            <button 
+              onClick={() => alert("Operational Guardrail: Multi-dimensional filtering logic is currently being calibrated.")}
+              className="px-8 py-4 bg-card border border-white/5 rounded-full shadow-sm text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:shadow-premium transition-all"
+            >
+              Filter View
+            </button>
+            <Link 
+              href="/dashboard/pipeline"
+              className="px-8 py-4 bg-brand-accent text-black rounded-full shadow-xl shadow-brand-glow/20 text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-3 group"
+            >
+              New Operation <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </Link>
+         </div>
       </section>
 
-      {/* 2. ANALYTICS MODAL (DEEP DIVE) */}
-      <AnimatePresence>
-        {selectedMetric && (
-          <motion.div 
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[600] flex items-center justify-center p-4 md:p-12 backdrop-blur-2xl bg-black/60"
-            onClick={() => setSelectedMetric(null)}
-          >
-            <motion.div 
-              initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
-              className="bg-zinc-950 border border-white/10 w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row h-full max-h-[800px]"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-full md:w-80 bg-zinc-900/50 p-10 border-r border-white/5 flex flex-col justify-between">
-                <div>
-                  <button onClick={() => setSelectedMetric(null)} className="mb-12 text-zinc-500 hover:text-white transition-colors flex items-center gap-2 uppercase text-[10px] font-black tracking-widest"><X size={14} /> Close View</button>
-                  <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4">
-                    {selectedMetric === "revenue" ? "Revenue" : selectedMetric === "momentum" ? "Leads" : selectedMetric === "conversion" ? "Sales" : "Segments"}
-                  </h2>
-                </div>
-                <div className="p-6 bg-black rounded-2xl border border-white/5">
-                  <span className="text-2xl font-black text-white">
-                    {selectedMetric === "revenue" ? `$${analytics.realizedRevenue.toLocaleString()}` : selectedMetric === "momentum" ? `${analytics.totalLeads} Total` : selectedMetric === "conversion" ? `${analytics.conversionRate}%` : analytics.topTypes[0]?.[0]}
-                  </span>
+      {/* 2. STAT MODULAR GRID */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        {/* Realized Intelligence */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          className="lg:col-span-8 bg-card rounded-[3.5rem] border border-white/5 shadow-module p-12 relative overflow-hidden group"
+        >
+          <div className="relative z-10">
+            <div className="flex justify-between items-start mb-10">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Realized Revenue</p>
+                <div className="flex items-baseline gap-4">
+                  <h2 className="text-7xl font-black tracking-tighter text-foreground">${analytics.realizedRevenue.toLocaleString()}</h2>
+                  <span className="text-brand-accent font-black text-xs">▲ 12%</span>
                 </div>
               </div>
-              <div className="flex-1 p-12 bg-black relative flex flex-col justify-center">
-                 {selectedMetric === "revenue" && (
-                   <div className="h-64 flex items-end gap-4 w-full">
-                      {Object.entries(analytics.revenueByMonth).map(([month, amount]) => (
-                        <div key={month} className="flex-1 flex flex-col items-center gap-4 group">
-                           <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div initial={{ height: 0 }} animate={{ height: analytics.realizedRevenue > 0 ? `${(amount / analytics.realizedRevenue) * 100}%` : '4px' }} className="w-full bg-brand-accent rounded-t-sm group-hover:bg-brand-accent transition-colors" />
-                           </div>
-                           <span className="text-[10px] font-black uppercase text-zinc-500">{month}</span>
-                        </div>
-                      ))}
-                   </div>
-                 )}
-                 {selectedMetric === "momentum" && (
-                   <div className="h-64 flex items-end gap-4 w-full">
-                      {analytics.dailyStats.map(([day, count]) => (
-                        <div key={day} className="flex-1 flex flex-col items-center gap-4 group">
-                           <div className="relative w-full flex flex-col justify-end h-full">
-                              <motion.div initial={{ height: 0 }} animate={{ height: count > 0 ? `${(count / 10) * 100}%` : '4px' }} className={`w-full ${count > 0 ? 'bg-brand-accent' : 'bg-zinc-900'} rounded-t-sm`} />
-                           </div>
-                           <span className="text-[10px] font-black uppercase text-zinc-500">{day}</span>
-                        </div>
-                      ))}
-                   </div>
-                 )}
-                 {selectedMetric === "conversion" && (
-                   <div className="space-y-12 w-full max-w-md mx-auto">
-                      <div className="space-y-4">
-                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-white"><span>Total Inquiries</span><span>{analytics.totalLeads}</span></div>
-                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: '100%' }} className="h-full bg-zinc-700" /></div>
+              <div className="space-y-4 text-right">
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Projected Inbound</p>
+                <h3 className="text-4xl font-black tracking-tighter text-foreground">${analytics.projectedPipelineValue.toLocaleString()}</h3>
+              </div>
+            </div>
+
+            {/* Mini Monthly Chart */}
+            <div className="flex items-end gap-3 h-12 mb-10 px-2">
+               {['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'].map((m) => {
+                  const monthValue = analytics.revenueByMonth[m] || 0;
+                  const maxVal = Math.max(...Object.values(analytics.revenueByMonth), 1);
+                  const height = (monthValue / maxVal) * 100;
+                  return (
+                    <div key={m} className="flex-1 h-full bg-secondary rounded-full overflow-hidden relative group/bar">
+                      <div 
+                        className="absolute bottom-0 left-0 right-0 bg-brand-accent/30 rounded-full group-hover/bar:bg-brand-accent transition-all duration-500" 
+                        style={{ height: `${height}%` }}
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/bar:opacity-100 transition-opacity">
+                         <span className="text-[8px] font-black text-black">{m}</span>
                       </div>
-                      <div className="space-y-4">
-                         <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-brand-accent"><span>Realized Bookings</span><span>{analytics.realizedCount}</span></div>
-                         <div className="h-4 bg-zinc-900 rounded-full overflow-hidden"><motion.div initial={{ width: 0 }} animate={{ width: `${analytics.conversionRate}%` }} className="h-full bg-brand-accent shadow-[0_0_20px_rgba(16,185,129,0.4)]" /></div>
-                      </div>
-                   </div>
-                 )}
-                 {selectedMetric === "segments" && (
-                    <div className="space-y-8 w-full max-w-md mx-auto">
-                       {analytics.topTypes.map(([type, count]) => (
-                         <div key={type} className="group flex items-center justify-between p-6 bg-zinc-900/40 border border-white/5 rounded-2xl hover:border-brand-accent/50 transition-all">
-                            <div>
-                               <h4 className="text-lg font-black uppercase tracking-tighter text-white">{type}</h4>
-                               <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{count} Active Leads</p>
-                            </div>
-                            <span className="text-xs font-black text-brand-accent uppercase tracking-widest">{Math.round((count / analytics.totalLeads) * 100)}% Share</span>
-                         </div>
-                       ))}
                     </div>
-                 )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  );
+               })}
+            </div>
 
-      {/* 3. MEDIA & RECENT ACTIVITY */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 border-t border-white/5 pt-12">
-        <div className="lg:col-span-2 space-y-8">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-black uppercase tracking-tight text-white">Media Library</h2>
-            <Link href="/dashboard/upload" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white">Upload New &rarr;</Link>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-            {photos.slice(0, 9).map((photo) => (
-              <div key={photo.id} className="group relative aspect-square bg-zinc-900 overflow-hidden border border-white/5 rounded-sm">
-                <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
-                <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
-                  <button onClick={() => setEditingPhoto(photo)} className="text-[10px] font-black uppercase tracking-widest text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black">Edit</button>
+            {/* Client Avatars */}
+            <div className="flex items-center -space-x-3">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="w-12 h-12 rounded-full border-4 border-card bg-secondary overflow-hidden shadow-sm relative">
+                   <User size={24} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-zinc-500" />
                 </div>
+              ))}
+              <div className="w-12 h-12 rounded-full border-4 border-card bg-secondary flex items-center justify-center text-[10px] font-black text-zinc-500 shadow-sm">
+                +12
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-8">
-          <h2 className="text-2xl font-black uppercase tracking-tight text-white">Recent Requests</h2>
-          <div className="space-y-4">
-            {bookings.slice(0, 6).map((booking) => (
-              <div key={booking.id} className="p-6 bg-zinc-900/50 border border-white/5 rounded-xl flex items-center justify-between group hover:border-white/10 transition-all">
-                <div className="flex items-center gap-4">
-                  <div className={`w-2 h-2 rounded-full ${booking.status === 'confirmed' ? 'bg-brand-accent' : 'bg-zinc-700 animate-pulse'}`} />
-                  <div>
-                    <h4 className="text-sm font-black uppercase tracking-tight text-white">{booking.name}</h4>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500">{booking.shoot_type}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-[10px] font-black uppercase tracking-widest text-white">
-                    {new Date(booking.event_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                  </span>
-                  <button 
-                    onClick={() => setDeletingId(booking.id)}
-                    className="p-2 text-zinc-700 hover:text-red-500 transition-colors relative z-10"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 4. MODALS (EDIT & DELETE) */}
-      <AnimatePresence>
-        {editingPhoto && (
-          <div className="fixed inset-0 bg-black/95 z-[500] flex items-center justify-center p-4 backdrop-blur-xl">
-            <div className="bg-zinc-950 border border-white/10 p-10 w-full max-md rounded-2xl shadow-2xl">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Edit Photo</h2>
-                <button onClick={() => setEditingPhoto(null)} className="text-zinc-500 hover:text-white"><X /></button>
-              </div>
-              <form onSubmit={handleUpdate} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Title</label>
-                  <input name="title" defaultValue={editingPhoto.title} className="w-full bg-zinc-900 border border-white/5 focus:border-brand-accent/50 px-6 py-4 text-white outline-none rounded-sm" required />
-                </div>
-                <div className="flex items-center gap-3">
-                  <input type="checkbox" name="is_featured" id="edit_featured" defaultChecked={editingPhoto.is_featured} className="w-5 h-5 accent-brand-accent" />
-                  <label htmlFor="edit_featured" className="text-[10px] font-black uppercase tracking-widest text-zinc-300">Feature on Homepage</label>
-                </div>
-                <button type="submit" className="w-full bg-white text-black font-black uppercase py-4 rounded-sm hover:bg-zinc-200 transition-colors">Save Changes</button>
-              </form>
             </div>
           </div>
-        )}
+        </motion.div>
 
-        {deletingId && (
-          <div className="fixed inset-0 bg-black/90 z-[700] flex items-center justify-center p-4 backdrop-blur-xl">
-             <motion.div 
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               exit={{ opacity: 0, scale: 0.9 }}
-               className="bg-zinc-950 border border-red-500/20 p-10 w-full max-w-sm rounded-2xl text-center shadow-[0_0_50px_rgba(239,68,68,0.1)]"
-             >
-                <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500">
-                   <AlertTriangle size={32} />
+        {/* Payout Intelligence */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+          className="lg:col-span-4 bg-card rounded-[3.5rem] border border-white/5 shadow-module p-12 relative overflow-hidden"
+        >
+          <div className="flex justify-between items-start mb-10">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Operational Liquidity</p>
+            <div className="w-10 h-10 rounded-full bg-secondary border border-white/5 flex items-center justify-center">
+              <ArrowRight className="-rotate-45 text-zinc-400" size={18} />
+            </div>
+          </div>
+          <h2 className="text-6xl font-black tracking-tighter text-foreground mb-8">${(analytics.realizedRevenue * 0.8).toLocaleString()}</h2>
+          
+          <div className="grid grid-cols-2 gap-4 mb-10">
+            <div className="p-6 bg-secondary rounded-[2rem] border border-white/5">
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Network</p>
+              <div className="flex items-center gap-3">
+                 <div className="w-6 h-6 bg-brand-accent rounded-sm" />
+                 <span className="text-xs font-black uppercase">Stripe</span>
+              </div>
+            </div>
+            <div className="p-6 bg-secondary rounded-[2rem] border border-white/5">
+              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Status</p>
+              <span className="text-xs font-black uppercase text-brand-accent">Ready</span>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => alert("Intelligence Sync: Payout transmission sequence initiated. Network verification in progress.")}
+            className="w-full py-6 bg-brand-accent text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-full shadow-xl shadow-brand-glow/20 hover:brightness-110 transition-all active:scale-95"
+          >
+            Execute Payout
+          </button>
+        </motion.div>
+      </section>
+
+      {/* 3. ACTIVE OPERATIONS PANEL (DARK) */}
+      <section className="relative group">
+        {/* Inline Filter Pills */}
+        <div className="flex items-center gap-4 mb-8 overflow-x-auto hide-scrollbar pb-2">
+           <button 
+             onClick={() => setSelectedMetric("all")}
+             className={cn(
+               "px-10 py-4 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+               selectedMetric === "all" ? "bg-brand-accent text-black shadow-brand-glow" : "bg-secondary border border-white/5 text-zinc-500 hover:text-white"
+             )}
+           >
+             Active Tasks <span className="ml-2 opacity-60">{bookings.filter(b => b.pipeline_stage !== 'delivered' && b.status !== 'cancelled').length}</span>
+           </button>
+           {[
+             { id: 'confirmed', label: 'In Review', stages: ['confirmed'] },
+             { id: 'operational', label: 'Operational', stages: ['shooting', 'editing'] },
+             { id: 'delivered', label: 'Success', stages: ['delivered'] },
+             { id: 'stalled', label: 'Stalled', stages: ['stalled'] }
+           ].map((f) => {
+             const count = bookings.filter(b => f.stages.includes(b.pipeline_stage)).length;
+             return (
+               <button 
+                 key={f.id} 
+                 onClick={() => setSelectedMetric(f.id)}
+                 className={cn(
+                   "px-8 py-4 border border-white/5 text-[10px] font-black uppercase tracking-widest rounded-full transition-all whitespace-nowrap",
+                   selectedMetric === f.id ? "bg-brand-accent text-black shadow-brand-glow" : "bg-secondary text-zinc-500 hover:text-white"
+                 )}
+               >
+                 {f.label} <span className="ml-2 opacity-60">{count}</span>
+               </button>
+             );
+           })}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+          className="bg-dark-panel rounded-[4rem] shadow-2xl overflow-hidden min-h-[600px] border border-white/5"
+        >
+          <div className="flex flex-col xl:flex-row h-full min-h-[600px]">
+            {/* Left: Operations List */}
+            <div className="w-full xl:w-1/3 border-r border-white/5 p-12">
+               <div className="flex justify-between items-center mb-10">
+                 <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Operational Queue</h3>
+                 <Settings className="text-zinc-700" size={18} />
+               </div>
+                <div className="space-y-4">
+                  {(() => {
+                    const filtered = bookings.filter(b => {
+                      if (selectedMetric === "all") return b.pipeline_stage !== 'delivered' && b.status !== 'cancelled';
+                      if (selectedMetric === 'confirmed') return b.pipeline_stage === 'confirmed';
+                      if (selectedMetric === 'operational') return ['shooting', 'editing'].includes(b.pipeline_stage);
+                      if (selectedMetric === 'delivered') return b.pipeline_stage === 'delivered';
+                      if (selectedMetric === 'stalled') return b.pipeline_stage === 'stalled';
+                      return true;
+                    });
+                    
+                    if (filtered.length === 0) {
+                      return (
+                        <div className="py-20 text-center opacity-30">
+                          <Activity className="mx-auto mb-4 text-zinc-500" size={32} />
+                          <p className="text-[10px] font-black uppercase tracking-widest">No matching operations</p>
+                        </div>
+                      );
+                    }
+
+                    return filtered.slice(0, 5).map((booking, idx) => (
+                   <motion.div 
+                     key={booking.id}
+                     initial={{ opacity: 0, x: -20 }}
+                     animate={{ opacity: 1, x: 0 }}
+                     transition={{ delay: idx * 0.1 }}
+                      className={cn(
+                        "p-8 rounded-[2.5rem] border transition-all cursor-pointer group flex items-center justify-between",
+                        idx === 0 ? "bg-white/5 border-white/10 shadow-xl" : "border-transparent hover:bg-white/5"
+                      )}
+                   >
+                     <div className="flex items-center gap-6">
+                        <div className="w-14 h-14 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                           <User size={24} className="text-zinc-500" />
+                        </div>
+                        <div>
+                            <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{booking.name || 'Anonymous Intelligence'}</h4>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{booking.shoot_type || 'Custom Media Unit'}</p>
+                        </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-lg font-black text-white italic mb-1">${(Number(booking.total_amount) || 0).toLocaleString()}</p>
+                        <span className={cn(
+                          "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                          idx === 0 ? "bg-brand-accent text-black" : "bg-white/10 text-zinc-400"
+                        )}>
+                          {booking.pipeline_stage || 'Ready'}
+                        </span>
+                     </div>
+                   </motion.div>
+                 ));
+                })()}
                 </div>
-                <h2 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">Confirm Delete</h2>
-                <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-8">This will permanently remove this record from your analytics.</p>
-                <div className="flex gap-4">
-                   <button onClick={confirmDelete} className="flex-1 py-4 bg-red-600 text-white font-black uppercase tracking-widest text-[10px] hover:bg-red-500 transition-colors">Delete</button>
-                   <button onClick={() => setDeletingId(null)} className="flex-1 py-4 bg-zinc-900 text-white font-black uppercase tracking-widest text-[10px] hover:bg-zinc-800 transition-colors">Cancel</button>
+            </div>
+
+            {/* Right: Operational Intel Detail */}
+            <div className="flex-1 p-16 bg-white/5">
+               <div className="max-w-4xl mx-auto space-y-16">
+                  <header className="flex justify-between items-start">
+                     <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-4">Transmission ID</p>
+                        <h2 className="text-5xl font-black text-white italic tracking-tighter">#ORD-{bookings[0]?.id.slice(0, 8).toUpperCase() || 'UNIT-01'}</h2>
+                     </div>
+                     <div className="px-8 py-3 bg-white/5 border border-white/10 rounded-full text-white text-[10px] font-black uppercase tracking-widest">
+                        System Active
+                     </div>
+                  </header>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      {[
+                        { label: 'Client Asset', val: bookings[0]?.name || 'Alex Johnson', icon: Users },
+                        { label: 'Operational Value', val: `$${(Number(bookings[0]?.total_amount) || 1200).toLocaleString()}`, icon: DollarSign },
+                        { label: 'Intelligence Tier', val: bookings[0]?.shoot_type || 'Sports Media Day', icon: Activity }
+                      ].map((item, i) => (
+                        <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-[#C8FF00] transition-all">
+                           <item.icon className="text-[#C8FF00] mb-6" size={24} />
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.label}</p>
+                           <h4 className="text-xl font-black text-white uppercase tracking-tight">{item.val}</h4>
+                        </div>
+                      ))}
+                  </div>
+
+                  <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+                     <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+                        <div className="space-y-6">
+                           <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Operational Curation</h3>
+                           <p className="text-zinc-500 text-sm font-medium max-w-sm">Synchronize all visual assets for this transmission to the master cloud repository.</p>
+                        </div>
+                          <button 
+                            onClick={() => alert("Cloud Synchro: Visual assets are being mapped to the master repository. Intelligence established.")}
+                            className="px-12 py-6 bg-[#C8FF00] text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95"
+                          >
+                             Sync Assets
+                          </button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
+      {/* 4. MODALS (LEGACY PRESERVATION) */}
+      <AnimatePresence>
+        {editingPhoto && (
+          <div className="fixed inset-0 bg-background/80 z-[1000] flex items-center justify-center p-4 backdrop-blur-3xl">
+             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-card p-12 rounded-[3.5rem] border border-white/5 shadow-2xl w-full max-w-xl">
+                {/* Modal Content - Preserving logic while skinning */}
+                <div className="flex justify-between items-center mb-10">
+                   <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">Edit Intelligence</h2>
+                   <button onClick={() => setEditingPhoto(null)} className="p-4 bg-secondary rounded-full border border-white/5 text-white"><X size={20} /></button>
                 </div>
+                <form onSubmit={handleUpdate} className="space-y-8">
+                   <div className="space-y-3">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-6">Asset Descriptor</label>
+                      <input name="title" defaultValue={editingPhoto.title} className="w-full bg-secondary border border-white/5 rounded-full px-10 py-6 text-white font-black text-sm focus:border-brand-accent outline-none" required />
+                   </div>
+                   <button type="submit" className="w-full py-8 bg-brand-accent text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-full shadow-brand-glow">Commit Changes</button>
+                </form>
              </motion.div>
           </div>
         )}

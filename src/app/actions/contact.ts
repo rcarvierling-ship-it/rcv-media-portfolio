@@ -18,7 +18,7 @@ export async function submitContact(formData: FormData) {
       subject: `General Inquiry: ${name}`,
       html: `
         <div style="font-family: sans-serif; padding: 20px; background-color: #09090b; color: #ffffff;">
-          <h2 style="color: #2563eb; text-transform: uppercase;">New General Inquiry</h2>
+          <h2 style="color: #C8FF00; text-transform: uppercase;">New General Inquiry</h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> ${email}</p>
           <p><strong>Message:</strong></p>

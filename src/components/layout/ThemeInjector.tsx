@@ -4,7 +4,7 @@ export async function ThemeInjector() {
   const supabase = await createClient();
   const { data: settings } = await supabase.from("site_settings").select("accent_color").limit(1).single();
 
-  const primary = settings?.accent_color || "#3b82f6";
+  const primary = settings?.accent_color || "#C8FF00";
   
   // Generate variations
   const glow = `${primary}1A`; // 10% opacity

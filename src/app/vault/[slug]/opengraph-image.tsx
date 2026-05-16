@@ -87,18 +87,18 @@ export default async function Image({ params }: { params: { slug: string } }) {
               alignItems: 'center',
               gap: 12,
               padding: '8px 20px',
-              background: 'rgba(59, 130, 246, 0.1)',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
+              background: 'rgba(200, 255, 0, 0.1)',
+              border: '1px solid rgba(200, 255, 0, 0.3)',
               borderRadius: 100,
               marginBottom: 40,
             }}
           >
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' }} />
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#C8FF00' }} />
             <div
               style={{
                 fontSize: 14,
                 fontWeight: 900,
-                color: '#3b82f6',
+                color: '#C8FF00',
                 textTransform: 'uppercase',
                 letterSpacing: '0.3em',
               }}

@@ -18,11 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <ThemeInjector />
       </head>
-      <body className={`${inter.variable} font-sans antialiased bg-black text-white min-h-screen flex flex-col`}>
+      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground min-h-screen flex flex-col`}>
         <Navbar />
         <main className="flex-1">
           {children}

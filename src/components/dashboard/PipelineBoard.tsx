@@ -9,13 +9,14 @@ import {
   Camera, 
   Edit3, 
   Send,
-  Loader2
+  Loader2,
+  Calendar
 } from "lucide-react";
 
 const STAGES = [
-  { id: 'lead', label: 'Leads', icon: Clock, color: 'text-blue-400', bg: 'bg-blue-400/10' },
-  { id: 'confirmed', label: 'Confirmed', icon: CheckCircle2, color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { id: 'shooting', label: 'Shooting', icon: Camera, color: 'text-purple-400', bg: 'bg-purple-400/10' },
+  { id: 'lead', label: 'Leads', icon: Clock, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
+  { id: 'confirmed', label: 'Booked', icon: Calendar, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+  { id: 'shooting', label: 'Shooting', icon: Camera, color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
   { id: 'editing', label: 'Editing', icon: Edit3, color: 'text-amber-400', bg: 'bg-amber-400/10' },
   { id: 'delivered', label: 'Delivered', icon: Send, color: 'text-zinc-400', bg: 'bg-zinc-400/10' }
 ];
@@ -65,11 +66,11 @@ export default function PipelineBoard({ bookings, onMoveStage, movingId }: Pipel
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   key={booking.id}
-                  className="bg-zinc-900/50 backdrop-blur-md border border-white/5 p-4 rounded-sm hover:border-white/20 transition-all group relative"
+                  className="bg-card backdrop-blur-md border border-white/5 p-4 rounded-sm hover:border-white/20 transition-all group relative"
                 >
                   {movingId === booking.id && (
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-sm">
-                      <Loader2 className="animate-spin text-blue-500" size={20} />
+                      <Loader2 className="animate-spin text-brand-accent" size={20} />
                     </div>
                   )}
 
@@ -93,7 +94,7 @@ export default function PipelineBoard({ bookings, onMoveStage, movingId }: Pipel
 
                      {booking.total_amount > 0 && (
                         <div className="pt-3 border-t border-white/5 flex justify-between items-center">
-                           <span className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">Value</span>
+                           <span className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">Value</span>
                            <span className="text-sm font-black text-white">${booking.total_amount.toLocaleString()}</span>
                         </div>
                      )}
@@ -104,14 +105,14 @@ export default function PipelineBoard({ bookings, onMoveStage, movingId }: Pipel
                      <button 
                        disabled={stage.id === 'lead' || movingId === booking.id}
                        onClick={() => handleMove(booking.id, stage.id, 'prev')}
-                       className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-20 text-white rounded-sm flex items-center justify-center transition-colors"
+                       className="flex-1 py-2 bg-secondary hover:bg-zinc-800 disabled:opacity-20 text-white rounded-sm flex items-center justify-center transition-colors"
                      >
                         <ChevronLeft size={14} />
                      </button>
                      <button 
                        disabled={stage.id === 'delivered' || movingId === booking.id}
                        onClick={() => handleMove(booking.id, stage.id, 'next')}
-                       className="flex-1 py-2 bg-white text-black hover:bg-zinc-200 disabled:opacity-20 rounded-sm flex items-center justify-center transition-colors"
+                       className="flex-1 py-2 bg-brand-accent text-black hover:brightness-110 disabled:opacity-20 rounded-sm flex items-center justify-center transition-colors"
                      >
                         <ChevronRight size={14} />
                      </button>

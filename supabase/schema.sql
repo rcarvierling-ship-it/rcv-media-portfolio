@@ -25,7 +25,7 @@
 -- ====================================================================
 
 -- Create Albums Table
-CREATE TABLE public.albums (
+CREATE TABLE IF NOT EXISTS public.albums (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
@@ -36,7 +36,7 @@ CREATE TABLE public.albums (
 );
 
 -- Create Photos Table
-CREATE TABLE public.photos (
+CREATE TABLE IF NOT EXISTS public.photos (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   title TEXT,
   description TEXT,
@@ -47,13 +47,20 @@ CREATE TABLE public.photos (
   category TEXT,
   album_id UUID,
   is_featured BOOLEAN DEFAULT false,
+  is_curated BOOLEAN DEFAULT false,
+  iso INTEGER,
+  aperture TEXT,
+  shutter_speed TEXT,
+  focal_length TEXT,
+  camera_model TEXT,
+  lens_model TEXT,
   sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   CONSTRAINT fk_photos_album FOREIGN KEY (album_id) REFERENCES public.albums (id) ON DELETE SET NULL
 );
 
 -- Create Site Settings Table
-CREATE TABLE public.site_settings (
+CREATE TABLE IF NOT EXISTS public.site_settings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   hero_image_url TEXT,
   hero_title TEXT,
@@ -201,7 +208,7 @@ CREATE TABLE IF NOT EXISTS public.pricing_packages (
   price TEXT NOT NULL,
   description TEXT,
   features TEXT[] DEFAULT '{}',
-  accent_color TEXT DEFAULT 'blue-600',
+  accent_color TEXT DEFAULT 'brand-accent',
   is_active BOOLEAN DEFAULT true,
   sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -218,7 +225,7 @@ CREATE POLICY "Admin full access pricing" ON public.pricing_packages FOR ALL TO 
 INSERT INTO public.pricing_packages (name, price, features, accent_color, sort_order)
 VALUES 
 ('Gameday Core', '', ARRAY['1.5 Hours Coverage', '25+ High-Res Edits', 'Digital Gallery', 'Standard Turnaround'], 'zinc-500', 1),
-('Athlete Spotlight', '', ARRAY['3 Hours Coverage', 'Portrait Session + Action', '50+ High-Res Edits', '48-Hour Turnaround'], 'blue-600', 2),
+('Athlete Spotlight', '', ARRAY['3 Hours Coverage', 'Portrait Session + Action', '50+ High-Res Edits', '48-Hour Turnaround'], 'brand-accent', 2),
 ('Tournament Elite', '', ARRAY['Full Day Coverage', 'Unlimited Photos', 'Highlight Reel Clips', 'Priority Delivery'], 'white', 3)
 ON CONFLICT DO NOTHING;
 
@@ -248,22 +255,22 @@ ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS about_bio TEXT DEFAULT
 ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS about_image_url TEXT DEFAULT 'https://images.unsplash.com/photo-1554046920-90dcac024a1e?q=80&w=1978&auto=format&fit=crop';
 
 -- Update Site Settings for Global Vibe Switch
-ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS accent_color TEXT DEFAULT '#3b82f6';
+ALTER TABLE public.site_settings ADD COLUMN IF NOT EXISTS accent_color TEXT DEFAULT '#C8FF00';
 
 -- Clear and replace pricing packages with updated photography-only tiers
 TRUNCATE public.pricing_packages;
 
 INSERT INTO public.pricing_packages (name, price, features, accent_color, sort_order)
 VALUES 
-('Sports Shoot', '$80', ARRAY['Up to 2 hours coverage', '25+ edited photos', 'Online gallery', 'Standard turnaround'], '#2563EB', 1),
-('Single Game', '$125', ARRAY['Up to 2.5 hours coverage', '40+ edited photos', 'Online gallery', 'Action + detail shots', 'Standard turnaround'], '#10B981', 2),
-('Portrait Session', '$125', ARRAY['45–60 minute session', '1 location', '20+ edited photos', 'Online gallery'], '#7C3AED', 3),
-('Cap & Gown Session', '$100', ARRAY['30–45 minute session', '1 location', '15+ edited photos', 'Online gallery'], '#D97706', 4),
-('Athlete Session', '$175', ARRAY['1.5–2 hours coverage', 'Portraits + action photos', '35+ edited photos', 'Online gallery', 'Social media ready edits'], '#9333EA', 5),
-('Senior Session', '$180', ARRAY['1 hour session', '1 location', '25+ edited photos', 'Online gallery', 'Outfit change if time allows'], '#DB2777', 6),
-('Team Media Day', '$250', ARRAY['Up to 2 hours coverage', 'Individual player photos', 'Team photos', '50+ edited photos', 'Social media ready edits'], '#16A34A', 7),
-('Event Coverage', 'Starting at $250', ARRAY['Up to 2 hours coverage', '50+ edited photos', 'Online gallery', 'Standard turnaround'], '#EA580C', 8),
-('Tournament / Extended Coverage', 'Starting at $400', ARRAY['Full-day or extended coverage', '100+ edited photos', 'Online gallery', 'Priority delivery', 'Multiple games or locations'], '#DC2626', 9);
+('Sports Shoot', '$80', ARRAY['Up to 2 hours coverage', '25+ edited photos', 'Online gallery', 'Standard turnaround'], '#C8FF00', 1),
+('Single Game', '$125', ARRAY['Up to 2.5 hours coverage', '40+ edited photos', 'Online gallery', 'Action + detail shots', 'Standard turnaround'], '#C8FF00', 2),
+('Portrait Session', '$125', ARRAY['45–60 minute session', '1 location', '20+ edited photos', 'Online gallery'], '#C8FF00', 3),
+('Cap & Gown Session', '$100', ARRAY['30–45 minute session', '1 location', '15+ edited photos', 'Online gallery'], '#C8FF00', 4),
+('Athlete Session', '$175', ARRAY['1.5–2 hours coverage', 'Portraits + action photos', '35+ edited photos', 'Online gallery', 'Social media ready edits'], '#C8FF00', 5),
+('Senior Session', '$180', ARRAY['1 hour session', '1 location', '25+ edited photos', 'Online gallery', 'Outfit change if time allows'], '#C8FF00', 6),
+('Team Media Day', '$250', ARRAY['Up to 2 hours coverage', 'Individual player photos', 'Team photos', '50+ edited photos', 'Social media ready edits'], '#C8FF00', 7),
+('Event Coverage', 'Starting at $250', ARRAY['Up to 2 hours coverage', '50+ edited photos', 'Online gallery', 'Standard turnaround'], '#C8FF00', 8),
+('Tournament / Extended Coverage', 'Starting at $400', ARRAY['Full-day or extended coverage', '100+ edited photos', 'Online gallery', 'Priority delivery', 'Multiple games or locations'], '#C8FF00', 9);
 -- General Inquiries Table
 CREATE TABLE IF NOT EXISTS public.inquiries (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

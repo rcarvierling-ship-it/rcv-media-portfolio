@@ -17,7 +17,7 @@ export function ContractListClient({ initialContracts }: { initialContracts: any
     switch (status) {
       case 'paid': return 'text-brand-accent bg-brand-accent/10 border-brand-accent/20';
       case 'signed': return 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20';
-      case 'sent': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+      case 'sent': return 'text-brand-accent bg-brand-accent/10 border-brand-accent/20';
       default: return 'text-zinc-500 bg-zinc-500/10 border-zinc-500/20';
     }
   };
@@ -39,7 +39,7 @@ export function ContractListClient({ initialContracts }: { initialContracts: any
                  layout
                  initial={{ opacity: 0, y: 10 }}
                  animate={{ opacity: 1, y: 0 }}
-                 className="premium-card bg-zinc-950 border border-white/5 p-6 rounded-xl group hover:border-white/10 transition-all"
+                 className="premium-card bg-card border border-white/5 p-6 rounded-xl group hover:border-brand-accent/30 transition-all shadow-premium"
                >
                   <div className="flex flex-col md:flex-row justify-between gap-8">
                      <div className="flex-1">
@@ -51,77 +51,35 @@ export function ContractListClient({ initialContracts }: { initialContracts: any
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 mb-6">{contract.booking?.shoot_type}</p>
                         
-                        <div className="flex flex-wrap gap-8">
-                           <div className="flex flex-col gap-1">
-                              <span className="text-[8px] font-black uppercase tracking-widest text-zinc-700">Contract Value</span>
-                              <span className="text-xs font-black text-white">${Number(contract.amount).toLocaleString()}</span>
+                        <div className="flex items-center gap-8">
+                           <div className="flex items-center gap-2">
+                              <DollarSign size={14} className="text-zinc-600" />
+                              <span className="text-[10px] font-black text-white">${contract.booking?.total_amount}</span>
                            </div>
-                           <div className="flex flex-col gap-1">
-                              <span className="text-[8px] font-black uppercase tracking-widest text-zinc-700">Agreement ID</span>
-                              <span className="text-xs font-mono text-zinc-500">{contract.id.slice(0, 8).toUpperCase()}</span>
+                           <div className="flex items-center gap-2">
+                              <Clock size={14} className="text-zinc-600" />
+                              <span className="text-[10px] font-black text-zinc-400">Created {new Date(contract.created_at).toLocaleDateString()}</span>
                            </div>
-                           {contract.signed_at && (
-                             <div className="flex flex-col gap-1">
-                                <span className="text-[8px] font-black uppercase tracking-widest text-emerald-900">Signed On</span>
-                                <span className="text-xs font-black text-emerald-500">{new Date(contract.signed_at).toLocaleDateString()}</span>
-                             </div>
-                           )}
                         </div>
                      </div>
 
-                     <div className="flex flex-col md:flex-row items-center gap-3 justify-center md:justify-end">
-                        <Link 
-                          href={`/contracts/${contract.id}`}
-                          target="_blank"
-                          className="w-full md:w-auto px-6 py-3 bg-zinc-900 text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-zinc-800 transition-all flex items-center justify-center gap-3"
+                     <div className="flex items-center gap-4">
+                        <a 
+                          href={contract.contract_pdf_url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="px-6 py-3 bg-secondary border border-white/5 text-[10px] font-black uppercase tracking-widest text-zinc-300 hover:text-white rounded-full flex items-center gap-2 transition-all"
                         >
-                           <ExternalLink size={14} /> View Client Link
-                        </Link>
-                        
-                        {contract.status === 'draft' && (
-                          <button 
-                            onClick={async () => {
-                               const res = await updateContractStatus(contract.id, 'sent');
-                               if (res.success) setContracts(prev => prev.map(c => c.id === contract.id ? {...c, status: 'sent'} : c));
-                            }}
-                            className="w-full md:w-auto px-6 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-blue-700 transition-all flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
-                          >
-                             <Send size={14} /> Send to Client
-                          </button>
-                        )}
-
-                        {contract.status === 'sent' && (
-                           <div className="px-6 py-3 border border-white/5 text-zinc-600 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
-                              <Clock size={14} /> Awaiting Signature
-                           </div>
-                        )}
-
-                        {contract.status === 'signed' && (
-                          <button 
-                            onClick={async () => {
-                               const res = await updateContractStatus(contract.id, 'paid');
-                               if (res.success) setContracts(prev => prev.map(c => c.id === contract.id ? {...c, status: 'paid'} : c));
-                            }}
-                            className="w-full md:w-auto px-6 py-3 bg-emerald-600 text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:bg-emerald-700 transition-all flex items-center justify-center gap-3"
-                          >
-                             <DollarSign size={14} /> Mark as Paid
-                          </button>
-                        )}
-                        
-                        {contract.status === 'paid' && (
-                           <div className="px-6 py-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
-                              <ShieldCheck size={14} /> Transaction Complete
-                           </div>
-                        )}
-
+                           <ExternalLink size={14} /> View File
+                        </a>
                         <button 
                           onClick={async () => {
-                            if (!confirm("Are you sure you want to delete this contract?")) return;
-                            const res = await deleteContract(contract.id);
-                            if (res.success) setContracts(prev => prev.filter(c => c.id !== contract.id));
+                            if (confirm('Irreversibly purge this contract from the archive?')) {
+                              const res = await deleteContract(contract.id);
+                              if (res.success) setContracts(contracts.filter(c => c.id !== contract.id));
+                            }
                           }}
-                          className="p-3 text-zinc-800 hover:text-red-500 transition-colors"
-                          title="Delete Contract"
+                          className="w-12 h-12 rounded-full border border-white/5 flex items-center justify-center text-zinc-600 hover:bg-red-500/10 hover:text-red-500 transition-all"
                         >
                            <Trash2 size={16} />
                         </button>
@@ -130,13 +88,6 @@ export function ContractListClient({ initialContracts }: { initialContracts: any
                </motion.div>
              ))}
           </AnimatePresence>
-
-          {contracts.length === 0 && (
-            <div className="py-40 text-center border-2 border-dashed border-white/5 rounded-2xl flex flex-col items-center justify-center">
-               <FileText size={48} className="text-zinc-800 mb-6" />
-               <p className="text-zinc-600 font-black uppercase tracking-[0.4em] text-[10px]">No active agreements found.</p>
-            </div>
-          )}
        </div>
     </div>
   );

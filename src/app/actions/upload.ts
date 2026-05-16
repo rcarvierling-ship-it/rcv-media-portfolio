@@ -25,10 +25,11 @@ export async function uploadToCloudinary(formData: FormData) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  return new Promise<{ url: string; public_id: string; width: number; height: number }>((resolve, reject) => {
+  return new Promise<{ url: string; public_id: string; width: number; height: number; metadata?: any }>((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "rcv_media",
+        image_metadata: true,
       },
       (error, result) => {
         if (error) reject(error);
@@ -38,6 +39,7 @@ export async function uploadToCloudinary(formData: FormData) {
             public_id: result.public_id,
             width: result.width,
             height: result.height,
+            metadata: result.image_metadata,
           });
         }
       }
@@ -60,9 +62,12 @@ export async function uploadMultipleToCloudinary(formData: FormData) {
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
 
-      return new Promise<{ url: string; public_id: string; width: number; height: number }>((resolve, reject) => {
+      return new Promise<{ url: string; public_id: string; width: number; height: number; metadata?: any }>((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "rcv_media" },
+          { 
+            folder: "rcv_media",
+            image_metadata: true,
+          },
           (error, result) => {
             if (error) reject(error);
             else if (result) {
@@ -71,6 +76,7 @@ export async function uploadMultipleToCloudinary(formData: FormData) {
                 public_id: result.public_id,
                 width: result.width,
                 height: result.height,
+                metadata: result.image_metadata,
               });
             }
           }
@@ -87,7 +93,11 @@ export async function getCloudinarySignature() {
   checkConfig();
   const timestamp = Math.round(new Date().getTime() / 1000);
   const signature = cloudinary.utils.api_sign_request(
-    { timestamp, folder: "rcv_media" },
+    { 
+      timestamp, 
+      folder: "rcv_media",
+      image_metadata: true 
+    },
     process.env.CLOUDINARY_API_SECRET!
   );
 
@@ -97,6 +107,7 @@ export async function getCloudinarySignature() {
     cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
     folder: "rcv_media",
+    image_metadata: true,
   };
 }
 

@@ -53,19 +53,19 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
               placeholder="Search Archive..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900/50 border border-white/5 pl-12 pr-6 py-3 rounded-sm text-xs font-bold uppercase tracking-widest text-white outline-none focus:border-brand-accent/30 transition-all"
+              className="w-full bg-secondary border border-white/5 pl-12 pr-6 py-4 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-accent transition-all shadow-inner"
             />
           </div>
           
-          <div className="flex flex-wrap gap-2 p-1 bg-zinc-900/50 border border-white/5 rounded-sm">
+          <div className="flex flex-wrap gap-2 p-1.5 bg-secondary border border-white/5 rounded-full shadow-inner">
              {(["all", "curated", "pending"] as const).map((f) => (
-               <button
-                 key={f}
-                 onClick={() => setFilter(f)}
-                 className={`px-4 py-2 text-[8px] font-black uppercase tracking-[0.2em] rounded-sm transition-all ${
-                   filter === f ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'
-                 }`}
-               >
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-6 py-2.5 text-[8px] font-black uppercase tracking-[0.2em] rounded-full transition-all ${
+                    filter === f ? 'bg-brand-accent text-black shadow-brand-glow' : 'text-zinc-500 hover:text-white'
+                  }`}
+                >
                  {f}
                </button>
              ))}
@@ -78,8 +78,8 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
           <motion.div
             key={photo.id}
             layout
-            className={`group relative aspect-[4/5] rounded-sm overflow-hidden border transition-all duration-500 ${
-              photo.is_curated ? 'border-brand-accent/30 shadow-[0_0_20px_var(--accent-glow)]' : 'border-white/5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100'
+            className={`group relative aspect-[4/5] rounded-[1.5rem] overflow-hidden border transition-all duration-500 ${
+              photo.is_curated ? 'border-brand-accent/30 shadow-brand-glow' : 'border-white/5 grayscale opacity-60 hover:grayscale-0 hover:opacity-100'
             }`}
           >
             <Image 
@@ -94,15 +94,15 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
                <span className="text-[8px] font-black uppercase tracking-widest text-zinc-500 mb-1">{photo.category || "General"}</span>
                <p className="text-[10px] font-black uppercase text-white truncate mb-4">{photo.title || "Untitled Asset"}</p>
                
-               <button 
-                 onClick={() => handleToggleCurated(photo)}
-                 disabled={loading === photo.id}
-                 className={`w-full py-3 rounded-sm flex items-center justify-center gap-2 transition-all ${
-                   photo.is_curated 
-                   ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white' 
-                   : 'bg-brand-accent/10 text-brand-accent border border-brand-accent/20 hover:bg-brand-accent hover:text-white'
-                 }`}
-               >
+                <button 
+                  onClick={() => handleToggleCurated(photo)}
+                  disabled={loading === photo.id}
+                  className={`w-full py-3 rounded-full flex items-center justify-center gap-2 text-[9px] font-black uppercase tracking-widest transition-all ${
+                    photo.is_curated 
+                    ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white' 
+                    : 'bg-brand-accent text-black shadow-brand-glow hover:brightness-110'
+                  }`}
+                >
                  {loading === photo.id ? (
                    <Loader2 className="animate-spin" size={12} />
                  ) : photo.is_curated ? (
@@ -123,10 +123,10 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
                  <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-white border border-white/10">
                     <Loader2 className="animate-spin" size={14} />
                  </div>
-               ) : photo.is_curated ? (
-                 <div className="w-8 h-8 rounded-full bg-brand-accent flex items-center justify-center text-white shadow-xl border border-white/20 hover:scale-110 transition-transform">
-                    <Star size={14} fill="currentColor" />
-                 </div>
+                ) : photo.is_curated ? (
+                  <div className="w-8 h-8 rounded-full bg-brand-accent flex items-center justify-center text-black shadow-brand-glow border border-white/20 hover:scale-110 transition-transform">
+                     <Star size={14} fill="currentColor" />
+                  </div>
                ) : (
                  <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-white/30 border border-white/10 hover:text-white hover:bg-black/60 transition-all">
                     <Circle size={14} />
@@ -137,9 +137,9 @@ export function CuratedDashboardClient({ initialPhotos }: { initialPhotos: any[]
         ))}
       </div>
 
-      {filteredPhotos.length === 0 && (
-        <div className="py-32 text-center border border-white/5 border-dashed rounded-sm">
-           <p className="text-zinc-600 font-black uppercase tracking-[0.3em] text-[10px]">No assets match your current parameters</p>
+       {filteredPhotos.length === 0 && (
+        <div className="py-32 text-center border border-white/5 border-dashed rounded-2xl bg-secondary">
+           <p className="text-zinc-500 font-black uppercase tracking-[0.3em] text-[10px]">No assets match your current parameters</p>
         </div>
       )}
     </div>

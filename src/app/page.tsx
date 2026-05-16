@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
+import { ArrowUpRight } from "lucide-react";
 import { trackEvent } from "@/utils/analytics";
 
 export default function HomePage() {
@@ -86,9 +87,9 @@ export default function HomePage() {
   const heroImage = heroSetting?.hero_image_url;
 
   return (
-    <div className="w-full bg-zinc-950 min-h-screen font-sans selection:bg-white selection:text-black">
+    <div className="w-full bg-background min-h-screen font-sans selection:bg-primary selection:text-primary-foreground text-foreground">
       {/* Global Noise Texture */}
-      <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
+      <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none opacity-50" />
 
       {/* SEASONAL ALERT BANNER */}
       <AnimatePresence>
@@ -96,40 +97,36 @@ export default function HomePage() {
           <motion.div 
             initial={{ y: -100 }} 
             animate={{ y: 0 }} 
-            className="fixed top-0 left-0 right-0 z-[200] bg-brand-accent text-white px-6 py-3 overflow-hidden"
+            className="fixed top-0 left-0 right-0 z-[200] bg-primary text-primary-foreground px-6 py-3 overflow-hidden shadow-lg border-b border-white/5"
           >
              <div className="max-w-[3200px] mx-auto flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                   <span className="px-2 py-0.5 bg-white text-black text-[8px] font-black uppercase tracking-widest rounded-sm animate-pulse">Active Season</span>
+                   <span className="px-2 py-0.5 bg-brand-accent text-black text-[8px] font-black uppercase tracking-widest rounded-sm">Active Season</span>
                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">{activeCampaign.title} is now open for booking</p>
                 </div>
                 <Link href={`/campaign/${activeCampaign.slug}`} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group">
-                   Claim Offer <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
+                   Claim Offer <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                 </Link>
              </div>
-             {/* Animated Progress/Scanning line */}
-             <div className="absolute bottom-0 left-0 h-[1px] bg-white/40 animate-scan w-full" />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* 1. EDITORIAL SPLIT HERO */}
-      <section className="relative w-full min-h-screen pt-24 md:pt-32 pb-24 px-6 flex flex-col md:flex-row items-center max-w-[3200px] mx-auto gap-12 overflow-hidden">
+      <section className="relative w-full min-h-screen pt-40 md:pt-48 pb-24 px-6 flex flex-col md:flex-row items-center max-w-[3200px] mx-auto gap-12 overflow-hidden">
         
         {/* Left Side: Dramatic Typography */}
         <div className="w-full md:w-1/2 flex flex-col justify-center relative z-10 pt-8 md:pt-0">
-
            <motion.div 
              initial={{ opacity: 0, y: 40 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-             className="mb-8"
+             className="mb-10"
            >
-             <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-white">
-               Built For
-             </h1>
-             <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">
-               The Moment.
+             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-6 block border-l-4 border-brand-accent pl-4">RCV.MEDIA Command Center</span>
+             <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.8] text-foreground mb-4">
+               Precision <br/>
+               <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-white italic">Visuals.</span>
              </h1>
            </motion.div>
 
@@ -137,155 +134,129 @@ export default function HomePage() {
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-             className="text-lg md:text-xl text-zinc-400 font-light max-w-md leading-relaxed mb-12"
+             className="text-lg md:text-xl text-zinc-500 font-medium max-w-lg leading-relaxed mb-16"
            >
-             Portraits, seniors, sports, and events — captured with energy and style. Engineered for athletes, graduates, and moments that matter.
+             High-end portraiture and athletic media for those who demand excellence. Captured with precision, delivered with speed.
            </motion.p>
 
            <motion.div 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-             className="flex flex-col sm:flex-row gap-4"
+             className="flex flex-wrap gap-4"
            >
              {activeCampaign ? (
                <Link
                  href={`/campaign/${activeCampaign.slug}`}
-                 className="group relative px-10 py-5 bg-brand-accent text-white font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none shadow-[0_0_30px_rgba(59,130,246,0.3)] animate-pulse"
+                 className="group relative px-12 py-5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] rounded-full overflow-hidden text-center flex-1 sm:flex-none shadow-2xl transition-all hover:scale-105 active:scale-95"
                >
                  <span className="relative z-10">Claim {activeCampaign.title} Offer</span>
                </Link>
              ) : (
                <Link
                  href="/portfolio"
-                 onClick={() => trackEvent('book_click', { location: 'hero_portfolio' })}
-                 className="group relative px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm overflow-hidden text-center flex-1 sm:flex-none"
+                 className="group relative px-12 py-5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] rounded-full overflow-hidden text-center flex-1 sm:flex-none shadow-2xl transition-all hover:scale-105 active:scale-95"
                >
-                 <div className="absolute inset-0 w-full h-full bg-brand-accent origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-[0.16,1,0.3,1]" />
-                 <span className="relative z-10 group-hover:text-white transition-colors duration-500">View Portfolio</span>
+                 <span className="relative z-10">View Portfolio</span>
                </Link>
              )}
              <Link
-               href="/curated"
-               className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:border-brand-accent transition-all rounded-sm text-center border border-white/10 flex-1 sm:flex-none"
-             >
-               Explore The Vault
-             </Link>
-             <Link
                href="/book"
-               onClick={() => trackEvent('book_click', { location: 'hero_main' })}
-               className="px-10 py-5 premium-glass text-white font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-colors rounded-sm text-center border border-white/10 flex-1 sm:flex-none"
+               className="px-12 py-5 bg-brand-accent text-black font-black uppercase tracking-widest text-[10px] hover:bg-brand-accent/90 transition-all rounded-full text-center flex-1 sm:flex-none shadow-brand-glow active:scale-95"
              >
-               Book a Shoot
+               Book Session
              </Link>
            </motion.div>
         </div>
 
-        {/* Right Side: Stacked Photo Collage */}
-        <div className="w-full md:w-1/2 relative h-[50vh] sm:h-[60vh] md:h-[80vh]">
+        {/* Right Side: Large Editorial Frame */}
+        <div className="w-full md:w-1/2 relative h-[60vh] md:h-[85vh]">
            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, rotate: -2 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.95, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute top-0 right-0 w-4/5 h-4/5 premium-placeholder rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-0 bg-court-grid"
+              className="absolute inset-0 bg-card border border-white/5 rounded-[3rem] shadow-premium overflow-hidden group"
             >
                {heroImage ? (
-                 <Image src={heroImage} alt="Hero image" fill className="object-cover object-[center_15%] opacity-80" priority />
+                 <Image src={heroImage} alt="Hero image" fill className="object-cover object-[center_15%] transition-transform duration-[3s] group-hover:scale-105" priority />
                ) : (
-                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-black opacity-80" />
+                 <div className="absolute inset-0 bg-zinc-100" />
                )}
+               <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+               
+               {/* Metadata Overlay (Concept Style) */}
+               <div className="absolute bottom-10 left-10 right-10 flex justify-between items-end">
+                  <div>
+                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-accent mb-2 block">Featured Asset</span>
+                     <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Visual Intelligence v4.0</h2>
+                  </div>
+                  <div className="hidden lg:flex gap-2">
+                     <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-black uppercase text-white tracking-widest">
+                       ISO {featuredPhotos[0]?.iso || "100"}
+                     </div>
+                     <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-black uppercase text-white tracking-widest">
+                       {featuredPhotos[0]?.aperture ? (featuredPhotos[0].aperture.includes('f/') ? featuredPhotos[0].aperture : `f/${featuredPhotos[0].aperture}`) : "f/1.2"}
+                     </div>
+                  </div>
+               </div>
             </motion.div>
 
+            {/* Floating Chip */}
             <motion.div 
-              initial={{ opacity: 0, x: 50, y: 50 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              transition={{ duration: 1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute bottom-0 left-0 w-2/3 h-2/3 premium-card rounded-2xl shadow-2xl overflow-hidden border border-white/10 z-10 flex items-center justify-center bg-court-grid"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-12 left-12 z-20 bg-card px-6 py-3 rounded-full border border-white/10 shadow-2xl flex items-center gap-3"
             >
-               {featuredPhotos[0]?.image_url ? (
-                  <Image src={featuredPhotos[0].image_url} alt="Featured" fill className="object-cover object-[center_15%] opacity-90" />
-               ) : (
-                 <div className="text-center p-6">
-                    <span className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-600 block mb-2">RCV.MEDIA</span>
-                    <span className="text-xl font-black uppercase text-zinc-800">Visuals</span>
-                 </div>
-              )}
-           </motion.div>
-
-           {/* Latest Work Floating Chip */}
-           <motion.div 
-             initial={{ opacity: 0, y: -20 }}
-             animate={{ opacity: 1, y: 0 }}
-             transition={{ duration: 0.8, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-             className="absolute top-12 left-0 z-20 premium-glass px-6 py-3 rounded-full border border-white/20 shadow-2xl flex items-center gap-3 backdrop-blur-2xl"
-           >
-             <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
-             <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">Latest Work</span>
-           </motion.div>
+              <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse shadow-brand-glow" />
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">System Live</span>
+            </motion.div>
         </div>
       </section>
 
       {/* 2. INFINITE MARQUEE */}
-      <div className="w-full border-y border-white/5 bg-zinc-900/50 overflow-hidden py-4 premium-glass relative z-10 flex">
+      <div className="w-full border-y border-white/5 bg-card/50 overflow-hidden py-4 premium-glass relative z-10 flex">
         <div className="flex whitespace-nowrap animate-marquee py-2">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="flex items-center gap-8 px-4">
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Seniors</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Portraits</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Events</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Graduation</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Media Days</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-            </div>
-          ))}
-        </div>
-        <div className="flex whitespace-nowrap animate-marquee py-2" aria-hidden="true">
-          {[...Array(8)].map((_, i) => (
-            <div key={i} className="flex items-center gap-8 px-4">
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Seniors</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Portraits</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Sports</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Events</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Graduation</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
-              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-500">Media Days</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent/50" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Seniors</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Portraits</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Sports</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Events</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Graduation</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
+              <span className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400">Media Days</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-accent" />
             </div>
           ))}
         </div>
       </div>
 
       {/* 3. FEATURED WORK (MAGAZINE GRID) */}
-      <section className="py-32 relative z-10 bg-zinc-950">
+      <section className="py-32 relative z-10 bg-background">
         <div className="max-w-[3200px] mx-auto px-6">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-16 gap-6">
             <div>
-              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-2 leading-none">The Edit</h2>
-              <p className="text-zinc-500 font-black uppercase tracking-[0.2em] text-[10px]">Selected Editorial Highlights</p>
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-foreground mb-2 leading-none">The Edit</h2>
+              <p className="text-secondary-foreground font-black uppercase tracking-[0.2em] text-[10px]">Selected Editorial Highlights</p>
             </div>
-            <Link href="/portfolio" className="text-white hover:text-zinc-400 uppercase tracking-[0.2em] text-[10px] font-black pb-1 border-b border-white hover:border-zinc-400 transition-all w-fit">
-              Explore Archive &rarr;
+            <Link href="/portfolio" className="text-foreground hover:text-zinc-600 uppercase tracking-[0.2em] text-[10px] font-black pb-1 border-b border-foreground hover:border-zinc-400 transition-all w-fit">
+              Explore Archive <ArrowUpRight size={12} className="inline ml-1" />
             </Link>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:min-h-[900px]">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:min-h-[900px]">
             {/* Left Huge Card: NEWEST FEATURED GALLERY */}
             <motion.div 
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="lg:col-span-8 premium-placeholder rounded-sm overflow-hidden group relative h-[600px] lg:h-full bg-court-grid"
+              className="lg:col-span-8 rounded-[2.5rem] overflow-hidden group relative h-[600px] lg:h-full bg-zinc-100 shadow-premium border border-border"
             >
                {newestGallery ? (
                  <>
@@ -307,28 +278,28 @@ export default function HomePage() {
                     priority
                  />
                ) : (
-                 <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 to-black" />
+                 <div className="absolute inset-0 bg-zinc-100" />
                )}
                
-               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
-               <div className="absolute bottom-10 left-10 z-10">
-                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2 border border-white/20 px-3 py-1 rounded-full w-fit backdrop-blur-md flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse" />
-                    Latest Release
+               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+               <div className="absolute bottom-12 left-12 z-10">
+                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white block mb-4 bg-white/10 backdrop-blur-md px-6 py-2.5 rounded-full w-fit flex items-center gap-3">
+                    <div className="w-2 h-2 bg-brand-accent rounded-full shadow-brand-glow" />
+                    Latest release
                  </span>
-                  <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter text-white">{newestGallery?.title || "RCV Frame"}</h3>
+                  <h3 className="text-4xl md:text-7xl font-black uppercase tracking-tighter text-white italic">{newestGallery?.title || "RCV Frame"}</h3>
                </div>
             </motion.div>
 
             {/* Right Stacked Cards: TRENDING & RECENT */}
-            <div className="lg:col-span-4 flex flex-col gap-4 h-full">
+            <div className="lg:col-span-4 flex flex-col gap-6 h-full">
                {/* TRENDING CARD */}
                <motion.div 
                  initial={{ opacity: 0, y: 30 }}
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ duration: 0.8, delay: 0.2 }}
-                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[400px] bg-court-grid"
+                 className="flex-1 rounded-[2.5rem] overflow-hidden group relative min-h-[400px] bg-secondary border border-white/5 shadow-premium"
                >
                  {trendingGallery ? (
                    <>
@@ -348,11 +319,11 @@ export default function HomePage() {
                      className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
                    />
                  ) : (
-                   <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
+                   <div className="absolute inset-0 bg-secondary" />
                  )}
-                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
-                 <div className="absolute bottom-6 left-6 z-10">
-                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-accent block mb-1">Trending Collection</span>
+                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                 <div className="absolute bottom-8 left-8 z-10">
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-accent block mb-2">Trending Collection</span>
                    <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{trendingGallery?.title || "Master Archive"}</h3>
                  </div>
                </motion.div>
@@ -363,7 +334,7 @@ export default function HomePage() {
                  whileInView={{ opacity: 1, y: 0 }}
                  viewport={{ once: true }}
                  transition={{ duration: 0.8, delay: 0.4 }}
-                 className="flex-1 premium-placeholder rounded-sm overflow-hidden group relative min-h-[400px] bg-court-grid"
+                 className="flex-1 rounded-[2.5rem] overflow-hidden group relative min-h-[400px] bg-secondary border border-white/5 shadow-premium"
                >
                  {featuredPhotos[2]?.image_url ? (
                    <Image 
@@ -373,11 +344,11 @@ export default function HomePage() {
                      className="object-cover object-[center_15%] transition-transform duration-[2s] group-hover:scale-[1.02]" 
                    />
                  ) : (
-                   <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-zinc-950 border border-white/5" />
+                   <div className="absolute inset-0 bg-secondary" />
                  )}
-                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500" />
-                 <div className="absolute bottom-6 left-6 z-10">
-                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-1">Recently Curated</span>
+                 <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
+                 <div className="absolute bottom-8 left-8 z-10">
+                   <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2">Recently Curated</span>
                    <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Visual Dossier</h3>
                  </div>
                </motion.div>
@@ -387,14 +358,14 @@ export default function HomePage() {
       </section>
 
       {/* 4. NUMBERED DISCIPLINES */}
-      <section className="py-32 relative z-10 border-t border-white/5 bg-zinc-950">
+      <section className="py-32 relative z-10 border-t border-white/5 bg-background">
         <div className="max-w-[3200px] mx-auto px-6">
           <div className="mb-20">
-            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4 leading-none">Specialties</h2>
-            <p className="text-zinc-500 font-light max-w-xl text-lg">Mastering the art of motion, portraiture, and narrative across all fields of play.</p>
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-foreground mb-4 leading-none">Specialties</h2>
+            <p className="text-secondary-foreground font-light max-w-xl text-lg">Mastering the art of motion, portraiture, and narrative across all fields of play.</p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { num: "01", title: "Seniors", desc: "Premium high school and college senior portraits." },
               { num: "02", title: "Portraits", desc: "Bold, cinematic profiles and editorial studio shots." },
@@ -407,27 +378,27 @@ export default function HomePage() {
                 key={cat.num} 
                 href={`/portfolio?category=${cat.title.toLowerCase()}`} 
                 onClick={() => trackEvent('portfolio_view', { category: cat.title })}
-                className="group block h-[400px]"
+                className="group block h-[450px]"
               >
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="premium-placeholder bg-court-grid p-10 rounded-sm h-full relative overflow-hidden transition-all duration-500 group-hover:-translate-y-2 border border-white/5 hover:border-white/20 hover:shadow-[0_20px_40px_rgba(0,0,0,0.8)]"
+                  className="bg-card p-12 rounded-[2.5rem] h-full relative overflow-hidden transition-all duration-500 group-hover:-translate-y-2 border border-white/5 hover:border-brand-accent hover:shadow-2xl hover:shadow-brand-glow/10 shadow-premium"
                 >
-                  <div className="absolute top-10 right-10 text-5xl font-black text-zinc-800/30 group-hover:text-zinc-700/50 transition-colors">
+                  <div className="absolute top-12 right-12 text-6xl font-black text-white/5 group-hover:text-white/10 transition-colors">
                     {cat.num}
                   </div>
                   
                   <div className="absolute bottom-10 left-10 pr-10">
-                     <h3 className="text-3xl font-black uppercase text-white mb-4 tracking-tighter group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-brand-accent transition-all">{cat.title}</h3>
-                     <p className="text-zinc-500 text-sm font-medium leading-relaxed max-w-[200px]">{cat.desc}</p>
+                     <h3 className="text-3xl font-black uppercase text-foreground mb-4 tracking-tighter group-hover:text-brand-accent transition-all">{cat.title}</h3>
+                     <p className="text-secondary-foreground text-sm font-medium leading-relaxed max-w-[200px]">{cat.desc}</p>
                   </div>
                   
                   {/* Hover Arrow */}
-                  <div className="absolute bottom-10 right-10 w-12 h-12 rounded-full border border-white/20 flex items-center justify-center opacity-0 transform translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                  <div className="absolute bottom-10 right-10 w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center opacity-0 transform translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                    <ArrowUpRight size={20} />
                   </div>
                 </motion.div>
               </Link>
@@ -437,24 +408,24 @@ export default function HomePage() {
       </section>
 
       {/* 5. STICKY SPLIT LAYOUT (EXPERIENCE) */}
-      <section className="relative z-10 border-t border-white/5 bg-zinc-950">
+      <section className="relative z-10 border-t border-white/5 bg-background">
         <div className="max-w-[3200px] mx-auto px-6 py-20 md:py-32">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
             
             {/* Sticky Left Column */}
             <div className="lg:w-1/3 relative">
               <div className="sticky top-40">
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 block mb-6 border border-zinc-800 px-3 py-1 rounded-full w-fit">Services</span>
-                <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter text-white leading-[0.9] mb-8">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 block mb-6 border border-white/5 px-4 py-1.5 rounded-full w-fit">Services</span>
+                <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter text-foreground leading-[0.9] mb-8">
                   Built For <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-accent">The Moment</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-white">The Moment</span>
                 </h2>
-                <p className="text-zinc-400 font-light text-lg leading-relaxed mb-10">
+                <p className="text-secondary-foreground font-light text-lg leading-relaxed mb-10">
                   Delivering imagery that demands attention. From the intensity of a championship game to the milestone of a graduation day.
                 </p>
                 <Link
                   href="/book"
-                  className="inline-block px-10 py-5 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm hover:bg-zinc-200 transition-colors"
+                  className="inline-block px-12 py-5 bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] rounded-full hover:brightness-110 transition-colors shadow-xl shadow-black/10"
                 >
                   Inquire Now
                 </Link>
@@ -462,7 +433,7 @@ export default function HomePage() {
             </div>
 
             {/* Scrolling Right Column (Stacked Cards) */}
-            <div className="lg:w-2/3 flex flex-col gap-6">
+            <div className="lg:w-2/3 flex flex-col gap-8">
               {[
                 { num: "01", title: "Senior Sessions", desc: "Creative and cinematic portraiture for high school and college seniors looking for something beyond the ordinary." },
                 { num: "02", title: "Portrait Sessions", desc: "Professional headshots and artistic portraits designed to capture personality and style with premium lighting." },
@@ -476,14 +447,14 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.6 }}
-                  className="premium-card p-12 md:p-16 rounded-sm border border-white/5 flex flex-col md:flex-row gap-8 items-start hover:border-white/20 transition-colors duration-500"
+                  className="bg-card p-12 md:p-16 rounded-[3rem] border border-white/5 flex flex-col md:flex-row gap-10 items-start hover:border-brand-accent transition-all duration-500 shadow-premium hover:shadow-2xl"
                 >
-                  <div className="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-800 w-20">
+                  <div className="text-6xl font-black text-white/5 w-24 leading-none">
                     {service.num}
                   </div>
                   <div>
-                    <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-4">{service.title}</h3>
-                    <p className="text-zinc-400 font-light leading-relaxed max-w-xl">{service.desc}</p>
+                    <h3 className="text-3xl font-black uppercase tracking-tighter text-foreground mb-4">{service.title}</h3>
+                    <p className="text-secondary-foreground font-light leading-relaxed max-w-xl">{service.desc}</p>
                   </div>
                 </motion.div>
               ))}
@@ -493,13 +464,13 @@ export default function HomePage() {
       </section>
 
       {/* 6. RECENT FRAMES (GRID PREVIEW) */}
-      <section className="py-20 relative z-10 border-t border-white/5 bg-zinc-950">
+      <section className="py-20 relative z-10 border-t border-white/5 bg-background">
          <div className="max-w-[3200px] mx-auto px-6 mb-12 flex justify-between items-end">
-            <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Recent Frames</h2>
-            <Link href="/portfolio" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white">View Full Archive &rarr;</Link>
+            <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground">Recent Frames</h2>
+            <Link href="/portfolio" className="text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-foreground">View Full Archive <ArrowUpRight size={12} className="inline ml-1" /></Link>
          </div>
          
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 px-6">
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 px-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <motion.div 
                 key={i}
@@ -507,13 +478,14 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="aspect-[3/4] h-[500px] md:h-auto premium-placeholder rounded-sm border border-white/10 relative overflow-hidden group bg-court-grid"
+                className="aspect-[3/4] h-[500px] md:h-auto rounded-3xl border border-white/5 relative overflow-hidden group bg-secondary"
               >
                  {featuredPhotos[i]?.image_url ? (
                    <Image src={featuredPhotos[i].image_url} alt="Recent Frame" fill className="object-cover transition-all duration-700" />
                  ) : (
-                   <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900 to-black" />
+                   <div className="absolute inset-0 bg-secondary" />
                  )}
+                 <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                  <div className="absolute bottom-6 left-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white">View Frame</span>
                  </div>
@@ -523,9 +495,8 @@ export default function HomePage() {
       </section>
 
       {/* 7. MASSIVE CTA */}
-      <section className="py-40 relative z-10 border-t border-white/5 overflow-hidden">
-        <div className="absolute inset-0 premium-placeholder bg-court-grid opacity-50 z-0" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-0" />
+      <section className="py-40 relative z-10 border-t border-white/5 overflow-hidden bg-background">
+        <div className="absolute inset-0 opacity-10 z-0 bg-court-grid" />
         
         <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
           <motion.h2 
@@ -533,10 +504,10 @@ export default function HomePage() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="text-[10vw] md:text-9xl font-black uppercase tracking-tighter text-white mb-16 leading-none"
+            className="text-[10vw] md:text-9xl font-black uppercase tracking-tighter text-foreground mb-16 leading-none"
           >
             Ready To <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-brand-muted">Capture?</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-white">Capture?</span>
           </motion.h2>
           
           <motion.div 
@@ -548,10 +519,15 @@ export default function HomePage() {
           >
             <Link
               href="/book"
-              onClick={() => trackEvent('book_click', { location: 'footer_cta' })}
-              className="px-14 py-6 bg-white text-black font-black uppercase tracking-widest text-sm rounded-sm hover:bg-zinc-200 transition-all hover:scale-105 transform duration-300"
+              className="px-16 py-7 bg-brand-accent text-black font-black uppercase tracking-[0.2em] text-sm rounded-full hover:bg-brand-accent/90 transition-all hover:scale-110 active:scale-95 shadow-brand-glow"
             >
-              Book a Shoot
+              Start Project Intelligence
+            </Link>
+            <Link
+              href="/portfolio"
+              className="px-16 py-7 bg-card border border-white/5 text-foreground font-black uppercase tracking-[0.2em] text-sm rounded-full hover:bg-secondary transition-all hover:scale-105 active:scale-95 shadow-premium"
+            >
+              View Archive
             </Link>
           </motion.div>
         </div>

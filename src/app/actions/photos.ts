@@ -16,6 +16,12 @@ export async function addPhoto(data: {
   public_id: string;
   width: number;
   height: number;
+  iso?: number;
+  aperture?: string;
+  shutter_speed?: string;
+  focal_length?: string;
+  camera_model?: string;
+  lens_model?: string;
 }) {
   const supabase = await createClient();
   const { data: user } = await supabase.auth.getUser();

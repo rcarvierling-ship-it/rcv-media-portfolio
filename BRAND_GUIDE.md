@@ -16,15 +16,15 @@ Colors:
 - Black
 - Charcoal
 - White
-- Blue accent
+- Neon green
 
 Package accent classes:
-- Sports Shoot: blue
-- Single Game: emerald
-- Portrait Session: violet
-- Cap & Gown Session: amber
-- Athlete Session: purple
-- Senior Session: pink
-- Team Media Day: green
-- Event Coverage: orange
-- Tournament / Extended Coverage: red
+- Sports Shoot: neon green
+- Single Game: neon green
+- Portrait Session: neon green
+- Cap & Gown Session: neon green
+- Athlete Session: neon green
+- Senior Session: neon green
+- Team Media Day: neon green
+- Event Coverage: neon green
+- Tournament / Extended Coverage: neon green

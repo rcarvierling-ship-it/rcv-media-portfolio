@@ -77,6 +77,13 @@ export default function AlbumMediaManager() {
           public_id: res.public_id,
           width: res.width,
           height: res.height,
+          // Technical Details
+          iso: res.metadata?.ISO ? parseInt(res.metadata.ISO) : undefined,
+          aperture: res.metadata?.FNumber || res.metadata?.ApertureValue,
+          shutter_speed: res.metadata?.ExposureTime,
+          focal_length: res.metadata?.FocalLength,
+          camera_model: res.metadata?.Model,
+          lens_model: res.metadata?.LensModel,
         }) as any;
         if (result?.success) {
           newPhotoIds.push(result.data.id);
@@ -163,15 +170,15 @@ export default function AlbumMediaManager() {
         <div className="flex gap-4">
           <button 
             onClick={() => setShowUpload(!showUpload)}
-            className={`px-8 py-4 ${showUpload ? 'bg-zinc-800 text-white' : 'bg-white/5 text-white border border-white/10'} text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-colors flex items-center gap-2`}
+            className={`px-8 py-4 ${showUpload ? 'bg-secondary text-white' : 'bg-secondary text-white border border-white/5'} text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 rounded-full shadow-premium`}
           >
             {showUpload ? <X size={14} /> : <Upload size={14} />} 
-            {showUpload ? "Cancel Upload" : "Direct Upload"}
+            {showUpload ? "Cancel Bridge" : "Direct Bridge"}
           </button>
           <button 
             onClick={handleSave}
             disabled={isSaving}
-            className="px-10 py-4 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest hover:bg-brand-accent transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="px-10 py-4 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 disabled:opacity-50 rounded-full shadow-brand-glow"
           >
             {isSaving ? "Syncing..." : "Sync Vault"} <Save size={14} />
           </button>
@@ -186,18 +193,18 @@ export default function AlbumMediaManager() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="premium-card p-10 bg-brand-accent/5 border border-brand-accent/20 rounded-2xl">
+            <div className="premium-card p-10 bg-card border border-white/5 rounded-[2.5rem] shadow-2xl">
                <div className="flex justify-between items-center mb-8">
                   <h2 className="text-xl font-black uppercase tracking-tighter text-white">Direct Upload Bridge</h2>
                   <p className="text-[10px] text-brand-accent font-black uppercase tracking-widest">Assets will be auto-linked to this vault</p>
                </div>
                
-               <div 
-                  {...getRootProps()} 
-                  className={`border-2 border-dashed p-16 text-center cursor-pointer transition-all rounded-xl mb-8 ${
-                    isDragActive ? "border-brand-accent bg-brand-accent/10" : "border-zinc-800 hover:border-brand-accent/50 bg-black/40"
-                  }`}
-                >
+                <div 
+                   {...getRootProps()} 
+                   className={`border-2 border-dashed p-16 text-center cursor-pointer transition-all rounded-[1.5rem] mb-8 ${
+                     isDragActive ? "border-brand-accent bg-brand-accent/10" : "border-white/5 hover:border-brand-accent/50 bg-background shadow-inner"
+                   }`}
+                 >
                   <input {...getInputProps()} />
                   <Upload size={32} className="mx-auto mb-4 text-zinc-700" />
                   <p className="text-zinc-500 uppercase tracking-[0.2em] text-[10px] font-black">
@@ -207,22 +214,22 @@ export default function AlbumMediaManager() {
 
                {uploadFiles.length > 0 && (
                  <div className="space-y-6">
-                    <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-                       {uploadFiles.map((f, i) => (
-                         <div key={i} className="aspect-square bg-zinc-800 rounded-sm flex items-center justify-center text-[10px] text-zinc-500 font-mono relative group">
-                            {f.name.slice(-4)}
-                            <button onClick={(e) => { e.stopPropagation(); setUploadFiles(prev => prev.filter((_, idx) => idx !== i)); }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"><X size={10} /></button>
-                         </div>
-                       ))}
-                    </div>
-                    <button 
-                      onClick={handleDirectUpload}
-                      disabled={uploading}
-                      className="w-full py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3"
-                    >
-                      {uploading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
-                      {uploading ? "Uploading to Cloudinary..." : `Deliver ${uploadFiles.length} Assets to Vault`}
-                    </button>
+                     <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+                        {uploadFiles.map((f, i) => (
+                          <div key={i} className="aspect-square bg-secondary rounded-xl flex items-center justify-center text-[10px] text-zinc-500 font-mono relative group border border-white/5">
+                             {f.name.slice(-4)}
+                             <button onClick={(e) => { e.stopPropagation(); setUploadFiles(prev => prev.filter((_, idx) => idx !== i)); }} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"><X size={10} /></button>
+                          </div>
+                        ))}
+                     </div>
+                     <button 
+                       onClick={handleDirectUpload}
+                       disabled={uploading}
+                       className="w-full py-5 bg-brand-accent text-black font-black uppercase tracking-widest text-[10px] rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow"
+                     >
+                       {uploading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle2 size={16} />}
+                       {uploading ? "Uploading to Cloudinary..." : `Deliver ${uploadFiles.length} Assets to Vault`}
+                     </button>
                  </div>
                )}
             </div>
@@ -230,17 +237,17 @@ export default function AlbumMediaManager() {
         )}
       </AnimatePresence>
 
-      <section className="premium-card p-6 bg-zinc-900/20 border border-white/5 rounded-2xl">
+       <section className="premium-card p-10 bg-card border border-white/5 rounded-[2.5rem] shadow-premium">
          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
             <div className="relative w-full md:w-96">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-600" size={16} />
-               <input 
-                 type="text" 
-                 placeholder="Filter library..."
-                 value={searchTerm}
-                 onChange={(e) => setSearchTerm(e.target.value)}
-                 className="w-full bg-black/40 border border-white/10 pl-12 pr-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-accent/50 transition-all"
-               />
+                <input 
+                  type="text" 
+                  placeholder="Filter library..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-secondary border border-white/5 pl-12 pr-6 py-4 rounded-full text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-brand-accent transition-all shadow-inner"
+                />
             </div>
             <div className="flex gap-6">
                <button onClick={() => setSelectedIds(new Set())} className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hover:text-white transition-colors">Deselect All</button>

@@ -108,7 +108,7 @@ function BookingContent() {
   };
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-zinc-950 relative">
+    <div className="pt-32 pb-24 min-h-screen bg-background relative selection:bg-primary selection:text-primary-foreground">
       <div className="fixed inset-0 z-[100] bg-ambient pointer-events-none" />
       
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -120,13 +120,13 @@ function BookingContent() {
               className="mb-12 p-8 bg-brand-accent/10 border border-brand-accent/20 rounded-sm flex flex-col md:flex-row justify-between items-center gap-6"
             >
                <div className="flex items-center gap-6 text-center md:text-left">
-                  <div className="w-12 h-12 bg-brand-accent text-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.3)]"><Zap size={24} /></div>
+                  <div className="w-12 h-12 bg-brand-accent text-black rounded-full flex items-center justify-center shadow-brand-glow"><Zap size={24} /></div>
                   <div>
                      <h3 className="text-xl font-black uppercase tracking-tighter text-white">{activeCampaign.title} Mode Active</h3>
                      <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em]">Promotion applies to all campaign bookings</p>
                   </div>
                </div>
-               <Link href={`/campaign/${activeCampaign.slug}`} className="px-8 py-3 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all">View Details</Link>
+               <Link href={`/campaign/${activeCampaign.slug}`} className="px-8 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all shadow-brand-glow">View Details</Link>
             </motion.div>
           )}
         </AnimatePresence>
@@ -237,7 +237,7 @@ function BookingContent() {
               <motion.div className="premium-card p-12 text-center rounded-2xl border border-white/10">
                 <h2 className="text-4xl font-black uppercase tracking-tighter text-white mb-4">Confirmed</h2>
                 <p className="text-zinc-400 text-lg mb-8">Your request is in. Check your email for details.</p>
-                <button onClick={() => setSuccess(false)} className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-sm">
+                <button onClick={() => setSuccess(false)} className="px-10 py-4 bg-brand-accent text-black font-black uppercase tracking-widest text-xs rounded-sm shadow-brand-glow">
                   Book Another
                 </button>
               </motion.div>
@@ -260,17 +260,17 @@ function BookingContent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Full Name</label>
-                      <input name="name" type="text" required defaultValue={prefill.name} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="name" type="text" required defaultValue={prefill.name} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Email Address</label>
-                      <input name="email" type="email" required defaultValue={prefill.email} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="email" type="email" required defaultValue={prefill.email} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Phone Number</label>
-                      <input name="phone" type="tel" required defaultValue={prefill.phone} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
+                      <input name="phone" type="tel" required defaultValue={prefill.phone} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" />
                     </div>
                   </div>
                 </div>
@@ -293,16 +293,16 @@ function BookingContent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Event Time</label>
-                      <input name="event_time" type="time" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" style={{ colorScheme: 'dark' }} />
+                      <input name="event_time" type="time" required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" style={{ colorScheme: 'dark' }} />
                     </div>
                     <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Location</label>
-                      <input name="location" type="text" required className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" placeholder="Stadium, Park, Studio, etc." />
+                      <input name="location" type="text" required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50" placeholder="Stadium, Park, Studio, etc." />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">How did you hear about RCV.Media?</label>
-                    <select name="lead_source" required defaultValue={prefill.pastClient ? "Past client" : ""} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 bg-zinc-950 appearance-none">
+                    <select name="lead_source" required defaultValue={prefill.pastClient ? "Past client" : ""} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 appearance-none">
                       <option value="" disabled>Select an option</option>
                       <option value="Instagram">Instagram</option>
                       <option value="Google">Google</option>
@@ -315,14 +315,14 @@ function BookingContent() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Additional Details</label>
-                    <textarea name="message" rows={4} className="w-full premium-glass border border-white/10 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none" placeholder="Tell me more about the shoot..." />
+                    <textarea name="message" rows={4} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-sm focus:border-brand-accent/50 resize-none" placeholder="Tell me more about the shoot..." />
                   </div>
                 </div>
 
                 <button 
                   type="submit" 
                   disabled={isSubmitting || !selectedPackage || !selectedDate}
-                  className="w-full py-6 bg-white text-black font-black uppercase tracking-widest text-sm rounded-sm hover:scale-[1.01] transition-all disabled:opacity-50"
+                  className="w-full py-6 bg-brand-accent text-black font-black uppercase tracking-widest text-sm rounded-sm hover:brightness-110 transition-all disabled:opacity-50 shadow-brand-glow"
                 >
                   {isSubmitting ? 'Processing...' : !selectedPackage ? 'Select a Package Above' : !selectedDate ? 'Select a Date' : 'Complete Booking Request'}
                 </button>
@@ -337,7 +337,7 @@ function BookingContent() {
 
 export default function BookPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-zinc-950 flex items-center justify-center text-white font-black uppercase tracking-widest text-xs">Initializing...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-white font-black uppercase tracking-widest text-xs">Initializing...</div>}>
       <BookingContent />
     </Suspense>
   );

@@ -9,7 +9,7 @@ import { Palette, Check, RefreshCw, GripVertical, Move, X, Maximize2 } from "luc
 import { reorderPhotos } from "@/app/actions/photos";
 
 const COLOR_PRESETS = [
-  { name: "Electric Blue", color: "#3b82f6" },
+  { name: "Neon Green", color: "#C8FF00" },
   { name: "Blood Red", color: "#ef4444" },
   { name: "Championship Gold", color: "#fbbf24" },
   { name: "Stealth Zinc", color: "#71717a" },
@@ -29,7 +29,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
   const [isSaving, setIsSaving] = useState(false);
   const [isReordering, setIsReordering] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const [activeColor, setActiveColor] = useState(initialSettings?.accent_color || "#3b82f6");
+  const [activeColor, setActiveColor] = useState(initialSettings?.accent_color || "#C8FF00");
   
   const supabase = createClient();
   const router = useRouter();
@@ -96,9 +96,9 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
           <Palette className="text-zinc-500" size={20} />
           <h2 className="text-xl font-black uppercase tracking-widest text-zinc-500">The Vibe Switch</h2>
         </div>
-        <div className="bg-zinc-900/50 border border-white/5 p-8 rounded-xl backdrop-blur-sm">
-          <p className="text-zinc-500 text-sm mb-8 max-w-2xl leading-relaxed">
-            Change the global accent color of the entire website. This will update buttons, glows, borders, and gradients across every page instantly.
+        <div className="bg-card border border-white/5 p-10 rounded-[2.5rem] backdrop-blur-xl shadow-premium">
+          <p className="text-zinc-500 text-sm mb-10 max-w-2xl leading-relaxed font-medium">
+            Surgically adjust the global accent color of the entire website. This will update buttons, glows, borders, and gradients across every page instantly.
           </p>
           
           <div className="flex flex-wrap gap-4">
@@ -123,10 +123,10 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
 
           <div className="mt-10 pt-8 border-t border-white/5 flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Current Theme:</span>
-              <div className="flex items-center gap-2 px-3 py-1 bg-black rounded-full border border-white/10">
-                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: activeColor }} />
-                 <span className="text-[10px] font-mono text-zinc-400 uppercase">{activeColor}</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Current DNA:</span>
+              <div className="flex items-center gap-2 px-4 py-2 bg-background rounded-full border border-white/10 shadow-inner">
+                 <div className="w-2.5 h-2.5 rounded-full shadow-glow" style={{ backgroundColor: activeColor }} />
+                 <span className="text-[10px] font-mono text-zinc-400 uppercase font-bold">{activeColor}</span>
               </div>
             </div>
             {isSaving && (
@@ -142,9 +142,9 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
       {/* 1. HERO SECTION EDITOR */}
       <section>
         <h2 className="text-xl font-black uppercase tracking-widest text-zinc-500 mb-6">Homepage Hero</h2>
-        <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm">
+        <div className="bg-card border border-white/5 p-10 rounded-[2.5rem] shadow-premium">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="relative aspect-video bg-black rounded-sm overflow-hidden border border-zinc-800">
+            <div className="relative aspect-video bg-background rounded-2xl overflow-hidden border border-white/10 shadow-inner">
                {settings?.hero_image_url ? (
                  <Image src={settings.hero_image_url} alt="Hero" fill className="object-cover" />
                ) : (
@@ -157,7 +157,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                 <p className="text-zinc-500 text-sm leading-relaxed mb-6">This is the large split image shown on the homepage hero section.</p>
                 <button 
                   onClick={() => setShowPhotoPicker({ active: true, target: 'hero' })}
-                  className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-colors"
+                  className="px-8 py-4 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded-full shadow-brand-glow"
                 >
                   Change Hero Image
                 </button>
@@ -177,7 +177,7 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
           <div className="flex gap-4">
              <button 
                onClick={() => setIsReorderModalOpen(true)}
-               className="px-6 py-3 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-widest hover:bg-zinc-700 transition-all flex items-center gap-2 border border-white/5"
+               className="px-6 py-3 bg-secondary text-white text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 border border-white/5 rounded-full"
              >
                <Move size={14} /> Edit Carousel Order
              </button>
@@ -194,21 +194,21 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
            {featuredPhotos.map((photo, i) => (
              <div 
                key={photo.id} 
-               className="relative aspect-square bg-zinc-900 border border-zinc-800 overflow-hidden group"
+               className="relative aspect-square bg-card border border-white/5 rounded-2xl overflow-hidden group shadow-premium"
              >
                 <Image src={photo.image_url} alt="Featured" fill className="object-cover" />
-                <div className="absolute top-2 left-2 bg-black/80 text-[8px] font-black px-2 py-1 text-white rounded-full">#{i+1}</div>
+                <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-[8px] font-black px-2.5 py-1 text-white rounded-full border border-white/10">#{i+1}</div>
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                   <button onClick={() => toggleFeatured(photo)} className="text-[8px] font-black uppercase tracking-widest text-red-500">Remove</button>
+                   <button onClick={() => toggleFeatured(photo)} className="text-[9px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-4 py-2 rounded-full border border-red-500/20 backdrop-blur-md hover:bg-red-500 hover:text-white transition-all">Remove</button>
                 </div>
              </div>
            ))}
            {featuredPhotos.length < 6 && (
              <button 
                 onClick={() => setShowPhotoPicker({ active: true, target: 'featured' })}
-                className="aspect-square border border-dashed border-zinc-800 flex items-center justify-center text-zinc-700 hover:border-zinc-500 hover:text-zinc-500 transition-all"
+                className="aspect-square border-2 border-dashed border-white/5 rounded-2xl flex items-center justify-center text-zinc-700 hover:border-brand-accent/30 hover:text-brand-accent transition-all bg-secondary/30"
              >
-                <span className="text-xs font-black uppercase tracking-widest">Add Slot</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Add Slot</span>
              </button>
            )}
         </div>
@@ -216,18 +216,20 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
 
       {/* PHOTO PICKER MODAL */}
       {showPhotoPicker.active && (
-        <div className="fixed inset-0 bg-black/95 z-[400] flex items-center justify-center p-8">
-           <div className="bg-zinc-950 border border-zinc-900 w-full max-w-5xl h-[80vh] flex flex-col">
-              <div className="p-8 border-b border-zinc-900 flex justify-between items-center">
-                 <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Select Image</h2>
-                 <button onClick={() => setShowPhotoPicker({ active: false, target: 'hero' })} className="text-zinc-500 hover:text-white">Close</button>
+        <div className="fixed inset-0 bg-background/95 backdrop-blur-xl z-[400] flex items-center justify-center p-8">
+           <div className="bg-card border border-white/10 w-full max-w-5xl h-[80vh] flex flex-col rounded-[2.5rem] shadow-2xl overflow-hidden">
+              <div className="p-10 border-b border-white/5 flex justify-between items-center bg-zinc-900/20">
+                 <h2 className="text-3xl font-black uppercase tracking-tighter text-white italic">Vault Selector</h2>
+                 <button onClick={() => setShowPhotoPicker({ active: false, target: 'hero' })} className="p-3 bg-secondary text-white hover:brightness-110 transition-all rounded-full border border-white/10">
+                    <X size={20} />
+                 </button>
               </div>
               <div className="flex-1 overflow-y-auto p-8 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                  {photos.map(photo => (
                    <div 
                      key={photo.id} 
                      onClick={() => showPhotoPicker.target === 'hero' ? updateHeroImage(photo.image_url) : toggleFeatured(photo)}
-                     className="relative aspect-square cursor-pointer group border-2 border-transparent hover:border-brand-accent transition-all"
+                     className="relative aspect-square cursor-pointer group border-2 border-transparent hover:border-brand-accent rounded-xl overflow-hidden transition-all hover:shadow-brand-glow"
                    >
                       <Image src={photo.image_url} alt="Selection" fill className="object-cover" />
                       {photo.is_featured && showPhotoPicker.target === 'featured' && (
@@ -270,14 +272,14 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                       {hasUnsavedChanges && !isReordering && (
                         <button 
                           onClick={saveReorder}
-                          className="px-8 py-4 bg-brand-accent text-white text-[10px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_30px_var(--accent-glow)] flex items-center gap-2"
+                          className="px-8 py-4 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all shadow-brand-glow flex items-center gap-2 rounded-full"
                         >
                            <Check size={14} strokeWidth={3} /> Apply Sequence
                         </button>
                       )}
                       <button 
                         onClick={() => setIsReorderModalOpen(false)}
-                        className="p-4 bg-zinc-800 text-white hover:bg-zinc-700 transition-all rounded-full"
+                        className="p-4 bg-secondary text-white hover:brightness-110 transition-all rounded-full border border-white/10"
                       >
                          <X size={20} strokeWidth={3} />
                       </button>
@@ -300,17 +302,17 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
                             boxShadow: "0 20px 40px rgba(0,0,0,0.4)",
                             zIndex: 100 
                           }}
-                          className={`relative flex items-center gap-6 p-4 bg-zinc-900 border-2 transition-all cursor-grab active:cursor-grabbing group rounded-sm overflow-hidden ${
+                          className={`relative flex items-center gap-6 p-5 bg-card border-2 transition-all cursor-grab active:cursor-grabbing group rounded-2xl overflow-hidden ${
                             isReordering ? 'opacity-50 grayscale pointer-events-none' : 'border-white/5 hover:border-white/10 shadow-xl'
                           }`}
                         >
                            {/* Index Badge */}
-                           <div className="w-12 h-12 bg-zinc-800 flex items-center justify-center font-black italic text-zinc-500 border border-white/5 shrink-0">
+                           <div className="w-14 h-14 bg-secondary flex items-center justify-center font-black italic text-zinc-500 border border-white/5 shrink-0 rounded-xl">
                               {i+1}
                            </div>
 
                            {/* Preview Image */}
-                           <div className="relative h-20 aspect-[16/10] bg-black border border-white/5 shrink-0 overflow-hidden">
+                           <div className="relative h-20 aspect-[16/10] bg-background border border-white/5 shrink-0 overflow-hidden rounded-lg">
                               <Image src={photo.image_url} alt="Preview" fill className="object-cover pointer-events-none" />
                            </div>
 

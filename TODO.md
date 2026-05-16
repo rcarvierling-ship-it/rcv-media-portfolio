@@ -73,15 +73,15 @@ Main brand line:
 
 | Package | Price | Accent |
 |---|---:|---|
-| Sports Shoot | $80 | blue |
-| Single Game | $125 | emerald |
-| Portrait Session | $125 | violet |
-| Cap & Gown Session | $100 | amber |
-| Athlete Session | $175 | purple |
-| Senior Session | $180 | pink |
-| Team Media Day | $250 | green |
-| Event Coverage | Starting at $250 | orange |
-| Tournament / Extended Coverage | Starting at $400 | red |
+| Sports Shoot | $80 | neon green |
+| Single Game | $125 | neon green |
+| Portrait Session | $125 | neon green |
+| Cap & Gown Session | $100 | neon green |
+| Athlete Session | $175 | neon green |
+| Senior Session | $180 | neon green |
+| Team Media Day | $250 | neon green |
+| Event Coverage | $250+ | neon green |
+| Tournament / Extended Coverage | $400+ | neon green |
 
 - [ ] Make pricing cards visually premium
 - [ ] Add FAQ below pricing

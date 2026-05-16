@@ -22,7 +22,7 @@ export function OptimizeWorkflowButton() {
     <button 
       onClick={handleOptimize}
       disabled={isOptimizing}
-      className="w-full py-4 bg-white text-black font-black uppercase text-[10px] tracking-widest hover:bg-zinc-100 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+      className="w-full py-5 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-3 disabled:opacity-50 rounded-full shadow-brand-glow"
     >
       {isOptimizing ? (
         <>

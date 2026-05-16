@@ -64,8 +64,8 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
     <div className="space-y-12">
       <div className="flex justify-end">
         <button 
-          onClick={() => setEditingPackage({ name: "", price: "", features: [], accent_color: "brand-accent", sort_order: 0 })}
-          className="px-6 py-3 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200"
+          onClick={() => setEditingPackage({ name: "", price: "", features: [], accent_color: "#C8FF00", sort_order: 0 })}
+          className="px-8 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded-full shadow-brand-glow"
         >
           Add New Package
         </button>
@@ -73,7 +73,7 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {packages.map((pkg) => (
-          <div key={pkg.id} className="bg-zinc-900 border border-zinc-800 p-8 rounded-sm relative group">
+          <div key={pkg.id} className="bg-card border border-white/5 p-8 rounded-[1.5rem] relative group shadow-premium hover:border-brand-accent/30 transition-all">
             <div className="flex justify-between items-start mb-4">
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -105,8 +105,8 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
 
             <button 
               onClick={() => handleToggleActive(pkg.id, pkg.is_active)}
-              className={`w-full py-2 text-[10px] font-black uppercase tracking-widest border transition-colors ${
-                pkg.is_active ? 'border-zinc-800 text-zinc-500 hover:bg-zinc-800' : 'border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white'
+              className={`w-full py-4 text-[10px] font-black uppercase tracking-widest border rounded-full transition-all ${
+                pkg.is_active ? 'border-white/5 bg-secondary text-zinc-500 hover:text-white' : 'bg-brand-accent border-brand-accent text-black shadow-brand-glow'
               }`}
             >
               {pkg.is_active ? 'Set Inactive' : 'Set Active'}
@@ -116,11 +116,11 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
       </div>
 
       {editingPackage && (
-        <div className="fixed inset-0 bg-black/90 z-[300] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-background/90 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-zinc-950 border border-zinc-800 p-10 w-full max-w-2xl"
+            className="bg-card border border-white/5 p-10 w-full max-w-2xl rounded-[2.5rem] shadow-2xl"
           >
             <div className="flex justify-between items-center mb-10">
               <h2 className="text-2xl font-black uppercase tracking-tighter text-white">
@@ -132,41 +132,41 @@ export function PricingAdminClient({ initialPackages }: { initialPackages: any[]
             </div>
 
             <form onSubmit={handleSave} className="space-y-6">
-              <div className="grid grid-cols-2 gap-6">
+               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Package Name</label>
-                  <input name="name" defaultValue={editingPackage.name} required className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
+                  <input name="name" defaultValue={editingPackage.name} required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Price Display</label>
-                  <input name="price" defaultValue={editingPackage.price} placeholder="$450" required className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
+                  <input name="price" defaultValue={editingPackage.price} placeholder="$450" required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Accent Color (HEX)</label>
-                  <input name="accent_color" defaultValue={editingPackage.accent_color} placeholder="#3b82f6" className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
+                  <input name="accent_color" defaultValue={editingPackage.accent_color} placeholder="#C8FF00" className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Sort Order</label>
-                  <input name="sort_order" type="number" defaultValue={editingPackage.sort_order} className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500" />
+                  <input name="sort_order" type="number" defaultValue={editingPackage.sort_order} className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent rounded-full text-sm font-bold shadow-inner" />
                 </div>
               </div>
 
-              <div className="space-y-2">
+               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Features (One per line)</label>
                 <textarea 
                   name="features" 
                   rows={6} 
                   defaultValue={editingPackage.features?.join("\n")}
-                  className="w-full bg-zinc-900 border border-zinc-800 px-4 py-3 text-white outline-none focus:border-zinc-500 resize-none"
+                  className="w-full bg-secondary border border-white/5 px-8 py-6 text-white outline-none focus:border-brand-accent rounded-[1.5rem] text-sm font-bold shadow-inner resize-none"
                   placeholder="3 Hours Coverage&#10;50+ Edits&#10;48h Turnaround"
                 />
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button type="submit" disabled={isSaving} className="flex-1 py-4 bg-white text-black font-black uppercase tracking-widest text-xs hover:bg-zinc-200 disabled:opacity-50">
+                 <button type="submit" disabled={isSaving} className="flex-1 py-5 bg-brand-accent text-black font-black uppercase tracking-widest text-xs hover:brightness-110 transition-all rounded-full shadow-brand-glow disabled:opacity-50">
                   {isSaving ? "Saving..." : "Save Package"}
                 </button>
               </div>
