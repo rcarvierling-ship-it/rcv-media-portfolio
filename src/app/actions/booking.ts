@@ -681,11 +681,20 @@ export async function sendGalleryEmail(bookingId: string, albumId: string, galle
     if (!booking) throw new Error("Booking not found");
     if (!booking.email) throw new Error("Booking lacks email address");
 
+    // Fetch the passcode securely directly on the server to prevent any client-side RLS hideouts!
+    const { data: album } = await supabase
+      .from("albums")
+      .select("passcode, is_private")
+      .eq("id", albumId)
+      .single();
+
+    const resolvedPasscode = passcode || album?.passcode;
+
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
       
       const emailSubject = `Your RCV.Media Photos are Ready!`;
-      const emailText = `Hey ${booking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${passcode ? `Your gallery password is: ${passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
+      const emailText = `Hey ${booking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${resolvedPasscode ? `Your gallery password is: ${resolvedPasscode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
 
       const { error } = await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
@@ -716,10 +725,10 @@ export async function sendGalleryEmail(bookingId: string, albumId: string, galle
       </a>
     </div>
 
-    ${passcode ? `
+    ${resolvedPasscode ? `
     <div style="background-color: #141414; border: 1px solid #1c1c1c; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px;">
       <span style="font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #666666; display: block; margin-bottom: 8px;">Gallery Password</span>
-      <span style="font-size: 18px; font-family: monospace; font-weight: 900; letter-spacing: 0.1em; color: #C8FF00;">${passcode}</span>
+      <span style="font-size: 18px; font-family: monospace; font-weight: 900; letter-spacing: 0.1em; color: #C8FF00;">${resolvedPasscode}</span>
     </div>
     ` : ''}
   </div>
