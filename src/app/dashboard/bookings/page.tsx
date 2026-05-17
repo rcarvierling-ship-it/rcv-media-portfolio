@@ -9,7 +9,7 @@ const STAGES = [
   { id: 'delivered', label: 'Delivered', color: 'text-brand-accent', bg: 'bg-brand-accent/10' },
 ];
 
-export default async function PipelinePage() {
+export default async function BookingsPage() {
   const supabase = await createClient();
 
   // 1. Fetch All Bookings (Pipeline)
@@ -79,8 +79,8 @@ export default async function PipelinePage() {
     <div className="h-full flex flex-col space-y-8 pb-32">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 border-b border-border pb-10">
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-3 italic">Strategic Pipeline</h1>
-          <p className="text-zinc-400 font-black tracking-[0.4em] uppercase text-[10px]">Agency Lead Flow & Contract Intelligence</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-3 italic">Bookings & Pipeline</h1>
+          <p className="text-zinc-400 font-black tracking-[0.4em] uppercase text-[10px]">Manage inquiries, active shoots, editing, delivery, and completed projects</p>
         </div>
         <div className="flex gap-12">
            <div className="text-right">

@@ -16,7 +16,7 @@ export async function updateBookingStage(bookingId: string, stage: string) {
     return { success: false, error: error.message };
   }
 
-  revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/bookings");
   return { success: true };
 }
 
@@ -32,6 +32,6 @@ export async function deleteBooking(bookingId: string) {
     return { success: false, error: error.message };
   }
 
-  revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/bookings");
   return { success: true };
 }

@@ -37,7 +37,7 @@ export async function createAlbum(data: {
 
   revalidatePath("/");
   revalidatePath("/albums");
-  revalidatePath("/dashboard/albums");
+  revalidatePath("/dashboard/galleries");
 }
 
 export async function updateAlbum(id: string, updates: { 
@@ -66,7 +66,7 @@ export async function updateAlbum(id: string, updates: {
 
   revalidatePath("/");
   revalidatePath("/albums");
-  revalidatePath("/dashboard/albums");
+  revalidatePath("/dashboard/galleries");
 }
 
 export async function deleteAlbum(id: string) {
@@ -79,5 +79,5 @@ export async function deleteAlbum(id: string) {
 
   revalidatePath("/");
   revalidatePath("/albums");
-  revalidatePath("/dashboard/albums");
+  revalidatePath("/dashboard/galleries");
 }

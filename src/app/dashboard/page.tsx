@@ -198,12 +198,12 @@ export default function DashboardPage() {
           </div>
         </div>
          <div className="flex items-center gap-3">
-            <Link 
-              href="/dashboard/pipeline"
-              className="px-8 py-4 bg-brand-accent text-black rounded-full shadow-xl shadow-brand-glow/20 text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-3 group"
-            >
-              New Booking <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
+             <Link 
+               href="/dashboard/bookings"
+               className="px-8 py-4 bg-brand-accent text-black rounded-full shadow-xl shadow-brand-glow/20 text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-3 group"
+             >
+               New Booking <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+             </Link>
          </div>
       </section>
 
@@ -290,7 +290,7 @@ export default function DashboardPage() {
                 <Camera size={14} className="text-brand-accent" /> Upload Photos
              </Link>
              <Link 
-               href="/dashboard/pipeline" 
+               href="/dashboard/bookings" 
                className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
              >
                 <Calendar size={14} className="text-brand-accent" /> Bookings Pipeline
@@ -355,13 +355,13 @@ export default function DashboardPage() {
             <div className="w-full xl:w-1/3 border-r border-white/5 p-12">
                <div className="flex justify-between items-center mb-10">
                  <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Bookings Queue</h3>
-                 <Link 
-                   href="/dashboard/pipeline"
-                   className="p-2 rounded-full hover:bg-white/5 text-zinc-500 hover:text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
-                   title="Configure Bookings & Pipeline"
-                 >
-                   <Settings size={18} />
-                 </Link>
+                  <Link 
+                    href="/dashboard/bookings"
+                    className="p-2 rounded-full hover:bg-white/5 text-zinc-500 hover:text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+                    title="Configure Bookings & Pipeline"
+                  >
+                    <Settings size={18} />
+                  </Link>
                </div>
                  <div className="space-y-4">
                    {(() => {

@@ -15,34 +15,16 @@ function cn(...inputs: (string | undefined | null | false)[]) {
   return twMerge(clsx(inputs));
 }
 
-const navGroups = [
-  {
-    title: "Media",
-    items: [
-      { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-      { label: "All Photos", href: "/dashboard/media", icon: Library },
-      { label: "Portfolio Curation", href: "/dashboard/curated", icon: ImageIcon },
-      { label: "Albums", href: "/dashboard/albums", icon: Inbox },
-    ]
-  },
-  {
-    title: "Operations",
-    items: [
-      { label: "Visuals", href: "/dashboard/visuals", icon: GitPullRequest },
-      { label: "Bookings Pipeline", href: "/dashboard/pipeline", icon: Tag },
-      { label: "Contracts", href: "/dashboard/contracts", icon: FileText },
-      { label: "Packages & Pricing", href: "/dashboard/pricing", icon: Tag },
-      { label: "Settings", href: "/dashboard/settings", icon: Settings },
-    ]
-  },
-  {
-    title: "Design",
-    items: [
-      { label: "Page Editor", href: "/dashboard/editor", icon: Layout },
-      { label: "About Page", href: "/dashboard/about", icon: User },
-    ]
-  }
+const navItems = [
+  { label: "Overview", href: "/dashboard" },
+  { label: "Bookings", href: "/dashboard/bookings" },
+  { label: "Media", href: "/dashboard/media" },
+  { label: "Galleries", href: "/dashboard/galleries" },
+  { label: "Contracts", href: "/dashboard/contracts" },
+  { label: "Pricing", href: "/dashboard/pricing" },
+  { label: "Analytics", href: "/dashboard/analytics" },
+  { label: "Site", href: "/dashboard/site" },
+  { label: "Settings", href: "/dashboard/settings" },
 ];
 
 export default function DashboardLayout({
@@ -65,21 +47,15 @@ export default function DashboardLayout({
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] hidden xl:block">RCV.Media Dashboard</span>
              </Link>
              
-             <nav className="hidden lg:flex items-center gap-2">
-                {[
-                  { label: "Overview", href: "/dashboard" },
-                  { label: "Bookings", href: "/dashboard/pipeline" },
-                  { label: "All Photos", href: "/dashboard/media" },
-                  { label: "Contracts", href: "/dashboard/contracts" },
-                  { label: "Analytics", href: "/dashboard/analytics" },
-                ].map((item) => {
-                  const isActive = pathname === item.href;
+             <nav className="hidden lg:flex items-center gap-1.5">
+                {navItems.map((item) => {
+                  const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
                   return (
                     <Link 
                       key={item.href} 
                       href={item.href}
                       className={cn(
-                        "px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500",
+                        "px-6 py-2.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] transition-all duration-500 whitespace-nowrap",
                         isActive ? "bg-brand-accent text-black shadow-xl" : "text-zinc-400 hover:text-white"
                       )}
                     >
@@ -100,39 +76,39 @@ export default function DashboardLayout({
                 />
              </div>
              
-                 <div className="relative group">
-                    <button className="w-12 h-12 rounded-full bg-zinc-800 p-0.5 border border-white/10 relative group-hover:border-brand-accent transition-all">
-                       <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden">
-                          <User size={24} className="text-zinc-500" />
-                       </div>
-                       <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-accent rounded-full border-2 border-dark-panel flex items-center justify-center shadow-brand-glow">
-                          <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
-                       </div>
-                    </button>
-                    
-                    <div className="absolute top-[calc(100%+1rem)] right-0 w-64 bg-dark-panel border border-white/5 rounded-[2rem] shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all p-4 z-[100] backdrop-blur-xl">
-                       <div className="p-6 border-b border-white/5 mb-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Admin Profile</p>
-                          <p className="text-sm font-black text-white italic">REESE VIERLING</p>
-                       </div>
-                       <div className="space-y-1">
-                          <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
-                              <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
-                              <span className="text-[9px] font-black uppercase tracking-widest">Settings</span>
-                          </Link>
-                          <button 
-                            onClick={async () => {
-                              const { logout } = await import("@/app/actions/auth");
-                              await logout();
-                            }}
-                            className="w-full flex items-center gap-4 p-4 hover:bg-red-500/10 rounded-full text-zinc-400 hover:text-red-500 transition-all"
-                          >
-                             <LogOut size={16} />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Logout</span>
-                          </button>
-                       </div>
-                    </div>
-                 </div>
+             <div className="relative group">
+                <button className="w-12 h-12 rounded-full bg-zinc-800 p-0.5 border border-white/10 relative group-hover:border-brand-accent transition-all">
+                   <div className="w-full h-full rounded-full bg-zinc-900 flex items-center justify-center overflow-hidden">
+                      <User size={24} className="text-zinc-500" />
+                   </div>
+                   <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-brand-accent rounded-full border-2 border-dark-panel flex items-center justify-center shadow-brand-glow">
+                      <div className="w-1.5 h-1.5 bg-black rounded-full animate-pulse" />
+                   </div>
+                </button>
+                
+                <div className="absolute top-[calc(100%+1rem)] right-0 w-64 bg-dark-panel border border-white/5 rounded-[2rem] shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all p-4 z-[100] backdrop-blur-xl">
+                   <div className="p-6 border-b border-white/5 mb-2">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Admin Profile</p>
+                      <p className="text-sm font-black text-white italic">REESE VIERLING</p>
+                   </div>
+                   <div className="space-y-1">
+                      <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
+                          <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
+                          <span className="text-[9px] font-black uppercase tracking-widest">Settings</span>
+                      </Link>
+                      <button 
+                        onClick={async () => {
+                          const { logout } = await import("@/app/actions/auth");
+                          await logout();
+                        }}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-red-500/10 rounded-full text-zinc-400 hover:text-red-500 transition-all"
+                      >
+                         <LogOut size={16} />
+                         <span className="text-[9px] font-black uppercase tracking-widest">Logout</span>
+                      </button>
+                   </div>
+                </div>
+             </div>
           </div>
         </header>
       </div>

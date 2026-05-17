@@ -85,14 +85,14 @@ export default function AlbumManager() {
     <div className="space-y-12 pb-24">
       <header className="flex justify-between items-end">
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2">Album Manager</h1>
-          <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Private Client Vaults & Public Collections</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-2 italic">Galleries</h1>
+          <p className="text-zinc-500 font-black tracking-[0.4em] uppercase text-[10px]">Private Client Vaults & Public Collections</p>
         </div>
         <button 
           onClick={() => setIsCreating(true)}
-          className="px-6 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 rounded-full shadow-brand-glow"
+          className="px-6 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-2 rounded-full shadow-brand-glow animate-pulse"
         >
-          <FolderPlus size={14} /> New Album
+          <FolderPlus size={14} /> New Gallery
         </button>
       </header>
 
@@ -188,7 +188,7 @@ export default function AlbumManager() {
 
                 <div className="grid grid-cols-2 gap-3">
                    <Link 
-                     href={`/dashboard/albums/${album.id}`}
+                     href={`/dashboard/galleries/${album.id}`}
                      className="flex-1 py-3 bg-secondary text-white text-[10px] font-black uppercase tracking-widest text-center hover:bg-zinc-700 transition-colors rounded-sm border border-white/5"
                    >
                      Manage Media

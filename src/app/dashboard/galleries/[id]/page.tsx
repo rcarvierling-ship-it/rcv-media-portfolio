@@ -195,7 +195,7 @@ export default function AlbumMediaManager() {
 
     setIsSaving(false);
     router.refresh();
-    router.push("/dashboard/albums");
+    router.push("/dashboard/galleries");
   };
 
   const filteredPhotos = allPhotos.filter(p => 
@@ -209,8 +209,8 @@ export default function AlbumMediaManager() {
     <div className="space-y-12 pb-24">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <Link href="/dashboard/albums" className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest mb-4">
-             <ArrowLeft size={14} /> Back to Albums
+          <Link href="/dashboard/galleries" className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-widest mb-4">
+             <ArrowLeft size={14} /> Back to Galleries
           </Link>
           <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">Manage Media: {album?.title}</h1>
           <p className="text-zinc-500 font-light tracking-wide uppercase text-[10px]">Deliver assets directly to this vault ({selectedIds.size} synced)</p>

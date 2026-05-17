@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { SiteEditorClient } from "./client";
 
-export default async function EditorDashboard() {
+export default async function SiteEditorDashboard() {
   const supabase = await createClient();
   
   const { data: settings } = await supabase
@@ -16,11 +16,11 @@ export default async function EditorDashboard() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-12 border-b border-zinc-800 pb-8">
-        <h1 className="text-4xl font-black uppercase tracking-tighter text-white mb-2">Site Editor</h1>
-        <p className="text-zinc-400 font-light text-lg">Control the visual layout and featured content of your website.</p>
-      </div>
+    <div className="space-y-12 pb-24">
+      <header className="border-b border-white/5 pb-10">
+        <h1 className="text-5xl font-black uppercase tracking-tighter text-white mb-3 italic">Site Editor</h1>
+        <p className="text-zinc-400 font-black tracking-[0.4em] uppercase text-[10px]">Brand assets, bio narrative, accent color DNA, homepage hero, and SEO settings</p>
+      </header>
 
       <SiteEditorClient 
         initialSettings={settings} 

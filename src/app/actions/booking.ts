@@ -223,7 +223,6 @@ export async function deleteBooking(id: string) {
     if (error) throw error;
     revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
-    revalidatePath("/dashboard/visuals");
     return { success: true };
   } catch (error) {
     console.error("Delete booking error:", error);
@@ -258,7 +257,6 @@ export async function updateBookingPipeline(id: string, updates: any) {
     }
     revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
-    revalidatePath("/dashboard/visuals");
     return { success: true };
   } catch (error: any) {
     console.error("Update pipeline CRITICAL FAILURE:", error);
@@ -282,7 +280,7 @@ export async function optimizeWorkflow() {
 
     if (inquiryError) throw inquiryError;
 
-    revalidatePath("/dashboard/pipeline");
+    revalidatePath("/dashboard/bookings");
     revalidatePath("/dashboard/analytics");
 
     return { 
@@ -444,7 +442,7 @@ export async function validateVaultAccess(albumId: string, inputPasscode: string
         })
         .eq("id", albumId);
 
-      revalidatePath("/dashboard/albums");
+      revalidatePath("/dashboard/galleries");
       return { success: true };
     } else {
       // FAILURE: Increment failed attempts
@@ -455,7 +453,7 @@ export async function validateVaultAccess(albumId: string, inputPasscode: string
         })
         .eq("id", albumId);
 
-      revalidatePath("/dashboard/albums");
+      revalidatePath("/dashboard/galleries");
       return { success: false, error: "Invalid passcode" };
     }
   } catch (error) {
@@ -640,7 +638,7 @@ export async function acceptInquiryAsBooking(inquiryId: string) {
     // 3. Mark inquiry as 'accepted'
     await supabase.from("inquiries").update({ status: 'accepted' }).eq("id", inquiryId);
     
-    revalidatePath("/dashboard/pipeline");
+    revalidatePath("/dashboard/bookings");
     return { success: true };
   } catch (error) {
     console.error("Accept inquiry error:", error);

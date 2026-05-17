@@ -51,7 +51,7 @@ TERMS AND CONDITIONS
   }
 
   revalidatePath("/dashboard/contracts");
-  revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/bookings");
   revalidatePath("/dashboard/analytics");
   return { success: true, contractId: contract.id };
 }
@@ -88,7 +88,7 @@ export async function deleteContract(contractId: string) {
   }
 
   revalidatePath("/dashboard/contracts");
-  revalidatePath("/dashboard/pipeline");
+  revalidatePath("/dashboard/bookings");
   revalidatePath("/dashboard/analytics");
   return { success: true };
 }
