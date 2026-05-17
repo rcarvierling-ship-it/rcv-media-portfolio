@@ -271,9 +271,13 @@ export default function DashboardPage() {
           <div>
             <div className="flex justify-between items-start mb-8">
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Quick Actions</p>
-              <div className="w-10 h-10 rounded-full bg-secondary border border-white/5 flex items-center justify-center">
+              <Link 
+                href="/dashboard/settings"
+                className="w-10 h-10 rounded-full bg-secondary hover:bg-white/5 border border-white/5 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
+                title="Site Settings"
+              >
                 <Settings className="text-zinc-400" size={18} />
-              </div>
+              </Link>
             </div>
             <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-8 italic">Manage <span className="text-zinc-300">Site</span></h3>
           </div>
@@ -351,7 +355,13 @@ export default function DashboardPage() {
             <div className="w-full xl:w-1/3 border-r border-white/5 p-12">
                <div className="flex justify-between items-center mb-10">
                  <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Bookings Queue</h3>
-                 <Settings className="text-zinc-700" size={18} />
+                 <Link 
+                   href="/dashboard/pipeline"
+                   className="p-2 rounded-full hover:bg-white/5 text-zinc-500 hover:text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center"
+                   title="Configure Bookings & Pipeline"
+                 >
+                   <Settings size={18} />
+                 </Link>
                </div>
                  <div className="space-y-4">
                    {(() => {
