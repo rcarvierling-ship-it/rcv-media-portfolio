@@ -145,7 +145,7 @@ export function Navbar() {
             {/* Bottom Accent */}
             <div className="mt-auto pb-20">
                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-300">
-                  RCV.Media Digital Agency
+                  RCV.Media Photography
                </p>
             </div>
           </motion.div>

@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { 
   Camera, User, Trophy, 
   Calendar, Zap, ArrowRight,
-  ShieldCheck, Globe, Star
+  ShieldCheck, Globe, Star,
+  GraduationCap, Users
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +14,7 @@ const SERVICES = [
   {
     id: "seniors",
     title: "Seniors",
-    description: "Premium senior portrait experiences that capture personality and style during this milestone year.",
+    description: "Creative and high-end portrait sessions celebrating your milestone graduation year.",
     icon: Star,
     accent: "brand-accent",
     image: "https://images.unsplash.com/photo-1522071823991-b9677232c32f?q=80&w=2070&auto=format&fit=crop"
@@ -21,7 +22,7 @@ const SERVICES = [
   {
     id: "portraits",
     title: "Portraits",
-    description: "Professional headshots, lifestyle sessions, and creative portraits tailored to your brand.",
+    description: "Clean and professional headshots, lifestyle sessions, and creative studio portraits.",
     icon: User,
     accent: "brand-accent",
     image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop"
@@ -29,7 +30,7 @@ const SERVICES = [
   {
     id: "sports",
     title: "Sports",
-    description: "High-energy action coverage and cinematic athlete portraits that capture the intensity of the game.",
+    description: "High-energy action coverage, game day photos, and cinematic player profiles.",
     icon: Trophy,
     accent: "brand-accent",
     image: "https://images.unsplash.com/photo-1517649763962-0c623066013b?q=80&w=2070&auto=format&fit=crop"
@@ -37,10 +38,26 @@ const SERVICES = [
   {
     id: "events",
     title: "Events",
-    description: "Full-scale event coverage from community gatherings to corporate galas and school celebrations.",
+    description: "Comprehensive coverage for corporate events, community gatherings, and celebrations.",
     icon: Calendar,
     accent: "brand-accent",
     image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop"
+  },
+  {
+    id: "graduation",
+    title: "Graduation",
+    description: "Cap & gown sessions celebrating your high school or college graduation on campus.",
+    icon: GraduationCap,
+    accent: "brand-accent",
+    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=2070&auto=format&fit=crop"
+  },
+  {
+    id: "team-media-days",
+    title: "Team Media Days",
+    description: "Professional roster headshots, group photos, and premium media day packages.",
+    icon: Users,
+    accent: "brand-accent",
+    image: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?q=80&w=2070&auto=format&fit=crop"
   }
 ];
 
@@ -81,7 +98,7 @@ export function ServicesClient() {
                 href="/book"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-full hover:bg-brand-accent transition-all group/btn"
               >
-                Secure Booking <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                Book Now <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
               </Link>
             </div>
           </motion.div>
@@ -96,17 +113,17 @@ export function ServicesClient() {
               <div className="space-y-6">
                  <ShieldCheck className="text-brand-accent" size={40} />
                  <h4 className="text-2xl font-black uppercase tracking-tight text-white italic">Premium Standards</h4>
-                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">We deploy elite-tier equipment and rigorous technical benchmarks to ensure every asset meets professional agency requirements.</p>
+                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">We deploy high-end professional cameras and premium lighting equipment to capture every detail with stunning clarity.</p>
               </div>
               <div className="space-y-6">
                  <Zap className="text-brand-accent" size={40} />
                  <h4 className="text-2xl font-black uppercase tracking-tight text-white italic">Rapid Delivery</h4>
-                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">Our optimized pipeline ensures that your visual intelligence is processed and delivered via private vault within industry-leading turnarounds.</p>
+                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">Our optimized workflow ensures that your photos are edited and delivered through a private online gallery with industry-leading speed.</p>
               </div>
               <div className="space-y-6">
                  <Globe className="text-brand-accent" size={40} />
                  <h4 className="text-2xl font-black uppercase tracking-tight text-white italic">Seamless Interface</h4>
-                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">From initial inquiry to final asset download, our proprietary dashboard provides a clean, unified experience for managing your media portfolio.</p>
+                 <p className="text-zinc-500 text-sm leading-relaxed font-medium">From booking your session to downloading your high-res photos, we provide a seamless and professional client experience.</p>
               </div>
            </div>
         </div>
@@ -115,14 +132,14 @@ export function ServicesClient() {
       {/* 3. FINAL CTA */}
       <section className="py-24 text-center space-y-12">
          <div className="space-y-4">
-            <h2 className="text-7xl font-black uppercase tracking-tighter text-white italic leading-none">Ready to deploy?</h2>
-            <p className="text-zinc-500 font-black uppercase tracking-[0.5em] text-xs">RCV.MEDIA // VISUAL INTELLIGENCE AGENCY</p>
+            <h2 className="text-7xl font-black uppercase tracking-tighter text-white italic leading-none">Ready to book a session?</h2>
+            <p className="text-zinc-500 font-black uppercase tracking-[0.5em] text-xs">RCV.MEDIA PHOTOGRAPHY</p>
          </div>
          <Link 
             href="/contact"
             className="inline-flex items-center gap-4 px-16 py-8 bg-brand-accent text-black font-black uppercase tracking-widest text-xs rounded-full hover:brightness-110 transition-all shadow-brand-glow active:scale-95"
          >
-            Initialize Project <ArrowRight size={18} />
+            Book a Session <ArrowRight size={18} />
          </Link>
       </section>
     </div>

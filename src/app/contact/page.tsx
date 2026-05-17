@@ -45,12 +45,12 @@ export default function ContactPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-8 block border-l-4 border-brand-accent pl-6">Direct Intelligence</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-8 block border-l-4 border-brand-accent pl-6">Get in Touch</span>
               <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter text-foreground mb-12 leading-[0.8]">
                 Let's <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-950 to-zinc-500 italic">Connect.</span>
               </h1>
               <p className="text-lg md:text-2xl text-zinc-500 font-medium leading-relaxed mb-16">
-                Operational inquiries, collaboration requests, or direct feedback. Our channels are open for high-performance communication.
+                Have a question, want to book a session, or just want to chat? We would love to hear from you.
               </p>
 
               <div className="space-y-12 max-w-sm">
@@ -59,7 +59,7 @@ export default function ContactPage() {
                       <Mail className="text-zinc-400 group-hover:text-brand-accent transition-colors" size={24} />
                    </div>
                    <div>
-                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Comms Channel</span>
+                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Email Address</span>
                       <span className="text-foreground font-black text-xl tracking-tighter">info@rcv-media.com</span>
                    </div>
                 </div>
@@ -68,7 +68,7 @@ export default function ContactPage() {
                       <MessageSquare className="text-zinc-400 group-hover:text-brand-accent transition-colors" size={24} />
                    </div>
                    <div>
-                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Social Frequency</span>
+                      <span className="block text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-2">Instagram</span>
                       <span className="text-foreground font-black text-xl tracking-tighter">@rcv.media</span>
                    </div>
                 </div>
@@ -98,7 +98,7 @@ export default function ContactPage() {
                   >
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Identification</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Your Name</label>
                         <input
                           required
                           type="text"
@@ -109,7 +109,7 @@ export default function ContactPage() {
                         />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Comms Frequency</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Your Email</label>
                         <input
                           required
                           type="email"
@@ -122,19 +122,19 @@ export default function ContactPage() {
                     </div>
                     
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Mission Subject</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Subject</label>
                       <input
                         required
                         type="text"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                         className="w-full bg-zinc-50 border border-border rounded-full px-10 py-6 text-foreground font-bold text-sm outline-none focus:border-brand-accent transition-all shadow-sm"
-                        placeholder="Inquiry Objective"
+                        placeholder="What is this about?"
                       />
                     </div>
 
                     <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Transmission Data</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-6">Message</label>
                       <textarea
                         required
                         rows={6}
@@ -153,7 +153,7 @@ export default function ContactPage() {
                       {isSubmitting ? (
                         <Loader2 className="animate-spin" size={20} />
                       ) : (
-                        <>Commit Transmission <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" /></>
+                        <>Send Message <ArrowRight size={16} className="group-hover:translate-x-2 transition-transform" /></>
                       )}
                     </button>
                   </motion.form>
@@ -167,15 +167,15 @@ export default function ContactPage() {
                     <div className="w-24 h-24 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-10 shadow-brand-glow">
                        <CheckCircle2 className="text-black" size={40} />
                     </div>
-                    <h2 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-6 italic">Transmission Success</h2>
+                    <h2 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-6 italic">Message Sent!</h2>
                     <p className="text-zinc-500 font-medium mb-12 max-w-sm mx-auto text-lg">
-                      Data received. Our team will analyze your requirements and establish contact shortly.
+                      Thank you for reaching out! We have received your message and will get back to you shortly.
                     </p>
                     <button 
                       onClick={() => setIsSuccess(false)}
                       className="px-10 py-4 border border-border rounded-full text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-black hover:border-black transition-all bg-zinc-50"
                     >
-                      New Transmission
+                      Send Another Message
                     </button>
                   </motion.div>
                 )}
@@ -190,10 +190,10 @@ export default function ContactPage() {
          <div className="max-w-[3200px] mx-auto px-6 flex justify-between items-center">
             <Link href="/" className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-black transition-all flex items-center gap-3">
                <div className="w-8 h-8 rounded-full border border-border flex items-center justify-center">&larr;</div>
-               Back to Intelligence
+               Back to Home
             </Link>
             <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-200">
-               RCV.Media Operational Comms
+               RCV.Media Photography
             </p>
          </div>
       </footer>

@@ -26,7 +26,7 @@ export function PricingClient({ packages }: { packages: any[] }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-8 block border border-white/5 px-6 py-2 rounded-full w-fit mx-auto">Investment Intel</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-8 block border border-white/5 px-6 py-2 rounded-full w-fit mx-auto">Pricing Packages</span>
             <h1 className="text-7xl md:text-9xl font-black uppercase tracking-tighter text-foreground mb-12 leading-[0.8]">
               Transparent <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-white italic">Excellence.</span>
             </h1>

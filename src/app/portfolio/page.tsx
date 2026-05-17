@@ -118,7 +118,7 @@ function PortfolioContent() {
         </header>
 
         {loading ? (
-          <div className="h-64 flex items-center justify-center text-zinc-400 font-black uppercase tracking-widest text-[10px] animate-pulse">Syncing Visual Intel...</div>
+          <div className="h-64 flex items-center justify-center text-zinc-400 font-black uppercase tracking-widest text-[10px] animate-pulse">Loading Portfolio...</div>
         ) : photos.length === 0 ? (
           <motion.div 
              initial={{ opacity: 0 }}
@@ -129,12 +129,12 @@ function PortfolioContent() {
               <div className="w-20 h-20 mb-8 mx-auto rounded-full bg-zinc-50 flex items-center justify-center border border-border">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-300"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <h3 className="text-3xl font-black uppercase text-foreground mb-4 tracking-tighter italic">Gallery Depleted</h3>
-              <p className="text-zinc-400 mb-8 max-w-md mx-auto font-medium">Visual assets are currently under curation. <br/> Check back for updated intel.</p>
+              <h3 className="text-3xl font-black uppercase text-foreground mb-4 tracking-tighter italic">Gallery Empty</h3>
+              <p className="text-zinc-400 mb-8 max-w-md mx-auto font-medium">Visual assets are currently under curation. <br/> Check back for updated photos.</p>
             </div>
           </motion.div>
         ) : filteredPhotos.length === 0 ? (
-           <div className="text-zinc-400 uppercase tracking-widest text-[10px] font-black pt-8">No operational assets in this sector.</div>
+          <div className="text-zinc-400 uppercase tracking-widest text-[10px] font-black pt-8">No photos found in this category.</div>
         ) : (
           <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-8 space-y-8">
             <AnimatePresence mode="popLayout">
@@ -243,9 +243,9 @@ function PortfolioContent() {
                      </div>
                    )}
                 </div>
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">Operational Evidence v4.0</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-2">RCV.Media Portfolio</p>
                 <h4 className="text-3xl font-black text-white uppercase tracking-tighter italic">
-                  {filteredPhotos[selectedImageIndex].title || "Visual Intelligence Archive"}
+                  {filteredPhotos[selectedImageIndex].title || "Photography Portfolio"}
                 </h4>
               </motion.div>
             </div>
@@ -258,7 +258,7 @@ function PortfolioContent() {
 
 export default function PortfolioPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-zinc-400 uppercase tracking-widest text-[10px] font-black animate-pulse">Syncing Archive...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-background flex items-center justify-center text-zinc-400 uppercase tracking-widest text-[10px] font-black animate-pulse">Loading Portfolio...</div>}>
       <PortfolioContent />
     </Suspense>
   );

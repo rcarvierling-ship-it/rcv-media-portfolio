@@ -72,7 +72,7 @@ export function AlbumClientView({
 
         {initialPhotos.length === 0 ? (
           <div className="py-40 text-center border border-white/5 rounded-2xl bg-zinc-900/10">
-             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-700">Currently Curating Collection</p>
+             <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-700">Currently Updating Collection</p>
           </div>
         ) : (
           <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
@@ -96,16 +96,16 @@ export function AlbumClientView({
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 
-                {/* Tactical Overlay */}
+                {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-8">
                    <div className="flex justify-end">
                       <div className="p-3 bg-white/10 backdrop-blur-md rounded-full border border-white/20">
-                         <Maximize2 size={16} className="text-white" />
+                          <Maximize2 size={16} className="text-white" />
                       </div>
                    </div>
                    <div>
-                      <span className="text-xs font-black text-white uppercase tracking-widest block mb-1">{photo.title || "Untitled Asset"}</span>
-                      <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{photo.category || "Official Media"}</span>
+                      <span className="text-xs font-black text-white uppercase tracking-widest block mb-1">{photo.title || "Untitled Photo"}</span>
+                      <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-[0.2em]">{photo.category || "Official Photo"}</span>
                    </div>
                 </div>
               </motion.div>
@@ -131,7 +131,7 @@ export function AlbumClientView({
                      <span className="text-[10px] font-black text-brand-accent">{selectedImageIndex + 1}</span>
                   </div>
                   <div className="h-px w-8 bg-zinc-800" />
-                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{initialPhotos.length} TOTAL ASSETS</span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{initialPhotos.length} TOTAL PHOTOS</span>
                </div>
                
                <div className="flex items-center gap-4">
@@ -142,7 +142,7 @@ export function AlbumClientView({
                     onClick={e => e.stopPropagation()}
                   >
                      <Download size={16} />
-                     <span className="text-[10px] font-black uppercase tracking-widest">Download Asset</span>
+                     <span className="text-[10px] font-black uppercase tracking-widest">Download Photo</span>
                   </a>
                   <button onClick={closeLightbox} className="p-4 bg-white/5 border border-white/10 rounded-full text-zinc-500 hover:text-white transition-all">
                      <X size={20} />
@@ -176,8 +176,8 @@ export function AlbumClientView({
                 />
                 
                 <div className="mt-12 text-center">
-                  <h3 className="text-2xl font-black uppercase tracking-tighter text-white italic mb-2">{initialPhotos[selectedImageIndex].title || "Untitled Asset"}</h3>
-                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">RCV.MEDIA // VISUAL INTELLIGENCE</p>
+                  <h3 className="text-2xl font-black uppercase tracking-tighter text-white italic mb-2">{initialPhotos[selectedImageIndex].title || "Untitled Photo"}</h3>
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600">RCV.MEDIA PHOTOGRAPHY</p>
                 </div>
               </motion.div>
             </div>

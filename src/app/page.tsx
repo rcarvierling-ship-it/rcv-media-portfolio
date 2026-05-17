@@ -136,7 +136,7 @@ export default function HomePage() {
              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
              className="mb-10"
            >
-             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-6 block border-l-4 border-brand-accent pl-4">RCV.MEDIA Command Center</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-brand-accent mb-6 block border-l-4 border-brand-accent pl-4">RCV.MEDIA Portfolio</span>
              <h1 className="text-6xl sm:text-7xl md:text-[8vw] font-black uppercase tracking-tighter leading-[0.8] text-foreground mb-4">
                Precision <br/>
                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-accent to-white italic">Visuals.</span>
@@ -200,8 +200,8 @@ export default function HomePage() {
                {/* Metadata Overlay (Concept Style) */}
                <div className="absolute bottom-10 left-10 right-10 flex justify-between items-end">
                   <div>
-                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-accent mb-2 block">Featured Asset</span>
-                     <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Visual Intelligence v4.0</h2>
+                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-brand-accent mb-2 block">Featured Work</span>
+                     <h2 className="text-3xl font-black uppercase tracking-tighter text-white">Featured Collections</h2>
                   </div>
                   <div className="hidden lg:flex gap-2">
                      <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-black uppercase text-white tracking-widest">
@@ -226,7 +226,7 @@ export default function HomePage() {
               className="absolute top-12 left-12 z-20 bg-card px-6 py-3 rounded-full border border-white/10 shadow-2xl flex items-center gap-3"
             >
               <div className="w-2 h-2 rounded-full bg-brand-accent animate-pulse shadow-brand-glow" />
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">System Live</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white">Now Booking</span>
             </motion.div>
         </div>
       </section>
@@ -366,7 +366,7 @@ export default function HomePage() {
                  <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500" />
                  <div className="absolute bottom-8 left-8 z-10">
                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white/70 block mb-2">Recently Curated</span>
-                   <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Visual Dossier</h3>
+                   <h3 className="text-2xl font-black uppercase tracking-tighter text-white">Curated Work</h3>
                  </div>
                </motion.div>
             </div>
@@ -538,7 +538,7 @@ export default function HomePage() {
               href="/book"
               className="px-16 py-7 bg-brand-accent text-black font-black uppercase tracking-[0.2em] text-sm rounded-full hover:bg-brand-accent/90 transition-all hover:scale-110 active:scale-95 shadow-brand-glow"
             >
-              Start Project Intelligence
+              Book a Shoot
             </Link>
             <Link
               href="/portfolio"

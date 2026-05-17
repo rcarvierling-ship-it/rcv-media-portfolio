@@ -124,10 +124,10 @@ export default function TeamBookingPage() {
                   <div className="space-y-4">
                      <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">What are you looking for?</label>
                      <select name="package_selected" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent/50 rounded-sm appearance-none">
-                        <option value="Media Day">Media Day (Portraits + Hype)</option>
+                        <option value="Media Day">Media Day (Individual + Roster Portraits)</option>
                         <option value="Event Coverage">Event Coverage (Action + Candid)</option>
                         <option value="Full Season">Full Season Campaign</option>
-                        <option value="Other">Other Strategic Need</option>
+                        <option value="Other">Other Booking Need</option>
                      </select>
                   </div>
                   <div className="space-y-2">
@@ -138,7 +138,7 @@ export default function TeamBookingPage() {
 
                 <div className="space-y-2">
                    <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Anything else we should know?</label>
-                  <textarea name="message" rows={3} className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm outline-none focus:border-brand-accent/50 rounded-sm resize-none" placeholder="e.g. 50 digital portraits, 1 hype reel clip, printed banners..." />
+                  <textarea name="message" rows={3} className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm outline-none focus:border-brand-accent/50 rounded-sm resize-none" placeholder="e.g. 50 digital portraits, team poster design, individual packages..." />
                 </div>
               </div>
 
@@ -151,19 +151,19 @@ export default function TeamBookingPage() {
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                    <div className="space-y-8">
-                      <div className="space-y-2">
+                       <div className="space-y-2">
                         <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Primary Email</label>
                         <input name="email" type="email" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm font-bold outline-none focus:border-brand-accent/50 rounded-sm" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Mobile Unit (Phone)</label>
+                       </div>
+                       <div className="space-y-2">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Phone Number</label>
                         <input name="phone" type="tel" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm font-bold outline-none focus:border-brand-accent/50 rounded-sm" />
-                      </div>
-                      <div className="space-y-2">
-                         <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Where is the shoot?</label>
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Where is the shoot?</label>
                         <input name="location" type="text" required className="w-full bg-black border border-white/5 px-6 py-4 text-white text-sm font-bold outline-none focus:border-brand-accent/50 rounded-sm" placeholder="Stadium / School Gym / Office" />
-                      </div>
-                      <input type="hidden" name="name" value="Team/Org Contact" />
+                       </div>
+                       <input type="hidden" name="name" value="Team/Org Contact" />
                    </div>
                    
                    <div className="space-y-4">
@@ -182,9 +182,9 @@ export default function TeamBookingPage() {
                <button 
                 type="submit" 
                 disabled={isSubmitting || !selectedDate}
-                className="w-full py-8 bg-brand-accent text-white font-black uppercase tracking-[0.5em] text-xs rounded-sm hover:brightness-110 transition-all disabled:opacity-50 shadow-[0_0_50px_rgba(59,130,246,0.2)]"
+                className="w-full py-8 bg-brand-accent text-black font-black uppercase tracking-[0.5em] text-xs rounded-sm hover:brightness-110 transition-all disabled:opacity-50 shadow-[0_0_50px_rgba(59,130,246,0.2)]"
               >
-                {isSubmitting ? 'Sending...' : 'Send Request'}
+                {isSubmitting ? 'Submitting...' : 'Submit Booking Request'}
               </button>
             </motion.form>
           )}
