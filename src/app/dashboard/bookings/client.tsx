@@ -292,9 +292,20 @@ export function PipelineClient({
                    </AnimatePresence>
 
                    {stage.items.length === 0 && (
-                     <div className="h-full flex flex-col items-center justify-center py-24 opacity-50 border-2 border-dashed border-border rounded-[1.5rem]">
-                        <Clock size={32} className="text-zinc-200 mb-4" />
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-300">No leads in queue</p>
+                     <div className="h-full flex flex-col items-center justify-center py-16 px-4 text-center bg-zinc-950/10 border border-dashed border-white/5 rounded-[1.5rem] space-y-3">
+                        {(() => {
+                          const Icon = STAGE_ICONS[stage.id] || Clock;
+                          return <Icon size={24} className="text-zinc-600 animate-pulse" />;
+                        })()}
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-white">{stage.label} is Empty</p>
+                          <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed mt-1 max-w-[200px] mx-auto">
+                            No projects are currently parked in this stage.
+                          </p>
+                        </div>
+                        <p className="text-[8px] text-brand-accent font-black uppercase tracking-wider">
+                          Action: Advance items from earlier stages or link a client.
+                        </p>
                      </div>
                    )}
                 </div>
@@ -307,9 +318,25 @@ export function PipelineClient({
           <motion.div key="inquiries" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8 max-w-5xl">
             <div className="grid grid-cols-1 gap-6">
               {inquiries.filter(i => i.status === 'new').length === 0 ? (
-                <div className="text-center py-40 bg-secondary border border-dashed border-white/5 rounded-[2.5rem]">
-                   <Mail className="mx-auto text-zinc-800 mb-6" size={48} />
-                   <p className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Inbox is clear. Zero backlog.</p>
+                <div className="text-center py-24 bg-card border border-dashed border-white/5 rounded-[2.5rem] p-12 space-y-4 max-w-2xl mx-auto">
+                   <Mail className="mx-auto text-brand-accent animate-pulse" size={48} />
+                   <div>
+                      <h4 className="text-lg font-black uppercase tracking-widest text-white mb-2">Zero Inbox Backlog</h4>
+                      <p className="text-xs text-zinc-500 leading-relaxed max-w-md mx-auto">
+                         There are currently no new inquiries or custom client questions submitted through the public portal.
+                      </p>
+                   </div>
+                   <div className="pt-2">
+                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-3">
+                         What's next: Wait for new client requests, or configure lead settings in the operations center.
+                      </p>
+                      <button 
+                         onClick={() => setActiveView('settings')}
+                         className="px-8 py-4 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow"
+                      >
+                         Configure Operations Tab
+                      </button>
+                   </div>
                 </div>
               ) : (
                 inquiries.filter(i => i.status === 'new').map((inquiry) => (
@@ -408,11 +435,27 @@ export function PipelineClient({
             <div className="grid grid-cols-1 gap-4">
                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-600 mb-6">Strategic Archive</h3>
                {archivedBookings.length === 0 && (
-                 <div className="text-center py-20 bg-secondary border border-dashed border-white/5 rounded-sm">
-                   <Archive className="mx-auto text-zinc-800 mb-4" size={40} />
-                   <p className="text-zinc-500 font-black uppercase tracking-widest text-[10px]">Archive is empty.</p>
-                 </div>
-               )}
+                  <div className="text-center py-20 bg-secondary/50 border border-dashed border-white/10 rounded-[2.5rem] p-10 space-y-4 max-w-2xl mx-auto">
+                    <Archive className="mx-auto text-brand-accent animate-pulse" size={40} />
+                    <div>
+                       <p className="text-zinc-300 font-black uppercase tracking-widest text-xs">Archive is Vacant</p>
+                       <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed max-w-md mx-auto mt-1">
+                          No strategic bookings, completed shoots, or cancelled inquiries have been moved to the storage database yet.
+                       </p>
+                    </div>
+                    <div className="pt-2">
+                       <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-3">
+                          Action: Manage active clients in the pipeline to advance or archive them.
+                       </p>
+                       <button 
+                         onClick={() => setActiveView('pipeline')}
+                         className="px-6 py-3 bg-brand-accent text-black font-black uppercase text-[8px] tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow"
+                       >
+                          Open Strategic Pipeline
+                       </button>
+                    </div>
+                  </div>
+                )}
                
                <div className="space-y-4">
                   {archivedBookings.map((booking) => (
@@ -1137,11 +1180,21 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
            
            <div className="space-y-4">
               {pulse.attention.length === 0 ? (
-                <div className="py-32 text-center bg-secondary border border-dashed border-white/5 rounded-[2.5rem]">
-                   <ShieldCheck className="mx-auto text-zinc-800 mb-4" size={48} />
-                   <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Operational Integrity Maintained</p>
-                </div>
-              ) : (
+                 <div className="py-20 px-8 text-center bg-secondary/50 border border-dashed border-white/10 rounded-[2.5rem] space-y-4">
+                    <ShieldCheck className="mx-auto text-brand-accent animate-pulse" size={48} />
+                    <div>
+                       <p className="text-[11px] font-black uppercase tracking-widest text-white leading-none mb-2">Operational Integrity Maintained</p>
+                       <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest max-w-sm mx-auto leading-relaxed">
+                          No pending inquiries, unsigned contracts, or active client actions are currently logged in your command queue.
+                       </p>
+                    </div>
+                    <div className="pt-2">
+                       <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-3">
+                          What's next: Wait for new client requests from public portals or check active pipeline.
+                       </p>
+                    </div>
+                 </div>
+               ) : (
                 pulse.attention.map((item: any) => (
                   <div key={item.id} className="p-10 bg-card border border-white/5 rounded-[2rem] flex flex-col md:flex-row items-center justify-between group hover:border-brand-accent transition-all relative overflow-hidden shadow-premium">
                      <div className="flex items-center gap-10 w-full md:w-auto">

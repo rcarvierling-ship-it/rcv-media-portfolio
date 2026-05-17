@@ -136,6 +136,47 @@ export default async function AnalyticsPage() {
   const sortedSources = Object.entries(sourceCounts)
     .sort((a: any, b: any) => b[1] - a[1]);
 
+  if (totalLeads === 0 && totalSignedOrPaidCount === 0) {
+    return (
+      <div className="space-y-16 pb-32">
+         <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-12">
+            <div>
+              <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Business Performance</span>
+              <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-foreground leading-none">Business <br/> <span className="text-zinc-400">Insights</span></h1>
+            </div>
+            <div className="flex gap-4">
+               <div className="px-6 py-3 bg-card border border-white/5 rounded-full shadow-sm">
+                  <span className="block text-[9px] font-black text-zinc-400 uppercase tracking-widest mb-1 text-center">Fiscal Year</span>
+                  <span className="text-sm font-black text-foreground block text-center">2026</span>
+               </div>
+               <div className="px-6 py-3 bg-brand-accent text-black rounded-full shadow-md shadow-brand-glow">
+                  <span className="block text-[9px] font-black text-black/60 uppercase tracking-widest mb-1 text-center">Status</span>
+                  <span className="text-sm font-black uppercase block text-center">Active</span>
+               </div>
+            </div>
+         </header>
+
+         <div className="text-center py-32 bg-card border border-dashed border-white/5 rounded-[3.5rem] p-12 space-y-6 max-w-4xl mx-auto shadow-premium">
+            <Activity className="mx-auto text-brand-accent animate-pulse" size={56} />
+            <div>
+               <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2 italic">Analytics Vault Offline</h3>
+               <p className="text-sm text-zinc-500 leading-relaxed max-w-lg mx-auto">
+                  Business intelligence diagnostics, contract average values, and lead conversion rates will calculate dynamically once client intake records and contract activities are registered.
+               </p>
+            </div>
+            <div className="pt-4 space-y-4">
+               <p className="text-[11px] font-black text-zinc-400 uppercase tracking-[0.2em]">
+                  Tactical action: Create inquiries, advance booking stages, or register test leads in the Strategic Pipeline.
+               </p>
+               <div className="flex justify-center pt-2">
+                 <OptimizeWorkflowButton />
+               </div>
+            </div>
+         </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-16 pb-32">
        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-12">

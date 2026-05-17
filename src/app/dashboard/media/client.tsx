@@ -475,10 +475,19 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                    </div>
                 </div>
               ) : (
-                <div className="py-20 text-center opacity-40">
-                   <ImageIcon className="mx-auto mb-4 text-zinc-500 animate-pulse" size={48} />
-                   <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Your staging area is empty</p>
-                   <p className="text-[8px] text-zinc-500 uppercase tracking-widest mt-1">Drag and drop assets above to configure their metadata and upload them</p>
+                <div className="py-16 text-center bg-zinc-950/20 rounded-[2rem] border border-dashed border-white/5 p-8 space-y-4">
+                   <ImageIcon className="mx-auto text-brand-accent animate-pulse" size={48} />
+                   <div>
+                      <h4 className="text-[11px] font-black uppercase tracking-widest text-white">Staging Area Clean</h4>
+                      <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed max-w-sm mx-auto mt-1">
+                         No files are currently staged in local buffer. Load high-fidelity media to customize tags and write to edge servers.
+                      </p>
+                   </div>
+                   <div className="pt-2">
+                      <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mb-3">
+                         Tactical step: Drop files into the dotted dashboard above or launch select menu.
+                      </p>
+                   </div>
                 </div>
               )}
            </div>
@@ -575,12 +584,36 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                    </motion.div>
                  ))}
 
-                 {filteredPhotos.length === 0 && (
-                   <div className="col-span-full py-32 text-center opacity-30">
-                      <ImageIcon className="mx-auto mb-4 text-zinc-500" size={48} />
-                      <p className="text-[10px] font-black uppercase tracking-widest">No matching assets in this view</p>
-                   </div>
-                 )}
+                  {filteredPhotos.length === 0 && (
+                    <div className="col-span-full py-24 text-center bg-zinc-950/20 border border-dashed border-white/5 rounded-[2rem] p-12 space-y-4">
+                       <ImageIcon className="mx-auto text-brand-accent animate-pulse" size={48} />
+                       <div>
+                          <h4 className="text-[11px] font-black uppercase tracking-widest text-white">No Assets Found</h4>
+                          <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed max-w-sm mx-auto mt-1">
+                             No image assets match the active search term "{searchTerm}" or category filter "{categoryFilter}" in this segment.
+                          </p>
+                       </div>
+                       <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                          {(searchTerm || categoryFilter !== "All") ? (
+                             <button 
+                               onClick={() => {
+                                 setSearchTerm("");
+                                 setCategoryFilter("All");
+                               }}
+                               className="px-6 py-3 bg-secondary border border-white/5 hover:border-white/10 text-white font-black uppercase text-[8px] tracking-widest rounded-full transition-all"
+                             >
+                                Reset Search & Filters
+                             </button>
+                          ) : null}
+                          <button 
+                            onClick={() => setActiveTab("upload")}
+                            className="px-6 py-3 bg-brand-accent text-black font-black uppercase text-[8px] tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow"
+                          >
+                             Stage Fresh Media
+                          </button>
+                       </div>
+                    </div>
+                  )}
               </div>
            </div>
 

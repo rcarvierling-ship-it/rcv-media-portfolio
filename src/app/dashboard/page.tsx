@@ -10,7 +10,7 @@ import {
   DollarSign, Users, Target, ArrowRight, TrendingUp, X, 
   BarChart3, Activity, Calendar, ChevronRight, Info, Trash2,
   AlertTriangle, User, Settings, Camera, Mail, Scissors, Zap,
-  MapPin, Clock, ShieldCheck, Copy, Loader2
+  MapPin, Clock, ShieldCheck, Copy, Loader2, Plus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -292,8 +292,19 @@ export default function DashboardPage() {
                  )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-600">
-                <User size={14} /> No active roster
+              <div className="mt-4 p-6 bg-zinc-950/20 rounded-2xl border border-white/5 space-y-3">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                  <User size={14} className="text-brand-accent animate-pulse" /> Empty Client Roster
+                </div>
+                <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest leading-relaxed">
+                  Your active bookings database is currently empty. Initialize client workflows or wait for new leads to enter.
+                </p>
+                <Link 
+                  href="/dashboard/bookings" 
+                  className="w-fit px-4 py-2 bg-brand-accent hover:brightness-110 text-black font-black uppercase text-[8px] tracking-widest rounded-full transition-all text-center flex items-center justify-center gap-1.5 shadow-brand-glow"
+                >
+                  <Plus size={10} /> Create Booking
+                </Link>
               </div>
             )}
           </div>
@@ -623,13 +634,24 @@ export default function DashboardPage() {
                         </div>
                      </div>
                  </div>
-               ) : (
-                 <div className="max-w-4xl mx-auto h-full flex flex-col items-center justify-center text-center opacity-30 py-40">
-                    <Users className="text-zinc-500 mb-6" size={48} />
-                    <h3 className="text-xl font-black uppercase tracking-widest text-white">No Bookings Selected</h3>
-                    <p className="text-xs text-zinc-500 mt-2">Active client bookings will populate details here.</p>
-                 </div>
-               )}
+                ) : (
+                  <div className="max-w-4xl mx-auto h-full flex flex-col items-center justify-center text-center py-24 bg-zinc-950/20 rounded-[2.5rem] border border-dashed border-white/5 p-12">
+                     <Users className="text-brand-accent mb-6 animate-pulse" size={48} />
+                     <h3 className="text-xl font-black uppercase tracking-widest text-white">No Bookings Selected</h3>
+                     <p className="text-xs text-zinc-500 mt-2 max-w-md mx-auto leading-relaxed">
+                        This indicates that there are no active bookings in your database, or you haven't clicked a client in the roster stack above to pull up operational details.
+                     </p>
+                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-4">
+                        Action required: Select a booking from the roster or initialize a new client booking.
+                      </p>
+                      <Link 
+                        href="/dashboard/bookings" 
+                        className="mt-6 px-8 py-4 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow flex items-center gap-2"
+                      >
+                        <Plus size={14} /> Go to Bookings & Pipeline
+                      </Link>
+                  </div>
+                )}
             </div>
           </div>
         </motion.div>
