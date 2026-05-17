@@ -168,8 +168,12 @@ CREATE TABLE IF NOT EXISTS public.bookings (
   linked_album_id UUID REFERENCES public.albums(id) ON DELETE SET NULL,
   contract_status TEXT DEFAULT 'unsigned', -- unsigned, signed
   deposit_paid BOOLEAN DEFAULT false,
-  final_paid BOOLEAN DEFAULT false,
   review_requested BOOLEAN DEFAULT false,
+  team_name TEXT,
+  estimated_count INTEGER,
+  budget TEXT,
+  coach_name TEXT,
+  booking_type TEXT DEFAULT 'standard',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
