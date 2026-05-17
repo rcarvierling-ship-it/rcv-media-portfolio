@@ -146,7 +146,7 @@ VALUES (
 -- ====================================================================
 
 -- Create Bookings Table
-CREATE TABLE public.bookings (
+CREATE TABLE IF NOT EXISTS public.bookings (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
@@ -174,7 +174,7 @@ CREATE TABLE public.bookings (
 );
 
 -- Create Blocked Dates Table
-CREATE TABLE public.blocked_dates (
+CREATE TABLE IF NOT EXISTS public.blocked_dates (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   date DATE UNIQUE NOT NULL,
   reason TEXT,
@@ -182,7 +182,7 @@ CREATE TABLE public.blocked_dates (
 );
 
 -- Create Marketing Vault Table
-CREATE TABLE public.marketing_vault (
+CREATE TABLE IF NOT EXISTS public.marketing_vault (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   category TEXT NOT NULL, -- captions, hashtags, templates, copy
   title TEXT NOT NULL,
