@@ -420,18 +420,44 @@ export default function DashboardPage() {
                     </header>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                          { label: 'Client Name', val: selectedBooking.name, icon: Users },
-                          { label: 'Booking Total', val: `$${(Number(selectedBooking.total_amount) || 0).toLocaleString()}`, icon: DollarSign },
-                          { label: 'Shoot Type', val: selectedBooking.shoot_type, icon: Activity }
-                        ].map((item, i) => (
-                          <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-brand-accent transition-all">
-                             <item.icon className="text-brand-accent mb-6" size={24} />
-                             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.label}</p>
-                             <h4 className="text-xl font-black text-white uppercase tracking-tight">{item.val}</h4>
-                          </div>
-                        ))}
-                    </div>
+                        {/* Client Name Card */}
+                        <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-brand-accent transition-all">
+                           <Users className="text-brand-accent mb-6" size={24} />
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">Client Name</p>
+                           <h4 className="text-xl font-black text-white uppercase tracking-tight truncate">{selectedBooking.name}</h4>
+                        </div>
+
+                        {/* Booking Total Card (EDITABLE) */}
+                        <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-brand-accent/50 focus-within:border-brand-accent transition-all relative overflow-hidden">
+                           <DollarSign className="text-brand-accent mb-6 animate-pulse" size={24} />
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">Booking Total (Edit Live)</p>
+                           <div className="flex items-center gap-1">
+                              <span className="text-xl font-black text-white">$</span>
+                              <input 
+                                 type="number" 
+                                 value={selectedBooking.total_amount === undefined || selectedBooking.total_amount === null ? "" : selectedBooking.total_amount} 
+                                 onChange={async (e) => {
+                                    const val = e.target.value === "" ? 0 : parseFloat(e.target.value);
+                                    if (isNaN(val)) return;
+                                    // Update local state
+                                    setBookings(prev => prev.map(b => b.id === selectedBooking.id ? { ...b, total_amount: val } : b));
+                                    setSelectedBooking(prev => prev ? { ...prev, total_amount: val } : null);
+                                    // Save to supabase
+                                    await supabase.from("bookings").update({ total_amount: val }).eq("id", selectedBooking.id);
+                                 }}
+                                 className="bg-transparent font-black text-white text-xl outline-none w-full border-b border-transparent focus:border-brand-accent/30 py-0.5"
+                                 placeholder="0"
+                              />
+                           </div>
+                        </div>
+
+                        {/* Shoot Type Card */}
+                        <div className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-brand-accent transition-all">
+                           <Activity className="text-brand-accent mb-6" size={24} />
+                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">Shoot Type</p>
+                           <h4 className="text-xl font-black text-white uppercase tracking-tight truncate">{selectedBooking.shoot_type}</h4>
+                        </div>
+                     </div>
 
                     <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
                        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
