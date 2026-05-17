@@ -35,6 +35,8 @@ type Photo = {
 type Booking = {
   id: string;
   name: string;
+  email: string;
+  phone: string;
   package_selected: string;
   shoot_type: string;
   status: string;
@@ -42,6 +44,7 @@ type Booking = {
   total_amount: number;
   created_at: string;
   event_date: string;
+  linked_album_id?: string | null;
 };
 
 type Package = {
@@ -53,6 +56,7 @@ export default function DashboardPage() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [packages, setPackages] = useState<Package[]>([]);
+  const [albums, setAlbums] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string>("all");
@@ -67,11 +71,13 @@ export default function DashboardPage() {
       const [
         { data: photosData }, 
         { data: bookingsData },
-        { data: pkgData }
+        { data: pkgData },
+        { data: albumsData }
       ] = await Promise.all([
         supabase.from("photos").select("*").order("created_at", { ascending: false }),
         supabase.from("bookings").select("*").order("created_at", { ascending: false }),
-        supabase.from("pricing_packages").select("name, price")
+        supabase.from("pricing_packages").select("name, price"),
+        supabase.from("albums").select("*").order("created_at", { ascending: false })
       ]);
 
       if (photosData) setPhotos(photosData);
@@ -82,6 +88,7 @@ export default function DashboardPage() {
         }
       }
       if (pkgData) setPackages(pkgData);
+      if (albumsData) setAlbums(albumsData);
       setLoading(false);
     }
     fetchData();
@@ -459,21 +466,89 @@ export default function DashboardPage() {
                         </div>
                      </div>
 
-                    <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
-                       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
-                       <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
-                          <div className="space-y-6">
-                             <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Media Delivery</h3>
-                             <p className="text-zinc-500 text-sm font-medium max-w-sm">Upload and organize deliverable photos for this client booking.</p>
-                          </div>
-                            <Link 
-                              href="/dashboard/media"
-                              className="px-12 py-6 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-brand-glow hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
-                            >
-                               Upload Photos
-                            </Link>
-                       </div>
-                    </div>
+                     <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+                        <div className="relative z-10 w-full space-y-8">
+                           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 pb-6 border-b border-white/5">
+                              <div>
+                                 <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Client Album & Delivery</h3>
+                                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-1">Pick and send high-fidelity client galleries directly.</p>
+                              </div>
+                              <Link 
+                                href="/dashboard/media"
+                                className="px-8 py-3 bg-zinc-900 hover:bg-zinc-800 border border-white/5 hover:border-white/10 text-white font-black uppercase tracking-widest text-[9px] rounded-full transition-all flex items-center justify-center gap-2"
+                              >
+                                 <Camera size={12} className="text-brand-accent" />
+                                 Upload Photos
+                              </Link>
+                           </div>
+
+                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              {/* Pick Album Column */}
+                              <div className="space-y-3">
+                                 <label className="text-[9px] font-black uppercase tracking-widest text-zinc-500 block">Link Gallery Album</label>
+                                 <select 
+                                    value={selectedBooking.linked_album_id || ""}
+                                    onChange={async (e) => {
+                                       const val = e.target.value === "" ? null : e.target.value;
+                                       // Update state
+                                       setBookings(prev => prev.map(b => b.id === selectedBooking.id ? { ...b, linked_album_id: val } : b));
+                                       setSelectedBooking(prev => prev ? { ...prev, linked_album_id: val } : null);
+                                       // Update Supabase
+                                       await supabase.from("bookings").update({ linked_album_id: val }).eq("id", selectedBooking.id);
+                                    }}
+                                    className="w-full bg-secondary border border-white/5 px-6 py-4 text-white text-xs font-black uppercase tracking-widest rounded-full outline-none focus:border-brand-accent transition-all appearance-none"
+                                 >
+                                    <option value="">-- Select Client Album --</option>
+                                    {albums.map(a => (
+                                       <option key={a.id} value={a.id}>{a.title} ({a.is_public ? 'Public' : 'Private'})</option>
+                                    ))}
+                                 </select>
+                              </div>
+
+                              {/* Send Gallery Column */}
+                              <div className="flex flex-col justify-end">
+                                 {selectedBooking.linked_album_id ? (() => {
+                                    const album = albums.find(a => a.id === selectedBooking.linked_album_id);
+                                    if (!album) return null;
+                                    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://rcv.media';
+                                    const galleryUrl = album.is_public ? `${origin}/albums/${album.slug}` : `${origin}/gallery/${album.slug}`;
+                                    
+                                    const emailSubject = `Your RCV.Media Photos are Ready!`;
+                                    const emailBody = `Hey ${selectedBooking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${!album.is_public && album.passcode ? `Your private passcode is: ${album.passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
+                                    const mailtoUrl = `mailto:${selectedBooking.email || ''}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+                                    return (
+                                       <div className="flex items-center gap-4 w-full">
+                                          <a 
+                                             href={mailtoUrl}
+                                             className="flex-1 py-4 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[10px] rounded-full shadow-brand-glow hover:scale-105 transition-all text-center flex items-center justify-center gap-2"
+                                          >
+                                             <Mail size={14} />
+                                             Send Gallery Email
+                                          </a>
+                                          <button 
+                                             onClick={() => {
+                                                navigator.clipboard.writeText(galleryUrl);
+                                                alert("Gallery link copied to clipboard!");
+                                             }}
+                                             className="px-6 py-4 bg-zinc-900 border border-white/5 hover:border-white/10 hover:bg-zinc-800 text-white font-black uppercase tracking-widest text-[10px] rounded-full transition-all flex items-center gap-2"
+                                             title="Copy Link"
+                                          >
+                                             <Copy size={14} className="text-brand-accent" />
+                                             Copy Link
+                                          </button>
+                                       </div>
+                                    );
+                                 })() : (
+                                    <div className="h-full flex items-center text-zinc-600 text-[10px] font-black uppercase tracking-widest italic pt-4 md:pt-0">
+                                       Link an album to unlock instant delivery options.
+                                    </div>
+                                 )}
+                              </div>
+                           </div>
+                        </div>
+                     </div>
                  </div>
                ) : (
                  <div className="max-w-4xl mx-auto h-full flex flex-col items-center justify-center text-center opacity-30 py-40">

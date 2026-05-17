@@ -84,8 +84,15 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
   const router = useRouter();
   const supabase = createClient();
 
-  const PORTFOLIO_TAGS = ["Sports", "Basketball", "Volleyball", "Football", "Soccer", "Portraits", "Lifestyle", "Events", "Cinematic"];
-  const categories = ["All", ...PORTFOLIO_TAGS];
+  // Dynamically extract all unique categories currently in use, merging with core defaults
+  const PORTFOLIO_TAGS = useMemo(() => {
+    const existing = Array.from(new Set(photos.map(p => p.category).filter(Boolean))) as string[];
+    const defaults = ["Sports", "Basketball", "Volleyball", "Football", "Soccer", "Portraits", "Lifestyle", "Events", "Cinematic"];
+    const normalized = Array.from(new Set([...defaults, ...existing].map(t => t.charAt(0).toUpperCase() + t.slice(1))));
+    return normalized.sort();
+  }, [photos]);
+
+  const categories = useMemo(() => ["All", ...PORTFOLIO_TAGS], [PORTFOLIO_TAGS]);
 
   const filteredPhotos = useMemo(() => {
     return photos.filter(p => {
@@ -347,14 +354,30 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                 {/* Granular Controls */}
                                 <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
                                    <div className="space-y-1.5">
-                                      <label className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Portfolio Tag</label>
-                                      <select 
-                                        value={item.category} 
-                                        onChange={(e) => updateStaged(index, { category: e.target.value })}
-                                        className="w-full bg-card border border-white/5 px-4 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-brand-accent transition-all rounded-full"
-                                      >
-                                         {PORTFOLIO_TAGS.map(tag => <option key={tag} value={tag}>{tag}</option>)}
-                                      </select>
+                                       <label className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Portfolio Tag</label>
+                                       <select 
+                                         value={PORTFOLIO_TAGS.includes(item.category) ? item.category : "Custom"} 
+                                         onChange={(e) => {
+                                            if (e.target.value === "Custom") {
+                                               updateStaged(index, { category: "New Tag" });
+                                            } else {
+                                               updateStaged(index, { category: e.target.value });
+                                            }
+                                         }}
+                                         className="w-full bg-card border border-white/5 px-4 py-2 text-[10px] font-black uppercase text-white outline-none focus:border-brand-accent transition-all rounded-full mb-1"
+                                       >
+                                          {PORTFOLIO_TAGS.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+                                          <option value="Custom">+ Custom...</option>
+                                       </select>
+                                       {(!PORTFOLIO_TAGS.includes(item.category) || item.category === "New Tag") && (
+                                          <input 
+                                             type="text"
+                                             placeholder="Type custom tag..."
+                                             className="w-full bg-black border border-brand-accent/30 px-3 py-1.5 text-[9px] font-bold uppercase text-white outline-none focus:border-brand-accent transition-all rounded-full"
+                                             value={item.category === "New Tag" ? "" : item.category || ""}
+                                             onChange={(e) => updateStaged(index, { category: e.target.value })}
+                                          />
+                                       )}
                                    </div>
                                    <div className="space-y-1.5">
                                       <label className="text-[8px] font-black uppercase tracking-widest text-zinc-500">Client Album</label>
@@ -591,18 +614,51 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                     </div>
 
                     <div className="grid grid-cols-2 gap-8">
-                       <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Category Tag</label>
-                          <select 
-                            className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase rounded-full shadow-sm"
-                            value={selectedPhoto.category || ""}
-                            onChange={(e) => handleUpdatePhoto(selectedPhoto.id, { category: e.target.value })}
-                          >
-                             {PORTFOLIO_TAGS.map(tag => (
-                               <option key={tag} value={tag}>{tag}</option>
-                             ))}
-                          </select>
-                       </div>
+                        <div className="space-y-4">
+                           <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Category Tag</label>
+                           <div className="space-y-3">
+                              <select 
+                                className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase rounded-full shadow-sm"
+                                value={PORTFOLIO_TAGS.includes(selectedPhoto.category) ? selectedPhoto.category : "Custom"}
+                                onChange={(e) => {
+                                   if (e.target.value === "Custom") {
+                                      handleUpdatePhoto(selectedPhoto.id, { category: "New Tag" });
+                                   } else {
+                                      handleUpdatePhoto(selectedPhoto.id, { category: e.target.value });
+                                   }
+                                }}
+                              >
+                                 {PORTFOLIO_TAGS.map(tag => (
+                                   <option key={tag} value={tag}>{tag}</option>
+                                 ))}
+                                 <option value="Custom">+ Create Custom...</option>
+                              </select>
+                              
+                              {(!PORTFOLIO_TAGS.includes(selectedPhoto.category) || selectedPhoto.category === "New Tag") && (
+                                 <input 
+                                    type="text"
+                                    placeholder="TYPE CUSTOM TAG..."
+                                    className="w-full bg-black border border-brand-accent/30 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase rounded-[1.5rem] shadow-brand-glow"
+                                    defaultValue={selectedPhoto.category === "New Tag" ? "" : selectedPhoto.category || ""}
+                                    onBlur={(e) => {
+                                       const newTag = e.target.value.trim();
+                                       if (newTag) {
+                                          handleUpdatePhoto(selectedPhoto.id, { category: newTag });
+                                       }
+                                    }}
+                                    onKeyDown={(e) => {
+                                       if (e.key === "Enter") {
+                                          const newTag = (e.target as HTMLInputElement).value.trim();
+                                          if (newTag) {
+                                             handleUpdatePhoto(selectedPhoto.id, { category: newTag });
+                                             (e.target as HTMLInputElement).blur();
+                                          }
+                                       }
+                                    }}
+                                 />
+                              )}
+                           </div>
+                        </div>
                        <div className="space-y-4">
                           <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Photo Album</label>
                           <select 

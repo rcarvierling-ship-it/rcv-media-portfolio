@@ -8,12 +8,11 @@ import { useSearchParams } from "next/navigation";
 
 import { trackEvent } from "@/utils/analytics";
 
-const categories = ["All", "Seniors", "Portraits", "Sports", "Events", "Graduation", "Media Days"];
-
 function PortfolioContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category");
   
+  const [categories, setCategories] = useState<string[]>(["All"]);
   const [activeCategory, setActiveCategory] = useState("All");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [photos, setPhotos] = useState<any[]>([]);
@@ -21,12 +20,12 @@ function PortfolioContent() {
   const supabase = createClient();
 
   useEffect(() => {
-    if (initialCategory) {
+    if (initialCategory && categories.length > 1) {
       const match = categories.find(c => c.toLowerCase() === initialCategory.toLowerCase());
       if (match) setActiveCategory(match);
     }
     trackEvent('portfolio_view');
-  }, [initialCategory]);
+  }, [initialCategory, categories]);
 
   useEffect(() => {
     async function fetchPhotos() {
@@ -46,6 +45,12 @@ function PortfolioContent() {
         // Filter out photos from private albums
         const publicPhotos = data.filter(p => !p.albums || p.albums.is_private === false);
         setPhotos(publicPhotos);
+        
+        // Extract unique categories dynamically and format them!
+        const unique = Array.from(new Set(publicPhotos.map(p => p.category).filter(Boolean))) as string[];
+        const formatted = unique.map(c => c.trim().charAt(0).toUpperCase() + c.trim().slice(1));
+        const sortedUnique = Array.from(new Set(formatted)).sort();
+        setCategories(["All", ...sortedUnique]);
       }
       setLoading(false);
     }

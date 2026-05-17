@@ -849,6 +849,78 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                 </div>
               </div>
 
+              {/* Client Album Link & Delivery Portal */}
+              <div className="mb-12 p-8 bg-zinc-50 border border-border rounded-[2rem] shadow-sm space-y-6">
+                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-border">
+                    <div>
+                       <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-1">Gallery Delivery Portal</p>
+                       <h3 className="text-xl font-black text-foreground uppercase tracking-tight italic">Client Gallery Album</h3>
+                    </div>
+                    <span className="px-3 py-1 bg-brand-accent/10 text-brand-accent text-[9px] font-black uppercase rounded-full tracking-widest">
+                       Tactical Assets
+                    </span>
+                 </div>
+                 
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                       <label className="text-[8px] font-black text-zinc-400 uppercase tracking-widest block">Linked Gallery Album</label>
+                       <select 
+                          value={item.linked_album_id || ""}
+                          onChange={async (e) => {
+                             const val = e.target.value === "" ? null : e.target.value;
+                             await onMove(item.id, stage.id, { linked_album_id: val });
+                          }}
+                          className="w-full bg-zinc-100 border border-border px-5 py-3 text-foreground text-xs font-bold uppercase tracking-widest rounded-full outline-none focus:border-brand-accent transition-all"
+                       >
+                          <option value="">-- Link Gallery Album --</option>
+                          {albums?.map((a: any) => (
+                             <option key={a.id} value={a.id}>{a.title} ({a.is_public ? 'Public' : 'Private'})</option>
+                          ))}
+                       </select>
+                    </div>
+
+                    <div className="flex flex-col justify-end">
+                       {item.linked_album_id ? (() => {
+                          const album = albums?.find((a: any) => a.id === item.linked_album_id);
+                          if (!album) return null;
+                          const origin = typeof window !== 'undefined' ? window.location.origin : 'https://rcv.media';
+                          const galleryUrl = album.is_public ? `${origin}/albums/${album.slug}` : `${origin}/gallery/${album.slug}`;
+                          
+                          const emailSubject = `Your RCV.Media Photos are Ready!`;
+                          const emailBody = `Hey ${item.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${!album.is_public && album.passcode ? `Your private passcode is: ${album.passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
+                          const mailtoUrl = `mailto:${item.email || ''}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+
+                          return (
+                             <div className="flex items-center gap-4 w-full">
+                                <a 
+                                   href={mailtoUrl}
+                                   className="flex-1 py-3 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[9px] rounded-full shadow-sm hover:scale-105 transition-all text-center flex items-center justify-center gap-2"
+                                >
+                                   <Mail size={12} />
+                                   Send Email
+                                </a>
+                                <button 
+                                   onClick={() => {
+                                      navigator.clipboard.writeText(galleryUrl);
+                                      alert("Gallery link copied to clipboard!");
+                                   }}
+                                   className="px-5 py-3 bg-zinc-200 hover:bg-zinc-300 text-foreground font-black uppercase tracking-widest text-[9px] rounded-full transition-all flex items-center justify-center gap-2"
+                                   title="Copy Link"
+                                >
+                                   <Copy size={12} className="text-brand-accent" />
+                                   Copy Link
+                                </button>
+                             </div>
+                          );
+                       })() : (
+                          <div className="h-full flex items-center text-zinc-400 text-[9px] font-black uppercase tracking-widest italic pt-2">
+                             Choose an album to unlock delivery capabilities.
+                          </div>
+                       )}
+                    </div>
+                 </div>
+              </div>
+
               {item.message && (
                 <div className="mb-12 p-8 bg-secondary border-l-4 border-brand-accent rounded-r-[1.5rem] shadow-sm">
                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mb-4 italic">Client Intent</p>
