@@ -107,7 +107,7 @@ export default function HomePage() {
     fetchData();
   }, []);
 
-  const heroImage = heroSetting?.hero_image_url;
+  const heroImage = heroSetting?.hero_image_url || featuredPhotos[0]?.image_url;
 
   return (
     <div className="w-full bg-background min-h-screen font-sans selection:bg-primary selection:text-primary-foreground text-foreground">

@@ -20,6 +20,9 @@ export async function ThemeInjector() {
         --accent-glow: ${glow};
         --accent-border: ${border};
         --accent-muted: ${muted};
+        --primary: ${solid};
+        --accent: ${solid};
+        --ring: ${solid};
       }
     `}} />
   );

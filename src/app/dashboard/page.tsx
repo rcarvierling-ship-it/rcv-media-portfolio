@@ -276,23 +276,23 @@ export default function DashboardPage() {
                href="/dashboard/media" 
                className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
              >
-                <Camera size={14} className="text-[#C8FF00]" /> Upload Photos
+                <Camera size={14} className="text-brand-accent" /> Upload Photos
              </Link>
              <Link 
                href="/dashboard/pipeline" 
                className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
              >
-                <Calendar size={14} className="text-[#C8FF00]" /> Bookings Pipeline
+                <Calendar size={14} className="text-brand-accent" /> Bookings Pipeline
              </Link>
              <Link 
                href="/dashboard/pricing" 
                className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
              >
-                <DollarSign className="text-[#C8FF00]" size={14} /> Packages & Pricing
+                <DollarSign className="text-brand-accent" size={14} /> Packages & Pricing
              </Link>
              <Link 
                href="/dashboard/settings" 
-               className="w-full py-5 bg-[#C8FF00] text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow"
+               className="w-full py-5 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow"
              >
                 <Settings size={14} /> Site Settings
              </Link>
@@ -425,8 +425,8 @@ export default function DashboardPage() {
                           { label: 'Booking Total', val: `$${(Number(selectedBooking.total_amount) || 0).toLocaleString()}`, icon: DollarSign },
                           { label: 'Shoot Type', val: selectedBooking.shoot_type, icon: Activity }
                         ].map((item, i) => (
-                          <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-[#C8FF00] transition-all">
-                             <item.icon className="text-[#C8FF00] mb-6" size={24} />
+                          <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-brand-accent transition-all">
+                             <item.icon className="text-brand-accent mb-6" size={24} />
                              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.label}</p>
                              <h4 className="text-xl font-black text-white uppercase tracking-tight">{item.val}</h4>
                           </div>
@@ -442,7 +442,7 @@ export default function DashboardPage() {
                           </div>
                             <Link 
                               href="/dashboard/media"
-                              className="px-12 py-6 bg-[#C8FF00] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
+                              className="px-12 py-6 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-brand-glow hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
                             >
                                Upload Photos
                             </Link>

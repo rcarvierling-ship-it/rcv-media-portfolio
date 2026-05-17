@@ -66,7 +66,20 @@ export async function deletePhoto(id: string, publicId: string, storagePath?: st
     }
   }
 
-  // 3. Delete from DB
+  // 3. Check and clean up global references in site_settings
+  try {
+    const { data: photoToDelete } = await supabase.from("photos").select("image_url").eq("id", id).single();
+    if (photoToDelete?.image_url) {
+      const { data: settings } = await supabase.from("site_settings").select("id, hero_image_url").limit(1).single();
+      if (settings && settings.hero_image_url === photoToDelete.image_url) {
+        await supabase.from("site_settings").update({ hero_image_url: null }).eq("id", settings.id);
+      }
+    }
+  } catch (err) {
+    console.error("Failed to clean up site settings reference:", err);
+  }
+
+  // 4. Delete from DB
   const { error } = await supabase.from("photos").delete().eq("id", id);
   if (error) throw new Error(error.message);
 
