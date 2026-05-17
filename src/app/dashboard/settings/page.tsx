@@ -18,7 +18,32 @@ export default function SettingsDashboardPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Library Photo Picker States
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState<'hero' | 'about' | null>(null);
+  
   const supabase = createClient();
+
+  const openPhotoPicker = async (target: 'hero' | 'about') => {
+    setPickerTarget(target);
+    setShowPicker(true);
+    setLoadingPhotos(true);
+    try {
+      const { data } = await supabase
+        .from("photos")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (data) {
+        setPhotos(data);
+      }
+    } catch (err) {
+      console.error("Failed to load photos:", err);
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
 
   useEffect(() => {
     async function fetchSettings() {
@@ -130,7 +155,8 @@ export default function SettingsDashboardPage() {
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Hero Background Image URL</label>
                    <div className="flex gap-4">
-                      <input name="hero_image_url" defaultValue={settings?.hero_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
+                      <input name="hero_image_url" value={settings?.hero_image_url || ""} onChange={(e) => setSettings({ ...settings, hero_image_url: e.target.value })} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
+                       <button type="button" onClick={() => openPhotoPicker('hero')} className="px-6 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-black uppercase tracking-widest text-[10px] transition-colors whitespace-nowrap rounded-sm">Choose from Library</button>
                       <div className="w-14 h-14 bg-zinc-800 rounded-sm overflow-hidden border border-white/5">
                          <img src={settings?.hero_image_url} alt="Preview" className="w-full h-full object-cover" />
                       </div>
@@ -168,7 +194,8 @@ export default function SettingsDashboardPage() {
                 <div className="space-y-2">
                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Profile Image URL</label>
                    <div className="flex gap-4">
-                      <input name="about_image_url" defaultValue={settings?.about_image_url} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
+                      <input name="about_image_url" value={settings?.about_image_url || ""} onChange={(e) => setSettings({ ...settings, about_image_url: e.target.value })} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-sm font-bold" />
+                       <button type="button" onClick={() => openPhotoPicker('about')} className="px-6 py-4 bg-zinc-800 hover:bg-zinc-700 text-white font-black uppercase tracking-widest text-[10px] transition-colors whitespace-nowrap rounded-sm">Choose from Library</button>
                       <div className="w-14 h-14 bg-zinc-800 rounded-sm overflow-hidden border border-white/5">
                          <img src={settings?.about_image_url} alt="Preview" className="w-full h-full object-cover" />
                       </div>
@@ -234,7 +261,7 @@ export default function SettingsDashboardPage() {
                 <div className="space-y-8">
                    <div className="space-y-2">
                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Global Accent Color</label>
-                      <div className="flex gap-4">
+                      <div className="flex flex-col sm:flex-row gap-4">
                          <input name="accent_color" defaultValue={settings?.accent_color} className="flex-1 bg-black/40 border border-white/10 px-6 py-4 text-white outline-none focus:border-brand-accent/50 transition-all text-[10px] font-mono" />
                          <div className="w-14 h-14 rounded-full border border-white/10" style={{ backgroundColor: settings?.accent_color }} />
                       </div>
@@ -277,6 +304,71 @@ export default function SettingsDashboardPage() {
 
         </div>
       </form>
+
+      {/* Photo Picker Modal */}
+      <AnimatePresence>
+        {showPicker && (
+          <div className="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full max-w-4xl bg-zinc-900 border border-white/10 rounded-sm shadow-2xl overflow-hidden flex flex-col max-h-[80vh]"
+            >
+              <header className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
+                <div>
+                  <h3 className="text-lg font-black uppercase tracking-wider text-white">Select from Library</h3>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest font-medium">Choose a photo for your {pickerTarget === 'hero' ? 'Homepage Hero' : 'About Page Profile'}</p>
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setShowPicker(false)}
+                  className="px-4 py-2 border border-white/10 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+              </header>
+
+              <div className="flex-1 overflow-y-auto p-6">
+                {loadingPhotos ? (
+                  <div className="flex flex-col items-center justify-center py-20 gap-4">
+                    <Loader2 className="animate-spin text-brand-accent" size={32} />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Loading Library...</span>
+                  </div>
+                ) : photos.length === 0 ? (
+                  <div className="text-center py-20">
+                    <ImageIcon className="mx-auto text-zinc-600 mb-4" size={48} />
+                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">No photos in your library yet.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {photos.map((photo) => (
+                      <button
+                        key={photo.id}
+                        type="button"
+                        onClick={() => {
+                          if (pickerTarget === 'hero') {
+                            setSettings({ ...settings, hero_image_url: photo.image_url });
+                          } else if (pickerTarget === 'about') {
+                            setSettings({ ...settings, about_image_url: photo.image_url });
+                          }
+                          setShowPicker(false);
+                        }}
+                        className="group relative aspect-square rounded-sm overflow-hidden border border-white/5 hover:border-brand-accent/50 transition-all text-left bg-black"
+                      >
+                        <img src={photo.image_url} alt={photo.title || "Photo"} className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300" />
+                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <span className="px-3 py-1.5 bg-brand-accent text-black font-black uppercase tracking-widest text-[8px] rounded-sm shadow-lg">Choose Photo</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
