@@ -685,7 +685,7 @@ export async function sendGalleryEmail(bookingId: string, albumId: string, galle
       const resend = new Resend(process.env.RESEND_API_KEY);
       
       const emailSubject = `Your RCV.Media Photos are Ready!`;
-      const emailText = `Hey ${booking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${passcode ? `Your private passcode is: ${passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
+      const emailText = `Hey ${booking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${passcode ? `Your gallery password is: ${passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
 
       const { error } = await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
@@ -699,35 +699,35 @@ export async function sendGalleryEmail(bookingId: string, albumId: string, galle
       <span style="color: #000000; font-weight: 900; font-size: 24px; font-style: italic; font-family: sans-serif;">R</span>
     </div>
     <h1 style="color: #ffffff; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.4em; margin-top: 15px; margin-bottom: 0;">RCV.MEDIA</h1>
-    <p style="color: #666666; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; margin-top: 5px;">Visual Intelligence & Artistry</p>
+    <p style="color: #666666; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; margin-top: 5px;">Portraits & Sports Photography</p>
   </div>
   
   <div style="background-color: #0c0c0c; border: 1px solid #141414; padding: 40px; border-radius: 16px; margin-bottom: 30px;">
     <h2 style="font-size: 24px; font-weight: 900; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 20px; color: #ffffff; font-style: italic;">
-      Hey <span style="color: #C8FF00;">${booking.name}</span>, your media is ready.
+      Hey <span style="color: #C8FF00;">${booking.name}</span>, your photos are ready!
     </h2>
     <p style="font-size: 14px; color: #a1a1aa; line-height: 1.8; font-weight: 400; margin-bottom: 30px;">
-      Reese Vierling has surgically curated your recent session and delivered the complete high-fidelity client gallery. The assets have been synced to your private vault.
+      Your photos are ready! I've selected the best shots from our session, and you can view and download all of them directly from your online gallery.
     </p>
     
     <div style="text-align: center; margin-bottom: 30px;">
       <a href="${galleryUrl}" style="background-color: #C8FF00; color: #000000; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.25em; padding: 18px 36px; border-radius: 50px; text-decoration: none; display: inline-block; box-shadow: 0 4px 20px rgba(200, 255, 0, 0.25); transition: all 0.3s ease;">
-        Enter Client Gallery
+        View Your Photos
       </a>
     </div>
 
     ${passcode ? `
     <div style="background-color: #141414; border: 1px solid #1c1c1c; padding: 20px; border-radius: 12px; text-align: center; margin-top: 25px;">
-      <span style="font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #666666; display: block; margin-bottom: 8px;">Private Vault Passcode</span>
+      <span style="font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.2em; color: #666666; display: block; margin-bottom: 8px;">Gallery Password</span>
       <span style="font-size: 18px; font-family: monospace; font-weight: 900; letter-spacing: 0.1em; color: #C8FF00;">${passcode}</span>
     </div>
     ` : ''}
   </div>
 
   <div style="text-align: center; padding-top: 20px; border-top: 1px solid #141414;">
-    <p style="font-size: 10px; color: #444444; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 10px 0;">RCV.MEDIA // PORTRAIT & SPORTS MEDIA DAYS</p>
+    <p style="font-size: 10px; color: #444444; font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em; margin: 0 0 10px 0;">RCV.MEDIA // REESE VIERLING</p>
     <p style="font-size: 10px; color: #666666; margin: 0;">
-      Delivering cinematic, high-fidelity narrative assets.
+      Portraits, seniors, sports, and events — captured with energy and style.
     </p>
   </div>
 </div>
