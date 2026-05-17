@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/client";
 import { deletePhoto, updatePhoto } from "@/app/actions/photos";
-import { deleteBooking } from "@/app/actions/booking";
+import { deleteBooking, sendGalleryEmail } from "@/app/actions/booking";
 import { 
   DollarSign, Users, Target, ArrowRight, TrendingUp, X, 
   BarChart3, Activity, Calendar, ChevronRight, Info, Trash2,
@@ -62,6 +62,7 @@ export default function DashboardPage() {
   const [selectedMetric, setSelectedMetric] = useState<string>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   
   const supabase = createClient();
   const router = useRouter();
@@ -559,19 +560,46 @@ export default function DashboardPage() {
                                     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://rcv.media';
                                     const galleryUrl = album.is_public ? `${origin}/albums/${album.slug}` : `${origin}/gallery/${album.slug}`;
                                     
-                                    const emailSubject = `Your RCV.Media Photos are Ready!`;
-                                    const emailBody = `Hey ${selectedBooking.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${!album.is_public && album.passcode ? `Your private passcode is: ${album.passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
-                                    const mailtoUrl = `mailto:${selectedBooking.email || ''}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+                                    const handleSendEmail = async () => {
+                                       setIsSendingEmail(true);
+                                       try {
+                                          const res = await sendGalleryEmail(
+                                             selectedBooking.id,
+                                             album.id,
+                                             galleryUrl,
+                                             album.is_public ? undefined : album.passcode
+                                          );
+                                          if (res?.success) {
+                                             alert(`Success! High-fidelity gallery delivered directly to ${selectedBooking.email || 'client'}.`);
+                                          } else {
+                                             alert(`Delivery failed: ${res?.error || 'Unknown error'}`);
+                                          }
+                                       } catch (err: any) {
+                                          alert(`Delivery error: ${err.message || 'Unknown network error'}`);
+                                       } finally {
+                                          setIsSendingEmail(false);
+                                       }
+                                    };
 
                                     return (
                                        <div className="flex items-center gap-4 w-full">
-                                          <a 
-                                             href={mailtoUrl}
-                                             className="flex-1 py-4 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[10px] rounded-full shadow-brand-glow hover:scale-105 transition-all text-center flex items-center justify-center gap-2"
+                                          <button 
+                                             onClick={handleSendEmail}
+                                             disabled={isSendingEmail}
+                                             className="flex-1 py-4 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[10px] rounded-full shadow-brand-glow hover:scale-105 transition-all text-center flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                                           >
-                                             <Mail size={14} />
-                                             Send Gallery Email
-                                          </a>
+                                             {isSendingEmail ? (
+                                                <>
+                                                   <Loader2 size={14} className="animate-spin" />
+                                                   Delivering...
+                                                </>
+                                             ) : (
+                                                <>
+                                                   <Mail size={14} />
+                                                   Send Gallery Email
+                                                </>
+                                             )}
+                                          </button>
                                           <button 
                                              onClick={() => {
                                                 navigator.clipboard.writeText(galleryUrl);

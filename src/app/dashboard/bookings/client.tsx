@@ -21,7 +21,8 @@ import {
   deliverGallery,
   updatePricingPackage,
   replyToInquiry,
-  updateSiteIdentity
+  updateSiteIdentity,
+  sendGalleryEmail
 } from "@/app/actions/booking";
 import { createContractFromBooking } from "@/app/actions/contracts";
 import { useRouter } from "next/navigation";
@@ -582,6 +583,7 @@ export function PipelineClient({
 function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, albums }: any) {
   const [showDetails, setShowDetails] = useState(false);
   const [isDelivering, setIsDelivering] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const linkedAlbum = albums.find((a: any) => a.id === item.linked_album_id);
 
   const handleGalleryDelivery = async () => {
@@ -886,32 +888,59 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                           const origin = typeof window !== 'undefined' ? window.location.origin : 'https://rcv.media';
                           const galleryUrl = album.is_public ? `${origin}/albums/${album.slug}` : `${origin}/gallery/${album.slug}`;
                           
-                          const emailSubject = `Your RCV.Media Photos are Ready!`;
-                          const emailBody = `Hey ${item.name},\n\nYour photos are ready and have been uploaded to your client gallery!\n\nYou can access your gallery here:\n${galleryUrl}\n\n${!album.is_public && album.passcode ? `Your private passcode is: ${album.passcode}\n\n` : ''}Let me know what you think!\n\nBest,\nReese Vierling\nRCV.Media`;
-                          const mailtoUrl = `mailto:${item.email || ''}?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(emailBody)}`;
+                          const handleSendEmail = async () => {
+                              setIsSendingEmail(true);
+                              try {
+                                 const res = await sendGalleryEmail(
+                                    item.id,
+                                    album.id,
+                                    galleryUrl,
+                                    album.is_public ? undefined : album.passcode
+                                 );
+                                 if (res?.success) {
+                                    alert(`Success! High-fidelity gallery delivered directly to ${item.email || 'client'}.`);
+                                 } else {
+                                    alert(`Delivery failed: ${res?.error || 'Unknown error'}`);
+                                 }
+                              } catch (err: any) {
+                                 alert(`Delivery error: ${err.message || 'Unknown network error'}`);
+                              } finally {
+                                 setIsSendingEmail(false);
+                              }
+                           };
 
-                          return (
-                             <div className="flex items-center gap-4 w-full">
-                                <a 
-                                   href={mailtoUrl}
-                                   className="flex-1 py-3 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[9px] rounded-full shadow-sm hover:scale-105 transition-all text-center flex items-center justify-center gap-2"
-                                >
-                                   <Mail size={12} />
-                                   Send Email
-                                </a>
-                                <button 
-                                   onClick={() => {
-                                      navigator.clipboard.writeText(galleryUrl);
-                                      alert("Gallery link copied to clipboard!");
-                                   }}
-                                   className="px-5 py-3 bg-zinc-200 hover:bg-zinc-300 text-foreground font-black uppercase tracking-widest text-[9px] rounded-full transition-all flex items-center justify-center gap-2"
-                                   title="Copy Link"
-                                >
-                                   <Copy size={12} className="text-brand-accent" />
-                                   Copy Link
-                                </button>
-                             </div>
-                          );
+                           return (
+                              <div className="flex items-center gap-4 w-full">
+                                 <button 
+                                    onClick={handleSendEmail}
+                                    disabled={isSendingEmail}
+                                    className="flex-1 py-3 bg-brand-accent hover:brightness-110 text-black font-black uppercase tracking-widest text-[9px] rounded-full shadow-sm hover:scale-105 transition-all text-center flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                 >
+                                    {isSendingEmail ? (
+                                       <>
+                                          <Loader2 size={12} className="animate-spin" />
+                                          Delivering...
+                                       </>
+                                    ) : (
+                                       <>
+                                          <Mail size={12} />
+                                          Send Email
+                                       </>
+                                    )}
+                                 </button>
+                                 <button 
+                                    onClick={() => {
+                                       navigator.clipboard.writeText(galleryUrl);
+                                       alert("Gallery link copied to clipboard!");
+                                    }}
+                                    className="px-5 py-3 bg-zinc-200 hover:bg-zinc-300 text-foreground font-black uppercase tracking-widest text-[9px] rounded-full transition-all flex items-center justify-center gap-2"
+                                    title="Copy Link"
+                                 >
+                                    <Copy size={12} className="text-brand-accent" />
+                                    Copy Link
+                                 </button>
+                              </div>
+                           );
                        })() : (
                           <div className="h-full flex items-center text-zinc-400 text-[9px] font-black uppercase tracking-widest italic pt-2">
                              Choose an album to unlock delivery capabilities.
