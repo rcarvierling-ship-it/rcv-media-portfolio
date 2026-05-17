@@ -107,8 +107,8 @@ function PortfolioContent() {
                 onClick={() => setActiveCategory(category)}
                 className={`px-8 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 rounded-full border ${
                   activeCategory === category 
-                    ? "bg-black text-white border-black shadow-xl scale-105" 
-                    : "bg-white text-zinc-400 border-border hover:border-brand-accent hover:text-black shadow-sm"
+                    ? "bg-brand-accent text-black border-brand-accent shadow-brand-glow scale-105" 
+                    : "bg-white/5 text-zinc-400 border-white/5 hover:border-brand-accent/50 hover:text-white shadow-premium"
                 }`}
               >
                 {category}
@@ -123,13 +123,13 @@ function PortfolioContent() {
           <motion.div 
              initial={{ opacity: 0 }}
              animate={{ opacity: 1 }}
-             className="w-full bg-white rounded-[3rem] p-32 flex flex-col items-center justify-center text-center border border-border shadow-premium relative overflow-hidden"
+             className="w-full bg-zinc-900/40 backdrop-blur-md rounded-[3rem] p-32 flex flex-col items-center justify-center text-center border border-white/5 shadow-premium relative overflow-hidden"
           >
             <div className="relative z-10">
-              <div className="w-20 h-20 mb-8 mx-auto rounded-full bg-zinc-50 flex items-center justify-center border border-border">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-300"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div className="w-20 h-20 mb-8 mx-auto rounded-full bg-black/40 flex items-center justify-center border border-white/10">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-zinc-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
-              <h3 className="text-3xl font-black uppercase text-foreground mb-4 tracking-tighter italic">Gallery Empty</h3>
+              <h3 className="text-3xl font-black uppercase text-white mb-4 tracking-tighter italic">Gallery Empty</h3>
               <p className="text-zinc-400 mb-8 max-w-md mx-auto font-medium">Visual assets are currently under curation. <br/> Check back for updated photos.</p>
             </div>
           </motion.div>
