@@ -41,6 +41,7 @@ export default async function AlbumPage({ params }: { params: Promise<{ slug: st
     .from('photos')
     .select('*')
     .eq('album_id', album.id)
+    .eq('is_curated', true)
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: false });
 

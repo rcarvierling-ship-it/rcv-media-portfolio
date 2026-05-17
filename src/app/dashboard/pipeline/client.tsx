@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   MoreVertical, Calendar, DollarSign, 
@@ -167,12 +168,12 @@ export function PipelineClient({
 
   const handleSavePackage = async (pkg: any) => {
     await updatePricingPackage(pkg.id, pkg);
-    alert("Pricing Intelligence Updated.");
+    alert("Pricing Packages Updated.");
   };
 
   const handleSaveSettings = async () => {
     await updateSiteIdentity(siteSettings.id, siteSettings);
-    alert("Operational Guardrails Updated.");
+    alert("Booking Settings Updated.");
   };
 
   const handleReply = async (inquiryId: string) => {
@@ -183,7 +184,7 @@ export function PipelineClient({
       setInquiries(prev => prev.map(i => i.id === inquiryId ? { ...i, status: 'replied' } : i));
       setReplyingTo(null);
       setReplyMessage("");
-      alert("Intelligence Dispatched: Reply sent.");
+      alert("Reply sent successfully.");
     }
     setIsProcessing(null);
   };
@@ -341,7 +342,7 @@ export function PipelineClient({
                                 disabled={isProcessing === inquiry.id}
                                 className="w-full py-5 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest hover:brightness-110 transition-all flex items-center justify-center gap-3 disabled:opacity-50 rounded-full shadow-brand-glow"
                               >
-                                {isProcessing === inquiry.id ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} Dispatch Intelligence
+                                {isProcessing === inquiry.id ? <Loader2 className="animate-spin" size={14} /> : <Send size={14} />} Send Reply
                               </button>
                               <button 
                                 onClick={() => setReplyingTo(null)}
@@ -781,7 +782,7 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                              onChange={async (e) => await onMove(item.id, stage.id, { total_amount: parseFloat(e.target.value) })}
                            />
                         </div>
-                        <div className="flex justify-between items-center">
+                        <div className="hidden">
                            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Deposit</span>
                            <div className="flex items-center gap-3">
                              <input 
@@ -799,14 +800,14 @@ function ProjectCard({ item, stage, onMove, onDelete, onContract, isProcessing, 
                            </div>
                         </div>
                         <div className="flex justify-between items-center pt-4 border-t border-border">
-                           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Final Due</span>
+                           <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Payment Status</span>
                            <div className="flex items-center gap-3">
-                             <span className="text-xl font-black text-white tracking-tighter">${(Number(item.total_amount) - (item.deposit_paid ? Number(item.deposit_amount || 0) : 0)).toLocaleString()}</span>
+                             <span className="text-xl font-black text-white tracking-tighter">${Number(item.total_amount).toLocaleString()}</span>
                              <button 
                                onClick={async () => await onMove(item.id, stage.id, { final_paid: !item.final_paid })}
                                className={`px-3 py-1 text-[7px] font-black uppercase rounded-full border shadow-sm ${item.final_paid ? 'bg-brand-accent border-brand-accent text-black' : 'bg-secondary border-white/5 text-zinc-500'}`}
                              >
-                               {item.final_paid ? 'Paid' : 'Due'}
+                               {item.final_paid ? 'Paid' : 'Unpaid'}
                              </button>
                            </div>
                         </div>
@@ -873,6 +874,7 @@ interface CommandCenterProps {
 }
 
 function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: CommandCenterProps) {
+  const router = useRouter();
   const allBookings = pipeline.flatMap((s: any) => s.items);
   const activeBookings = allBookings.filter((b: any) => b.status !== 'cancelled');
 
@@ -997,24 +999,24 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
          {/* Payout/Quick Actions Card */}
          <div className="bg-card border border-white/5 p-12 rounded-[2.5rem] shadow-premium flex flex-col justify-between">
             <div>
-               <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 mb-8">Asset Liquidity</p>
-               <h4 className="text-4xl font-black text-white tracking-tighter leading-none mb-4">${(monthlyRevenue * 0.85).toLocaleString()}</h4>
-               <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Available for immediate payout</p>
+               <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-500 mb-8">Quick Actions</p>
+               <h4 className="text-3xl font-black text-white tracking-tighter leading-none mb-4">Shortcuts</h4>
+               <p className="text-[11px] font-bold text-zinc-500 uppercase tracking-widest">Manage your bookings workspace</p>
             </div>
             
             <div className="space-y-4">
                <div className="flex items-center justify-between p-4 bg-secondary rounded-2xl border border-white/5">
                   <div className="flex items-center gap-3">
-                     <div className="w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-accent"><Zap size={14} /></div>
-                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Stripe Direct</span>
+                     <div className="w-8 h-8 rounded-full bg-brand-accent/20 flex items-center justify-center text-brand-accent"><ShieldCheck size={14} /></div>
+                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Client Contracts</span>
                   </div>
-                  <span className="text-[10px] font-black text-zinc-500 uppercase">Active</span>
+                  <Link href="/dashboard/contracts" className="text-[10px] font-black text-brand-accent uppercase hover:underline">View</Link>
                </div>
                <button 
-                  onClick={() => alert("Liquidity Dispatch: Transmission initiated. Funds being routed to verified Stripe account.")}
+                  onClick={() => router.push("/dashboard/media")}
                   className="w-full py-5 bg-brand-accent text-black text-[11px] font-black uppercase tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow"
                 >
-                   Withdraw Intel
+                   Upload Photos
                 </button>
             </div>
          </div>
@@ -1051,7 +1053,7 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
                            )}
                         </div>
                         <div>
-                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">{item.type === 'inquiry' ? 'Tactical Inquiry' : 'Pipeline Project'}</p>
+                           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">{item.type === 'inquiry' ? 'New Inquiry' : 'Client Booking'}</p>
                            <p className="text-white font-black uppercase tracking-tight text-2xl leading-none mb-2 group-hover:text-brand-accent transition-colors">{item.name}</p>
                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{item.action.label}</p>
                         </div>
@@ -1078,7 +1080,7 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
         <div className="lg:col-span-4 space-y-12">
            {/* TODAY'S SCHEDULE */}
            <div className="space-y-8">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 border-b border-border pb-4">Today's Pulse</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 border-b border-border pb-4">Today's Schedule</h3>
               <div className="space-y-4">
                  {pulse.todayShoots.length === 0 ? (
                    <div className="p-8 border border-dashed border-white/5 rounded-[2rem] text-center">
@@ -1088,7 +1090,7 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
                    pulse.todayShoots.map((b: any) => (
                      <div key={b.id} className="p-8 bg-secondary border border-white/5 rounded-[2rem] shadow-premium relative overflow-hidden group hover:border-brand-accent transition-all">
                         <div className="absolute top-0 right-0 p-4 opacity-5 text-white group-hover:text-brand-accent transition-colors"><Camera size={40} /></div>
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-3">Live Operational Session</p>
+                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-3">Active Shoot Session</p>
                         <p className="text-white font-black uppercase tracking-tight text-xl leading-none mb-3">{b.name}</p>
                         <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-brand-accent">
                            <MapPin size={12} /> {b.location || 'Location Pending'}
@@ -1101,10 +1103,10 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
 
            {/* ACCOUNTS RECEIVABLE */}
            <div className="space-y-8">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 border-b border-border pb-4">Pending Credits</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 border-b border-border pb-4">Pending Payments</h3>
               <div className="space-y-3">
                  {pulse.unpaid.length === 0 ? (
-                   <p className="text-[10px] font-bold text-zinc-500 italic uppercase">Operational balance optimized</p>
+                   <p className="text-[10px] font-bold text-zinc-500 italic uppercase">All balances paid in full</p>
                  ) : (
                    pulse.unpaid.slice(0, 5).map((b: any) => (
                      <div key={b.id} className="flex justify-between items-center px-6 py-4 bg-secondary border border-white/5 rounded-full shadow-premium hover:border-brand-accent transition-all group">
@@ -1112,7 +1114,7 @@ function CommandCenter({ pipeline, inquiries, siteSettings, onMove, onAccept }: 
                            <p className="text-[11px] font-black text-white uppercase tracking-tight leading-none mb-1">{b.name}</p>
                            <p className="text-[8px] font-black text-zinc-500 uppercase tracking-widest">{b.shoot_type || 'Custom Asset'}</p>
                         </div>
-                        <span className="text-sm font-black text-red-500 tracking-tighter group-hover:scale-110 transition-transform">${(Number(b.total_amount) - (b.deposit_paid ? Number(b.deposit_amount || 0) : 0)).toLocaleString()}</span>
+                        <span className="text-sm font-black text-red-500 tracking-tighter group-hover:scale-110 transition-transform">${Number(b.total_amount).toLocaleString()}</span>
                      </div>
                    ))
                  )}
@@ -1168,7 +1170,7 @@ function MarketingVault({ initialVault, supabase }: { initialVault: any[], supab
           onClick={() => setIsAdding(!isAdding)}
           className="px-8 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all rounded-full shadow-brand-glow"
         >
-          {isAdding ? 'Close Intelligence' : 'Add New Asset'}
+          {isAdding ? 'Close Editor' : 'Add New Item'}
         </button>
       </div>
 
@@ -1211,7 +1213,7 @@ function MarketingVault({ initialVault, supabase }: { initialVault: any[], supab
             onClick={handleAdd}
             className="w-full py-5 bg-brand-accent text-black font-black uppercase text-[11px] tracking-widest hover:brightness-110 transition-all rounded-full shadow-brand-glow"
           >
-            Store Asset
+            Save Item
           </button>
         </div>
       )}
@@ -1260,7 +1262,7 @@ function MarketingVault({ initialVault, supabase }: { initialVault: any[], supab
                   }}
                   className="text-[9px] font-black uppercase tracking-widest text-zinc-300 hover:text-red-500 transition-colors"
                 >
-                  Purge Asset
+                  Delete Item
                 </button>
               </div>
             </motion.div>

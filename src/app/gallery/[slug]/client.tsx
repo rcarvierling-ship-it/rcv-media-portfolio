@@ -32,10 +32,17 @@ export function GalleryClient({ album }: { album: any }) {
       async function fetchPhotos() {
         setLoading(true);
         trackEvent('vault_view');
-        const { data } = await supabase
+        
+        let photosQuery = supabase
           .from("photos")
           .select("*")
-          .eq("album_id", album.id)
+          .eq("album_id", album.id);
+          
+        if (!album.is_private) {
+          photosQuery = photosQuery.eq("is_curated", true);
+        }
+        
+        const { data } = await photosQuery
           .order("sort_order", { ascending: true })
           .order("created_at", { ascending: false });
         
@@ -44,7 +51,7 @@ export function GalleryClient({ album }: { album: any }) {
       }
       fetchPhotos();
     }
-  }, [isAuthorized, album.id, supabase]);
+  }, [isAuthorized, album.id, supabase, album.is_private]);
 
   const handleAuth = (e: React.FormEvent) => {
     e.preventDefault();

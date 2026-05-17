@@ -17,30 +17,30 @@ function cn(...inputs: (string | undefined | null | false)[]) {
 
 const navGroups = [
   {
-    title: "Media Hub",
+    title: "Media",
     items: [
       { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
-      { label: "Business Analytics", href: "/dashboard/analytics", icon: BarChart3 },
-      { label: "Master Library", href: "/dashboard/media", icon: Library },
-      { label: "Curation Hub", href: "/dashboard/curated", icon: ImageIcon },
+      { label: "Analytics", href: "/dashboard/analytics", icon: BarChart3 },
+      { label: "All Photos", href: "/dashboard/media", icon: Library },
+      { label: "Portfolio Curation", href: "/dashboard/curated", icon: ImageIcon },
       { label: "Albums", href: "/dashboard/albums", icon: Inbox },
     ]
   },
   {
-    title: "Agency Ops",
+    title: "Operations",
     items: [
-      { label: "Visual Intelligence", href: "/dashboard/visuals", icon: GitPullRequest },
-      { label: "Strategic Pipeline", href: "/dashboard/pipeline", icon: Tag },
-      { label: "Contract Engine", href: "/dashboard/contracts", icon: FileText },
-      { label: "Pricing Engine", href: "/dashboard/pricing", icon: Tag },
-      { label: "Vibe Settings", href: "/dashboard/settings", icon: Settings },
+      { label: "Visuals", href: "/dashboard/visuals", icon: GitPullRequest },
+      { label: "Bookings Pipeline", href: "/dashboard/pipeline", icon: Tag },
+      { label: "Contracts", href: "/dashboard/contracts", icon: FileText },
+      { label: "Packages & Pricing", href: "/dashboard/pricing", icon: Tag },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
     ]
   },
   {
-    title: "Platform Design",
+    title: "Design",
     items: [
-      { label: "Site Editor", href: "/dashboard/editor", icon: Layout },
-      { label: "About Mastery", href: "/dashboard/about", icon: User },
+      { label: "Page Editor", href: "/dashboard/editor", icon: Layout },
+      { label: "About Page", href: "/dashboard/about", icon: User },
     ]
   }
 ];
@@ -62,16 +62,16 @@ export default function DashboardLayout({
                 <div className="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center shadow-brand-glow">
                    <span className="text-black font-black text-xl italic">R</span>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] hidden xl:block">RCV.Media Ops</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] hidden xl:block">RCV.Media Dashboard</span>
              </div>
              
              <nav className="hidden lg:flex items-center gap-2">
                 {[
                   { label: "Overview", href: "/dashboard" },
-                  { label: "Pipeline", href: "/dashboard/pipeline" },
-                  { label: "Archive", href: "/dashboard/media" },
+                  { label: "Bookings", href: "/dashboard/pipeline" },
+                  { label: "All Photos", href: "/dashboard/media" },
                   { label: "Contracts", href: "/dashboard/contracts" },
-                  { label: "Intelligence", href: "/dashboard/analytics" },
+                  { label: "Analytics", href: "/dashboard/analytics" },
                 ].map((item) => {
                   const isActive = pathname === item.href;
                   return (
@@ -95,7 +95,7 @@ export default function DashboardLayout({
                 <LayoutGrid size={16} className="text-brand-accent" />
                 <input 
                   type="text" 
-                  placeholder="System Search..." 
+                  placeholder="Search..." 
                   className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest text-white w-40 placeholder:text-zinc-700" 
                 />
              </div>
@@ -112,13 +112,13 @@ export default function DashboardLayout({
                     
                     <div className="absolute top-[calc(100%+1rem)] right-0 w-64 bg-dark-panel border border-white/5 rounded-[2rem] shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 translate-y-2 transition-all p-4 z-[100] backdrop-blur-xl">
                        <div className="p-6 border-b border-white/5 mb-2">
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Command Identity</p>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 mb-1">Admin Profile</p>
                           <p className="text-sm font-black text-white italic">REESE VIERLING</p>
                        </div>
                        <div className="space-y-1">
                           <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
-                             <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Operational Settings</span>
+                              <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
+                              <span className="text-[9px] font-black uppercase tracking-widest">Settings</span>
                           </Link>
                           <button 
                             onClick={async () => {
@@ -128,7 +128,7 @@ export default function DashboardLayout({
                             className="w-full flex items-center gap-4 p-4 hover:bg-red-500/10 rounded-full text-zinc-400 hover:text-red-500 transition-all"
                           >
                              <LogOut size={16} />
-                             <span className="text-[9px] font-black uppercase tracking-widest">Terminate Session</span>
+                             <span className="text-[9px] font-black uppercase tracking-widest">Logout</span>
                           </button>
                        </div>
                     </div>

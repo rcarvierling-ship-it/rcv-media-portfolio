@@ -171,7 +171,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         const item = stagedFiles[i];
         const { file, category, album_id, is_curated, is_featured } = item;
         
-        console.log(`Master Syncing file ${i + 1}/${stagedFiles.length}: ${file.name}`);
+        console.log(`Uploading file ${i + 1}/${stagedFiles.length}: ${file.name}`);
         
         // 1. Upload MASTER to Supabase Storage
         const fileExt = file.name.split('.').pop();
@@ -184,7 +184,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
         if (storageError) {
            console.error("Supabase Storage Error:", storageError);
-           throw new Error(`Master Vault upload failed for ${file.name}. Ensure 'master-collection' bucket exists.`);
+           throw new Error(`Original photo upload failed for ${file.name}. Ensure 'master-collection' bucket exists.`);
         }
 
         const { data: { publicUrl: rawImageUrl } } = supabase.storage
@@ -279,8 +279,8 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
     <div className="space-y-10">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div>
-          <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-2">Master Library</h1>
-          <p className="text-zinc-400 font-light tracking-wide uppercase text-[10px]">Managing {photos.length} assets across your entire horizon</p>
+          <h1 className="text-5xl font-black uppercase tracking-tighter text-foreground mb-2">Photo Library</h1>
+          <p className="text-zinc-400 font-light tracking-wide uppercase text-[10px]">Managing {photos.length} photos in your library</p>
         </div>
         <div className="flex gap-4">
            <button 
@@ -315,7 +315,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                          <Upload size={24} />
                       </div>
                       <div className="text-center">
-                         <p className="text-[10px] font-black uppercase tracking-widest text-white">Drag & Drop Media to Stage Assets</p>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-white">Drag & drop photos here to stage them</p>
                          <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-[0.2em] mt-1">Supports High-Res RAW / JPG / WEBP (Max 20)</p>
                       </div>
                    </div>
@@ -324,7 +324,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                    {stagedFiles.length > 0 && (
                      <div className="space-y-4">
                         <div className="flex justify-between items-center px-4">
-                           <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Staged for Sync ({stagedFiles.length})</h3>
+                           <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Photos Ready to Upload ({stagedFiles.length})</h3>
                            <button onClick={() => setStagedFiles([])} className="text-[8px] font-black uppercase tracking-widest text-red-500 hover:text-red-400">Clear All</button>
                         </div>
                         
@@ -374,7 +374,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                                           item.is_curated ? 'bg-brand-accent border-brand-accent text-black shadow-sm' : 'bg-card border-white/5 text-zinc-500'
                                         }`}
                                       >
-                                         {item.is_curated ? 'Live in Hub' : 'Archive Only'}
+                                         {item.is_curated ? 'Show on Portfolio' : 'Hide from Portfolio'}
                                       </button>
                                       <button 
                                         onClick={() => updateStaged(index, { is_featured: !item.is_featured })}
@@ -401,10 +401,10 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                              onClick={handleBatchUpload}
                              className="w-full py-5 bg-brand-accent text-black font-black uppercase tracking-[0.3em] text-[10px] hover:brightness-110 transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-brand-glow rounded-full"
                            >
-                              {uploadLoading ? <Loader2 className="animate-spin" size={16} /> : <>Commence Smart Batch Sync <Upload size={16} /></>}
+                              {uploadLoading ? <Loader2 className="animate-spin" size={16} /> : <>Upload staged photos <Upload size={16} /></>}
                            </button>
                            {stagedFiles.some(f => f.file.size > 50*1024*1024) && (
-                             <p className="text-center text-red-500 text-[8px] font-black uppercase tracking-widest mt-4">One or more files exceed the 50MB Master Limit</p>
+                             <p className="text-center text-red-500 text-[8px] font-black uppercase tracking-widest mt-4">One or more files exceed the 50MB Upload Limit</p>
                            )}
                         </div>
                      </div>
@@ -519,7 +519,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                  <button onClick={() => setSelectedPhoto(null)} className="absolute top-10 right-10 text-zinc-500 hover:text-white transition-colors p-2 bg-secondary rounded-full border border-white/5"><X size={20} /></button>
                  
                  <div className="mb-12">
-                    <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Asset Intelligence</span>
+                    <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">Photo Details</span>
                     <h2 className="text-4xl font-black uppercase tracking-tighter text-foreground leading-none mb-4">Edit Details</h2>
                  </div>
 
@@ -533,7 +533,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                           rel="noopener noreferrer"
                           className="px-8 py-4 bg-brand-accent text-black font-black uppercase tracking-widest text-[10px] rounded-full flex items-center gap-2 hover:brightness-110 transition-all shadow-brand-glow"
                         >
-                          <Download size={14} /> Download Master Asset
+                          <Download size={14} /> Download Original Photo
                         </a>
                       </div>
                     )}
@@ -581,7 +581,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                   )}
                   <div className="space-y-10">
                     <div className="space-y-4">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Asset Title</label>
+                       <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Photo Title</label>
                        <input 
                          className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold rounded-full shadow-sm"
                          value={selectedPhoto.title || ""}
@@ -592,7 +592,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
                     <div className="grid grid-cols-2 gap-8">
                        <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Image Tag</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Category Tag</label>
                           <select 
                             className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase rounded-full shadow-sm"
                             value={selectedPhoto.category || ""}
@@ -604,7 +604,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                           </select>
                        </div>
                        <div className="space-y-4">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Associated Album</label>
+                          <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Photo Album</label>
                           <select 
                             className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none focus:border-brand-accent transition-all text-sm font-bold uppercase rounded-full shadow-sm"
                             value={selectedPhoto.album_id || ""}
@@ -648,7 +648,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                        {selectedPhoto.raw_image_url && (
                          <div className="flex items-center justify-between p-8 bg-brand-accent/5 border border-brand-accent/20 rounded-[1.5rem] shadow-sm">
                             <div>
-                               <p className="text-[10px] font-black uppercase tracking-widest text-brand-accent mb-1">Master Collection Asset</p>
+                               <p className="text-[10px] font-black uppercase tracking-widest text-brand-accent mb-1">Original Photo Archive</p>
                                <p className="text-[9px] text-zinc-500 uppercase">High-resolution archive is active and secure</p>
                             </div>
                             <div className="p-3 bg-card rounded-full text-brand-accent shadow-sm border border-brand-accent/20">
@@ -663,7 +663,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
                          onClick={() => handleDelete(selectedPhoto)}
                          className="w-full py-5 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all rounded-full flex items-center justify-center gap-2 shadow-sm"
                        >
-                          <Trash2 size={16} /> Delete Asset Permanently
+                          <Trash2 size={16} /> Delete Photo Permanently
                        </button>
                     </div>
                  </div>

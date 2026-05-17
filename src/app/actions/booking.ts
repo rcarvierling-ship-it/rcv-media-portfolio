@@ -152,6 +152,52 @@ export async function submitBooking(formData: FormData) {
           });
         }
 
+        // 3. CLIENT CONFIRMATION EMAIL
+        await resend.emails.send({
+          from: "RCV Media <bookings@rcv-media.com>",
+          to: email,
+          replyTo: "rcar.vierling@gmail.com",
+          subject: `Booking Confirmed: ${shoot_type} - RCV Media`,
+          html: `
+            <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
+              <div style="margin-bottom: 40px; text-align: center;">
+                <h1 style="font-size: 24px; font-weight: 900; letter-spacing: -1px; text-transform: uppercase; margin: 0; color: #ffffff;">RCV<span style="color: #52525b;">.</span>MEDIA</h1>
+                <p style="font-size: 10px; font-weight: 900; color: #C8FF00; text-transform: uppercase; letter-spacing: 3px; margin-top: 10px;">Booking Confirmed</p>
+              </div>
+              
+              <div style="padding: 30px; background-color: #09090b; border: 1px solid #27272a; border-radius: 4px;">
+                <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 10px; color: #ffffff;">Hi ${name},</h2>
+                <p style="font-size: 14px; line-height: 1.6; color: #a1a1aa; margin-bottom: 20px;">
+                  Your booking request for a <strong>${shoot_type}</strong> has been successfully received and secured!
+                </p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #18181b; padding-top: 20px; margin-bottom: 30px;">
+                  <div>
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Shoot Type</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0; color: #ffffff;">${shoot_type}</p>
+                  </div>
+                  <div>
+                    <p style="font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #52525b; margin: 0;">Date / Time</p>
+                    <p style="font-size: 14px; font-weight: 700; margin: 5px 0; color: #ffffff;">${event_date} @ ${event_time || "TBD"}</p>
+                  </div>
+                </div>
+
+                <div style="padding: 20px; background-color: #000000; border-left: 2px solid #C8FF00; margin-bottom: 20px;">
+                  <p style="font-size: 10px; color: #888888; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 5px 0;">Total Balance</p>
+                  <p style="font-size: 24px; color: #ffffff; font-weight: 900; margin: 0;">$${total_amount}</p>
+                  <p style="font-size: 11px; color: #a1a1aa; margin: 5px 0 0 0; font-style: italic;">
+                    No deposit is required. The full balance is due upon gallery delivery.
+                  </p>
+                </div>
+
+                <p style="font-size: 12px; line-height: 1.6; color: #71717a; margin: 0;">
+                  I will review your request and get in touch with you shortly with the contract and final details. Feel free to reply to this email directly if you have any questions!
+                </p>
+              </div>
+            </div>
+          `
+        });
+
         if (emailError) {
           console.error("Resend Error Detail:", emailError);
         }
@@ -239,7 +285,7 @@ export async function optimizeWorkflow() {
 
     return { 
       success: true, 
-      message: `Operational Intelligence optimized. ${inquiryCount || 0} stale inquiries archived. Pipeline clarity increased by 18%.` 
+      message: `Workflow optimized successfully! ${inquiryCount || 0} old inquiries archived.` 
     };
   } catch (error: any) {
     console.error("Optimization FAILURE:", error);

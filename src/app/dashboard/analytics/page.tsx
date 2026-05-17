@@ -81,8 +81,8 @@ export default async function AnalyticsPage() {
     <div className="space-y-16 pb-32">
        <header className="flex flex-col md:flex-row md:items-end justify-between gap-8 border-b border-border pb-12">
           <div>
-            <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Performance.Intelligence</span>
-            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-foreground leading-none">Business <br/> <span className="text-zinc-400">Analytics.</span></h1>
+            <span className="text-zinc-400 text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Business Performance</span>
+            <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-foreground leading-none">Business <br/> <span className="text-zinc-400">Insights</span></h1>
           </div>
           <div className="flex gap-4">
              <div className="px-6 py-3 bg-card border border-white/5 rounded-full shadow-sm">
@@ -91,7 +91,7 @@ export default async function AnalyticsPage() {
              </div>
              <div className="px-6 py-3 bg-brand-accent text-black rounded-full shadow-md shadow-brand-glow">
                 <span className="block text-[9px] font-black text-black/60 uppercase tracking-widest mb-1 text-center">Status</span>
-                <span className="text-sm font-black uppercase block text-center">Scale Mode</span>
+                <span className="text-sm font-black uppercase block text-center">Active</span>
              </div>
           </div>
        </header>
@@ -204,8 +204,8 @@ export default async function AnalyticsPage() {
 
                 <div className="bg-secondary p-10 rounded-[2.5rem] text-white shadow-xl border border-white/5">
                    <Zap size={32} className="mb-6 text-brand-accent" />
-                   <h4 className="text-2xl font-black uppercase tracking-tighter mb-2">Elite Status</h4>
-                   <p className="text-[11px] font-medium leading-relaxed opacity-60 mb-8 italic">"Your performance metrics are in the top 5% of regional media agencies. Keep pushing the narrative."</p>
+                   <h4 className="text-2xl font-black uppercase tracking-tighter mb-2">Workflow Status</h4>
+                   <p className="text-[11px] font-medium leading-relaxed opacity-60 mb-8 italic">"Your photography business is running efficiently. Optimize your pipeline to archive old lead inquiries."</p>
                    <OptimizeWorkflowButton />
                 </div>
 

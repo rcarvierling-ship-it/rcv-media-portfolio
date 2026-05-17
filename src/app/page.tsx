@@ -61,7 +61,12 @@ export default function HomePage() {
         .limit(1)
         .single();
       
-      if (newestData) setNewestGallery(newestData);
+      if (newestData) {
+        if (newestData.photos) {
+          newestData.photos = newestData.photos.filter((p: any) => p.is_curated);
+        }
+        setNewestGallery(newestData);
+      }
 
       // 3. Fetch Trending Gallery
       const { data: trendingData } = await supabase
@@ -72,7 +77,12 @@ export default function HomePage() {
         .limit(1)
         .single();
       
-      if (trendingData) setTrendingGallery(trendingData);
+      if (trendingData) {
+        if (trendingData.photos) {
+          trendingData.photos = trendingData.photos.filter((p: any) => p.is_curated);
+        }
+        setTrendingGallery(trendingData);
+      }
 
       // 4. Fetch Curated Photos
       const { data: photosData } = await supabase

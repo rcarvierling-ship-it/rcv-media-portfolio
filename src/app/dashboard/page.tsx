@@ -173,32 +173,26 @@ export default function DashboardPage() {
             <ArrowRight className="rotate-180 text-zinc-400" size={20} />
           </button>
           <div>
-            <h1 className="text-6xl font-black tracking-tighter text-foreground mb-1 leading-none italic">Executive <span className="text-zinc-300">Overview</span></h1>
+            <h1 className="text-6xl font-black tracking-tighter text-foreground mb-1 leading-none italic">Dashboard <span className="text-zinc-300">Overview</span></h1>
             <div className="flex items-center gap-3">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">RCV Operations Command</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">RCV.Media Dashboard</span>
               <div className="w-1.5 h-1.5 bg-brand-accent rounded-full animate-pulse shadow-brand-glow" />
             </div>
           </div>
         </div>
          <div className="flex items-center gap-3">
-            <button 
-              onClick={() => alert("Operational Guardrail: Multi-dimensional filtering logic is currently being calibrated.")}
-              className="px-8 py-4 bg-card border border-white/5 rounded-full shadow-sm text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:shadow-premium transition-all"
-            >
-              Filter View
-            </button>
             <Link 
               href="/dashboard/pipeline"
               className="px-8 py-4 bg-brand-accent text-black rounded-full shadow-xl shadow-brand-glow/20 text-[10px] font-black uppercase tracking-widest hover:brightness-110 transition-all flex items-center gap-3 group"
             >
-              New Operation <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+              New Booking <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
             </Link>
          </div>
       </section>
 
       {/* 2. STAT MODULAR GRID */}
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        {/* Realized Intelligence */}
+        {/* Revenue Overview */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
           className="lg:col-span-8 bg-card rounded-[3.5rem] border border-white/5 shadow-module p-12 relative overflow-hidden group"
@@ -206,14 +200,14 @@ export default function DashboardPage() {
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-10">
               <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Realized Revenue</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Completed Revenue</p>
                 <div className="flex items-baseline gap-4">
                   <h2 className="text-7xl font-black tracking-tighter text-foreground">${analytics.realizedRevenue.toLocaleString()}</h2>
                   <span className="text-brand-accent font-black text-xs">▲ 12%</span>
                 </div>
               </div>
               <div className="space-y-4 text-right">
-                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Projected Inbound</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400 mb-2">Pending Revenue</p>
                 <h3 className="text-4xl font-black tracking-tighter text-foreground">${analytics.projectedPipelineValue.toLocaleString()}</h3>
               </div>
             </div>
@@ -240,7 +234,7 @@ export default function DashboardPage() {
 
             {/* Client Avatars */}
             <div className="flex items-center -space-x-3">
-              {[1, 2, 3, 4, 5].map((i) => (
+               {[1, 2, 3, 4, 5].map((i) => (
                 <div key={i} className="w-12 h-12 rounded-full border-4 border-card bg-secondary overflow-hidden shadow-sm relative">
                    <User size={24} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-zinc-500" />
                 </div>
@@ -252,39 +246,47 @@ export default function DashboardPage() {
           </div>
         </motion.div>
 
-        {/* Payout Intelligence */}
+        {/* Quick Actions */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-          className="lg:col-span-4 bg-card rounded-[3.5rem] border border-white/5 shadow-module p-12 relative overflow-hidden"
+          className="lg:col-span-4 bg-card rounded-[3.5rem] border border-white/5 shadow-module p-12 relative overflow-hidden flex flex-col justify-between"
         >
-          <div className="flex justify-between items-start mb-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Operational Liquidity</p>
-            <div className="w-10 h-10 rounded-full bg-secondary border border-white/5 flex items-center justify-center">
-              <ArrowRight className="-rotate-45 text-zinc-400" size={18} />
-            </div>
-          </div>
-          <h2 className="text-6xl font-black tracking-tighter text-foreground mb-8">${(analytics.realizedRevenue * 0.8).toLocaleString()}</h2>
-          
-          <div className="grid grid-cols-2 gap-4 mb-10">
-            <div className="p-6 bg-secondary rounded-[2rem] border border-white/5">
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Network</p>
-              <div className="flex items-center gap-3">
-                 <div className="w-6 h-6 bg-brand-accent rounded-sm" />
-                 <span className="text-xs font-black uppercase">Stripe</span>
+          <div>
+            <div className="flex justify-between items-start mb-8">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Quick Actions</p>
+              <div className="w-10 h-10 rounded-full bg-secondary border border-white/5 flex items-center justify-center">
+                <Settings className="text-zinc-400" size={18} />
               </div>
             </div>
-            <div className="p-6 bg-secondary rounded-[2rem] border border-white/5">
-              <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Status</p>
-              <span className="text-xs font-black uppercase text-brand-accent">Ready</span>
-            </div>
+            <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground mb-8 italic">Manage <span className="text-zinc-300">Site</span></h3>
           </div>
-
-          <button 
-            onClick={() => alert("Intelligence Sync: Payout transmission sequence initiated. Network verification in progress.")}
-            className="w-full py-6 bg-brand-accent text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-full shadow-xl shadow-brand-glow/20 hover:brightness-110 transition-all active:scale-95"
-          >
-            Execute Payout
-          </button>
+          
+          <div className="space-y-4">
+             <Link 
+               href="/dashboard/media" 
+               className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
+             >
+                <Camera size={14} className="text-[#C8FF00]" /> Upload Photos
+             </Link>
+             <Link 
+               href="/dashboard/pipeline" 
+               className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
+             >
+                <Calendar size={14} className="text-[#C8FF00]" /> Bookings Pipeline
+             </Link>
+             <Link 
+               href="/dashboard/pricing" 
+               className="w-full py-5 bg-secondary hover:bg-white/5 text-white border border-white/5 font-black uppercase text-[10px] tracking-widest rounded-full transition-all flex items-center justify-center gap-3"
+             >
+                <DollarSign className="text-[#C8FF00]" size={14} /> Packages & Pricing
+             </Link>
+             <Link 
+               href="/dashboard/settings" 
+               className="w-full py-5 bg-[#C8FF00] text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow"
+             >
+                <Settings size={14} /> Site Settings
+             </Link>
+          </div>
         </motion.div>
       </section>
 
@@ -295,17 +297,17 @@ export default function DashboardPage() {
            <button 
              onClick={() => setSelectedMetric("all")}
              className={cn(
-               "px-10 py-4 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
-               selectedMetric === "all" ? "bg-brand-accent text-black shadow-brand-glow" : "bg-secondary border border-white/5 text-zinc-500 hover:text-white"
+                "px-10 py-4 text-[10px] font-black uppercase tracking-widest rounded-full transition-all",
+                selectedMetric === "all" ? "bg-brand-accent text-black shadow-brand-glow" : "bg-secondary border border-white/5 text-zinc-500 hover:text-white"
              )}
            >
-             Active Tasks <span className="ml-2 opacity-60">{bookings.filter(b => b.pipeline_stage !== 'delivered' && b.status !== 'cancelled').length}</span>
+              Active Bookings <span className="ml-2 opacity-60">{bookings.filter(b => b.pipeline_stage !== 'delivered' && b.status !== 'cancelled').length}</span>
            </button>
            {[
-             { id: 'confirmed', label: 'In Review', stages: ['confirmed'] },
-             { id: 'operational', label: 'Operational', stages: ['shooting', 'editing'] },
-             { id: 'delivered', label: 'Success', stages: ['delivered'] },
-             { id: 'stalled', label: 'Stalled', stages: ['stalled'] }
+              { id: 'confirmed', label: 'Confirmed', stages: ['confirmed'] },
+              { id: 'operational', label: 'Shooting/Editing', stages: ['shooting', 'editing'] },
+              { id: 'delivered', label: 'Completed', stages: ['delivered'] },
+              { id: 'stalled', label: 'Stalled', stages: ['stalled'] }
            ].map((f) => {
              const count = bookings.filter(b => f.stages.includes(b.pipeline_stage)).length;
              return (
@@ -331,7 +333,7 @@ export default function DashboardPage() {
             {/* Left: Operations List */}
             <div className="w-full xl:w-1/3 border-r border-white/5 p-12">
                <div className="flex justify-between items-center mb-10">
-                 <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Operational Queue</h3>
+                 <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Bookings Queue</h3>
                  <Settings className="text-zinc-700" size={18} />
                </div>
                 <div className="space-y-4">
@@ -349,7 +351,7 @@ export default function DashboardPage() {
                       return (
                         <div className="py-20 text-center opacity-30">
                           <Activity className="mx-auto mb-4 text-zinc-500" size={32} />
-                          <p className="text-[10px] font-black uppercase tracking-widest">No matching operations</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest">No matching bookings</p>
                         </div>
                       );
                     }
@@ -370,8 +372,8 @@ export default function DashboardPage() {
                            <User size={24} className="text-zinc-500" />
                         </div>
                         <div>
-                            <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{booking.name || 'Anonymous Intelligence'}</h4>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{booking.shoot_type || 'Custom Media Unit'}</p>
+                            <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{booking.name || 'Guest Client'}</h4>
+                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{booking.shoot_type || 'Custom Package'}</p>
                         </div>
                      </div>
                      <div className="text-right">
@@ -389,24 +391,24 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Right: Operational Intel Detail */}
+            {/* Right: Booking Details */}
             <div className="flex-1 p-16 bg-white/5">
                <div className="max-w-4xl mx-auto space-y-16">
                   <header className="flex justify-between items-start">
                      <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-4">Transmission ID</p>
-                        <h2 className="text-5xl font-black text-white italic tracking-tighter">#ORD-{bookings[0]?.id.slice(0, 8).toUpperCase() || 'UNIT-01'}</h2>
+                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-4">Booking ID</p>
+                        <h2 className="text-5xl font-black text-white italic tracking-tighter">#BK-{bookings[0]?.id.slice(0, 8).toUpperCase() || 'BK-01'}</h2>
                      </div>
                      <div className="px-8 py-3 bg-white/5 border border-white/10 rounded-full text-white text-[10px] font-black uppercase tracking-widest">
-                        System Active
+                        Active
                      </div>
                   </header>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                       {[
-                        { label: 'Client Asset', val: bookings[0]?.name || 'Alex Johnson', icon: Users },
-                        { label: 'Operational Value', val: `$${(Number(bookings[0]?.total_amount) || 1200).toLocaleString()}`, icon: DollarSign },
-                        { label: 'Intelligence Tier', val: bookings[0]?.shoot_type || 'Sports Media Day', icon: Activity }
+                        { label: 'Client Name', val: bookings[0]?.name || 'Alex Johnson', icon: Users },
+                        { label: 'Booking Total', val: `$${(Number(bookings[0]?.total_amount) || 1200).toLocaleString()}`, icon: DollarSign },
+                        { label: 'Shoot Type', val: bookings[0]?.shoot_type || 'Sports Media Day', icon: Activity }
                       ].map((item, i) => (
                         <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-[#C8FF00] transition-all">
                            <item.icon className="text-[#C8FF00] mb-6" size={24} />
@@ -420,15 +422,15 @@ export default function DashboardPage() {
                      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
                      <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
                         <div className="space-y-6">
-                           <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Operational Curation</h3>
-                           <p className="text-zinc-500 text-sm font-medium max-w-sm">Synchronize all visual assets for this transmission to the master cloud repository.</p>
+                           <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Media Delivery</h3>
+                           <p className="text-zinc-500 text-sm font-medium max-w-sm">Upload and organize deliverable photos for this client booking.</p>
                         </div>
-                          <button 
-                            onClick={() => alert("Cloud Synchro: Visual assets are being mapped to the master repository. Intelligence established.")}
-                            className="px-12 py-6 bg-[#C8FF00] text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95"
+                          <Link 
+                            href="/dashboard/media"
+                            className="px-12 py-6 bg-[#C8FF00] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
                           >
-                             Sync Assets
-                          </button>
+                             Upload Photos
+                          </Link>
                      </div>
                   </div>
                </div>
@@ -444,15 +446,15 @@ export default function DashboardPage() {
              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-card p-12 rounded-[3.5rem] border border-white/5 shadow-2xl w-full max-w-xl">
                 {/* Modal Content - Preserving logic while skinning */}
                 <div className="flex justify-between items-center mb-10">
-                   <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">Edit Intelligence</h2>
+                   <h2 className="text-3xl font-black uppercase tracking-tighter text-foreground italic">Edit Photo Details</h2>
                    <button onClick={() => setEditingPhoto(null)} className="p-4 bg-secondary rounded-full border border-white/5 text-white"><X size={20} /></button>
                 </div>
                 <form onSubmit={handleUpdate} className="space-y-8">
                    <div className="space-y-3">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-6">Asset Descriptor</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-6">Photo Title</label>
                       <input name="title" defaultValue={editingPhoto.title} className="w-full bg-secondary border border-white/5 rounded-full px-10 py-6 text-white font-black text-sm focus:border-brand-accent outline-none" required />
                    </div>
-                   <button type="submit" className="w-full py-8 bg-brand-accent text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-full shadow-brand-glow">Commit Changes</button>
+                   <button type="submit" className="w-full py-8 bg-brand-accent text-black font-black uppercase tracking-[0.4em] text-[11px] rounded-full shadow-brand-glow">Save Changes</button>
                 </form>
              </motion.div>
           </div>

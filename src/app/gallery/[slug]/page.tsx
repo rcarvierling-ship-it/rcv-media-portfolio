@@ -15,11 +15,16 @@ export default async function GalleryPage({ params }: { params: Promise<{ slug: 
   if (!album) return notFound();
 
   // Fetch photos for this album
-  const { data: photos } = await supabase
+  let photosQuery = supabase
     .from("photos")
     .select("*")
-    .eq("album_id", album.id)
-    .order("sort_order", { ascending: true });
+    .eq("album_id", album.id);
+  
+  if (!album.is_private) {
+    photosQuery = photosQuery.eq("is_curated", true);
+  }
+
+  const { data: photos } = await photosQuery.order("sort_order", { ascending: true });
 
   // Fetch the linked booking to see if it needs inspiration
   const { data: booking } = await supabase

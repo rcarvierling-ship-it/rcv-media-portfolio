@@ -33,9 +33,6 @@ export function getNextAction(booking: any): NextAction {
     if (contract_status !== 'signed') {
       return { label: 'Collect Signed Contract', category: 'waiting', priority: 3 };
     }
-    if (!deposit_paid) {
-      return { label: 'Collect Deposit', category: 'waiting', priority: 4 };
-    }
     
     // Check if shoot is coming up or passed
     if (shootDate < today) {
@@ -66,7 +63,7 @@ export function getNextAction(booking: any): NextAction {
   // 5. DELIVERED STAGE
   if (pipeline_stage === 'delivered') {
     if (!final_paid) {
-      return { label: 'Collect Final Payment', category: 'waiting', priority: 5 };
+      return { label: 'Collect Payment', category: 'waiting', priority: 5 };
     }
     if (!review_requested) {
       return { label: 'Request Review', category: 'action', priority: 6 };
