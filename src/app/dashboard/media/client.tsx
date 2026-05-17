@@ -128,8 +128,16 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
   const handleToggleFeatured = async (photo: any) => {
     setIsProcessing(photo.id);
-    await updatePhoto(photo.id, { is_featured: !photo.is_featured });
-    setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_featured: !p.is_featured } : p));
+    const newStatus = !photo.is_featured;
+    try {
+      await updatePhoto(photo.id, { is_featured: newStatus });
+      setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_featured: newStatus } : p));
+      if (selectedPhoto?.id === photo.id) {
+        setSelectedPhoto({ ...selectedPhoto, is_featured: newStatus });
+      }
+    } catch (err) {
+      alert("Featured toggle failed.");
+    }
     setIsProcessing(null);
   };
 
@@ -160,8 +168,16 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
 
   const handleToggleCurated = async (photo: any) => {
     setIsProcessing(photo.id);
-    await updatePhoto(photo.id, { is_curated: !photo.is_curated });
-    setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_curated: !p.is_curated } : p));
+    const newStatus = !photo.is_curated;
+    try {
+      await updatePhoto(photo.id, { is_curated: newStatus });
+      setPhotos(prev => prev.map(p => p.id === photo.id ? { ...p, is_curated: newStatus } : p));
+      if (selectedPhoto?.id === photo.id) {
+        setSelectedPhoto({ ...selectedPhoto, is_curated: newStatus });
+      }
+    } catch (err) {
+      alert("Curated toggle failed.");
+    }
     setIsProcessing(null);
   };
 
