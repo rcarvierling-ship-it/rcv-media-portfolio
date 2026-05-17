@@ -152,6 +152,7 @@ CREATE TABLE IF NOT EXISTS public.bookings (
   email TEXT NOT NULL,
   phone TEXT,
   instagram_handle TEXT,
+  lead_source TEXT,
   shoot_type TEXT NOT NULL,
   package_selected TEXT,
   event_date DATE NOT NULL,
