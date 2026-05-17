@@ -1454,144 +1454,173 @@ function CampaignManager({ initialCampaigns, supabase, siteSettings, onUpdateSet
   };
 
   const activeCampaign = campaigns.find(c => c.id === siteSettings.active_campaign_id);
+
   return (
-    <div className="h-full">
-      <div className="flex gap-2 overflow-x-auto pb-8 mb-8 border-b border-border scrollbar-hide">
-        {[
-          { id: 'command_center', label: 'Pulse', icon: Activity },
-          { id: 'pipeline', label: 'Pipeline', icon: GitPullRequest },
-          { id: 'inquiries', label: 'Inquiries', icon: Mail },
-          { id: 'archive', label: 'Archive', icon: Archive },
-          { id: 'marketing_vault', label: 'Vault', icon: Lock },
-          { id: 'inspiration_board', label: 'Inspo', icon: Image },
-          { id: 'campaigns', label: 'Campaigns', icon: Zap },
-          { id: 'settings', label: 'Settings', icon: Settings },
-        ].map((view) => (
-          <button
-            key={view.id}
-            onClick={() => setActiveView(view.id as any)}
-            className={cn(
-              "px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border flex items-center gap-3 whitespace-nowrap",
-              activeView === view.id 
-                ? "bg-brand-accent text-black border-brand-accent shadow-brand-glow scale-105" 
-                : "bg-card text-zinc-500 border-white/5 hover:border-brand-accent/30"
-            )}
-          >
-            <view.icon size={14} />
-            {view.label}
-          </button>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-12">
+      {/* GLOBAL MODE SWITCH */}
+      <div className="premium-card p-10 bg-brand-accent/5 border border-brand-accent/20 rounded-sm flex flex-col md:flex-row justify-between items-center gap-8">
+         <div className="flex items-center gap-6">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${activeCampaign ? 'bg-brand-accent text-black shadow-brand-glow' : 'bg-zinc-900 text-zinc-700'}`}>
+               <Zap size={28} />
+            </div>
+            <div>
+               <h3 className="text-xl font-black uppercase tracking-tighter text-white leading-none mb-1">Global Seasonal Mode</h3>
+               <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.3em]">Currently Active: <span className="text-brand-accent">{activeCampaign?.title || 'Standard Operations'}</span></p>
+            </div>
+         </div>
+         <div className="flex items-center gap-4">
+            <select 
+              className="bg-black border border-white/10 p-4 text-white text-[10px] font-black uppercase tracking-widest outline-none focus:border-brand-accent rounded-sm min-w-[250px]"
+              value={siteSettings.active_campaign_id || ''}
+              onChange={(e) => handleSetGlobal(e.target.value)}
+              disabled={isUpdatingGlobal}
+            >
+               <option value="">Off (Standard Mode)</option>
+               {campaigns.filter(c => c.is_active).map(c => (
+                 <option key={c.id} value={c.id}>{c.title}</option>
+               ))}
+            </select>
+            {isUpdatingGlobal && <Loader2 className="animate-spin text-brand-accent" size={16} />}
+         </div>
+      </div>
+
+      <div className="flex justify-between items-end">
+        <div className="space-y-2">
+          <h2 className="text-4xl font-black uppercase tracking-tighter text-white italic">Seasonal Campaigns</h2>
+          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.4em]">Propaganda & Conversion Strategy</p>
+        </div>
+        <button 
+          onClick={() => { setIsAdding(true); resetForm(); }}
+          className="px-8 py-3 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest rounded-sm hover:brightness-110 transition-all shadow-brand-glow"
+        >
+          Launch New Campaign
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {campaigns.map((c) => (
+          <div key={c.id} className="premium-card p-10 bg-zinc-900/20 border border-white/5 rounded-sm relative group">
+            <div className={`absolute top-0 right-0 px-4 py-1 text-[8px] font-black uppercase tracking-widest rounded-bl-sm ${c.is_active ? 'bg-emerald-500 text-white' : 'bg-zinc-800 text-zinc-500'}`}>
+              {c.is_active ? 'Active' : 'Draft'}
+            </div>
+            <h3 className="text-2xl font-black uppercase tracking-tighter text-white mb-2">{c.title}</h3>
+            <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest mb-8">{c.promo_price} Promo</p>
+            
+            <div className="space-y-4 mb-8">
+               <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Deadline</span>
+                  <span className="text-[10px] font-black text-white">{c.booking_deadline || 'Open'}</span>
+               </div>
+               <div className="flex justify-between items-center pb-4 border-b border-white/5">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600">Route</span>
+                  <span className="text-[10px] font-black text-zinc-400">/campaign/{c.slug}</span>
+               </div>
+            </div>
+
+            <div className="flex gap-2">
+               <button 
+                 onClick={() => { setEditingId(c.id); setFormData(c); }}
+                 className="flex-1 py-3 border border-white/5 text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-sm"
+               >
+                 Modify Intel
+               </button>
+               <button className="px-4 py-3 border border-white/5 text-zinc-500 hover:text-white hover:bg-white/5 transition-all rounded-sm">
+                 <Copy size={14} />
+               </button>
+            </div>
+          </div>
         ))}
       </div>
 
       <AnimatePresence>
-        <motion.div
-          key={activeView}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3 }}
-        >
-          {activeView === 'command_center' && (
-            <div key="stats">
-              <CommandCenter 
-                pipeline={pipeline} 
-                inquiries={inquiries} 
-                siteSettings={siteSettings}
-                onMove={onMove}
-                onAccept={onAccept}
-              />
-            </div>
-          )}
-          {activeView === 'pipeline' && (
-             <div key="kanban" className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-8 overflow-x-auto pb-20">
-                {pipeline.map((stage) => (
-                  <div key={stage.id} className="min-w-[350px] space-y-6">
-                    <div className="flex items-center justify-between px-4">
-                       <h3 className={cn("text-[10px] font-black uppercase tracking-[0.4em]", stage.color)}>{stage.label}</h3>
-                       <span className="text-[10px] font-black text-zinc-300">{stage.items.length}</span>
-                    </div>
-                    <div className="space-y-4">
-                       {stage.items.map((item: any) => (
-                         <div key={item.id} className="bg-card border border-white/5 p-6 rounded-[2rem] shadow-premium hover:border-brand-accent transition-all group cursor-pointer">
-                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.shoot_type || 'Custom'}</p>
-                            <p className="text-white font-black uppercase tracking-tight text-lg leading-none mb-4">{item.name}</p>
-                            <div className="flex justify-between items-center">
-                               <div className="flex -space-x-2">
-                                  {[1, 2].map(i => (
-                                    <div key={i} className="w-6 h-6 rounded-full bg-zinc-800 border-2 border-card" />
-                                  ))}
-                               </div>
-                               <button 
-                                 onClick={() => { setUpdatingId(item.id); }}
-                                 className="w-8 h-8 rounded-full bg-secondary border border-white/5 flex items-center justify-center text-zinc-500 group-hover:bg-brand-accent group-hover:text-black transition-all"
-                               >
-                                 <ArrowRight size={14} />
-                               </button>
+        {(isAdding || editingId) && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-6 bg-black/90 backdrop-blur-xl">
+             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-4xl bg-zinc-900 border border-white/10 p-12 rounded-sm shadow-2xl relative overflow-y-auto max-h-[90vh]">
+                <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="absolute top-8 right-8 text-zinc-500 hover:text-white"><X size={24} /></button>
+                
+                <div className="mb-12">
+                   <span className="text-brand-accent text-[10px] font-black uppercase tracking-[0.5em] mb-4 block">Campaign Deployment</span>
+                   <h2 className="text-5xl font-black uppercase tracking-tighter text-white leading-none mb-4">{editingId ? 'Edit Campaign' : 'New Campaign'}</h2>
+                </div>
+
+                <div className="grid grid-cols-2 gap-12 mb-12">
+                   <div className="space-y-8">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Campaign Title</label>
+                         <input type="text" className="w-full bg-black border border-white/5 p-4 text-white text-lg font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">URL Slug</label>
+                         <div className="flex items-center gap-4 bg-black border border-white/5 p-4 rounded-sm">
+                            <span className="text-zinc-600 font-bold">/campaign/</span>
+                            <input type="text" className="bg-transparent text-white font-bold outline-none w-full" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} />
+                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-8">
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Promo Price</label>
+                            <input type="text" className="w-full bg-black border border-white/5 p-4 text-white font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.promo_price} onChange={(e) => setFormData({ ...formData, promo_price: e.target.value })} />
+                         </div>
+                         <div className="space-y-2">
+                            <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Booking Deadline</label>
+                            <input type="date" className="w-full bg-black border border-white/5 p-4 text-white font-bold outline-none focus:border-brand-accent rounded-sm" value={formData.booking_deadline} onChange={(e) => setFormData({ ...formData, booking_deadline: e.target.value })} />
+                         </div>
+                      </div>
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest">Strategic Description</label>
+                         <textarea className="w-full bg-black border border-white/5 p-4 text-white text-sm outline-none focus:border-brand-accent rounded-sm min-h-[100px]" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} />
+                      </div>
+                   </div>
+
+                   <div className="space-y-8">
+                      <div className="space-y-2">
+                         <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest text-brand-accent">Intelligence Assets</label>
+                         <div className="space-y-4">
+                            <div className="p-4 bg-black/40 border border-white/5 rounded-sm">
+                               <p className="text-[9px] font-black uppercase text-zinc-500 mb-4 tracking-widest">Instagram Captions</p>
+                               <textarea 
+                                 className="w-full bg-transparent text-zinc-400 text-xs outline-none min-h-[80px]" 
+                                 placeholder="Add options separated by line breaks..."
+                                 value={formData.instagram_captions.join('\n')}
+                                 onChange={(e) => setFormData({ ...formData, instagram_captions: e.target.value.split('\n') })}
+                               />
+                            </div>
+                            <div className="p-4 bg-black/40 border border-white/5 rounded-sm">
+                               <p className="text-[9px] font-black uppercase text-zinc-500 mb-4 tracking-widest">Email Templates</p>
+                               <textarea 
+                                 className="w-full bg-transparent text-zinc-400 text-xs outline-none min-h-[80px]" 
+                                 placeholder="Email body templates..."
+                                 value={formData.email_templates.join('\n\n---\n\n')}
+                                 onChange={(e) => setFormData({ ...formData, email_templates: e.target.value.split('\n\n---\n\n') })}
+                               />
                             </div>
                          </div>
-                       ))}
-                    </div>
-                  </div>
-                ))}
-             </div>
-          )}
-          {activeView === 'inquiries' && (
-             <div className="space-y-6">
-                {inquiries.map((inquiry: any) => (
-                  <div key={inquiry.id} className="bg-card border border-white/5 p-10 rounded-[2.5rem] flex flex-col md:flex-row justify-between items-center gap-10 shadow-premium hover:border-brand-accent transition-all">
-                     <div className="flex items-center gap-8">
-                        <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center text-zinc-500 border border-white/5">
-                           <User size={24} />
-                        </div>
-                        <div>
-                           <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-1">{new Date(inquiry.created_at).toLocaleDateString()}</p>
-                           <h3 className="text-2xl font-black uppercase tracking-tighter text-white">{inquiry.name}</h3>
-                           <p className="text-[10px] font-black text-brand-accent uppercase tracking-widest">{inquiry.subject}</p>
-                        </div>
-                     </div>
-                     <div className="flex gap-4">
-                        <button onClick={() => onAccept(inquiry.id)} className="px-10 py-4 bg-brand-accent text-black text-[10px] font-black uppercase tracking-widest rounded-full hover:brightness-110 shadow-brand-glow transition-all">Accept</button>
-                        <button className="px-10 py-4 bg-secondary border border-white/5 text-zinc-500 text-[10px] font-black uppercase tracking-widest rounded-full hover:text-white transition-all">Reject</button>
-                     </div>
-                  </div>
-                ))}
-             </div>
-          )}
-          {activeView === 'marketing_vault' && <MarketingVault initialVault={vault} supabase={supabase} />}
-          {activeView === 'inspiration_board' && <InspirationBoard initialBoard={inspirationBoard} supabase={supabase} />}
-          {activeView === 'campaigns' && <CampaignManager initialCampaigns={campaigns} supabase={supabase} siteSettings={siteSettings} onUpdateSettings={setSiteSettings} />}
-          {activeView === 'settings' && (
-             <div className="max-w-2xl bg-card border border-white/5 p-12 rounded-[3rem] shadow-premium">
-                <h3 className="text-2xl font-black uppercase tracking-tighter text-foreground mb-12 italic">System Parameters</h3>
-                <div className="space-y-10">
-                   <div className="space-y-4">
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Monthly Revenue Goal</label>
-                      <input 
-                        type="number" 
-                        className="w-full bg-secondary border border-white/5 p-6 rounded-full text-2xl font-black text-white outline-none focus:border-brand-accent shadow-inner"
-                        value={siteSettings.monthly_revenue_goal}
-                        onChange={(e) => setSiteSettings({ ...siteSettings, monthly_revenue_goal: parseFloat(e.target.value) })}
-                      />
+                      </div>
+                      <div className="flex items-center gap-4">
+                         <div 
+                           onClick={() => setFormData({ ...formData, is_active: !formData.is_active })}
+                           className={`w-12 h-7 rounded-full relative transition-colors cursor-pointer ${formData.is_active ? 'bg-emerald-500' : 'bg-zinc-800'}`}
+                         >
+                            <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${formData.is_active ? 'left-6' : 'left-1'}`} />
+                         </div>
+                         <span className="text-[10px] font-black uppercase tracking-widest text-white">Live Status</span>
+                      </div>
                    </div>
-                   <button className="w-full py-6 bg-brand-accent text-black font-black uppercase text-[11px] tracking-widest rounded-full hover:brightness-110 transition-all shadow-brand-glow">Synchronize Settings</button>
                 </div>
-             </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {updatingId && (
-          <PipelineItemDetails 
-            itemId={updatingId} 
-            pipeline={pipeline} 
-            packages={packages} 
-            onClose={() => setUpdatingId(null)} 
-            onMove={onMove}
-          />
+                <div className="flex gap-4">
+                   <button onClick={handleSave} className="flex-1 py-5 bg-white text-black font-black uppercase text-[11px] tracking-widest hover:bg-zinc-200 transition-all rounded-sm">
+                      Deploy Campaign
+                   </button>
+                   <button onClick={() => { setIsAdding(false); setEditingId(null); }} className="px-12 py-5 bg-zinc-800 text-white font-black uppercase text-[11px] tracking-widest hover:bg-zinc-700 transition-all rounded-sm">
+                      Abort
+                   </button>
+                </div>
+             </motion.div>
+          </div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 

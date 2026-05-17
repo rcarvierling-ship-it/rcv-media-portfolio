@@ -56,7 +56,16 @@ export function InteractiveCalendar({
 
     // Padding for start of week
     for (let i = 0; i < start; i++) {
-      result.push({ day: null, key: `pad-${i}` });
+      result.push({ 
+        day: null, 
+        key: `pad-${i}`,
+        dateStr: "",
+        isDisabled: true,
+        isBlocked: false,
+        isTooSoon: false,
+        isSelected: false,
+        isToday: false
+      });
     }
 
     for (let d = 1; d <= count; d++) {
@@ -69,6 +78,7 @@ export function InteractiveCalendar({
       const isTooFar = date > maxBookingDate;
       const isBlocked = blockedDates.includes(dateStr);
       const isSelected = selectedDate === dateStr;
+      const isToday = date.getTime() === today.getTime();
       
       const isDisabled = isPast || isTooSoon || isTooFar || isBlocked;
 
@@ -79,6 +89,7 @@ export function InteractiveCalendar({
         isBlocked,
         isTooSoon,
         isSelected,
+        isToday,
         key: dateStr,
       });
     }
