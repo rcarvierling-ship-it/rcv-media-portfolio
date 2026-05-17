@@ -23,8 +23,7 @@ const navItems = [
   { label: "Contracts", href: "/dashboard/contracts" },
   { label: "Pricing", href: "/dashboard/pricing" },
   { label: "Analytics", href: "/dashboard/analytics" },
-  { label: "Site", href: "/dashboard/site" },
-  { label: "Settings", href: "/dashboard/settings" },
+  { label: "Site Editor", href: "/dashboard/site" },
 ];
 
 export default function DashboardLayout({
@@ -92,9 +91,9 @@ export default function DashboardLayout({
                       <p className="text-sm font-black text-white italic">REESE VIERLING</p>
                    </div>
                    <div className="space-y-1">
-                      <Link href="/dashboard/settings" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
+                      <Link href="/dashboard/site" className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-full text-zinc-400 hover:text-brand-accent transition-all group/item">
                           <Settings size={16} className="group-hover/item:rotate-90 transition-transform" />
-                          <span className="text-[9px] font-black uppercase tracking-widest">Settings</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest">Site Editor</span>
                       </Link>
                       <button 
                         onClick={async () => {

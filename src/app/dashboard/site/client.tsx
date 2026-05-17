@@ -9,7 +9,7 @@ import {
   Palette, Check, RefreshCw, GripVertical, 
   Move, X, Maximize2, Save, User, Globe, 
   Instagram, Mail, ImageIcon, Sparkles, CheckCircle2,
-  Settings2, Eye, Shield, Loader2
+  Settings2, Eye, Shield, Loader2, Calendar
 } from "lucide-react";
 import { reorderPhotos } from "@/app/actions/photos";
 import { updateSiteSettings } from "@/app/actions/settings";
@@ -27,7 +27,7 @@ const COLOR_PRESETS = [
 export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettings: any, allPhotos: any[] }) {
   const [settings, setSettings] = useState(initialSettings);
   const [photos] = useState(allPhotos);
-  const [activeTab, setActiveTab] = useState<"brand" | "homepage" | "about" | "accent" | "featured" | "seo">("brand");
+  const [activeTab, setActiveTab] = useState<"brand" | "homepage" | "about" | "accent" | "featured" | "seo" | "logistics">("brand");
   
   const [featuredPhotos, setFeaturedPhotos] = useState(
     allPhotos.filter(p => p.is_featured).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
@@ -130,7 +130,8 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
           { id: "about", label: "Bio & Narrative", icon: Sparkles },
           { id: "accent", label: "Accent Color DNA", icon: Palette },
           { id: "featured", label: "Featured Edit", icon: ImageIcon },
-          { id: "seo", label: "SEO Metadata", icon: Settings2 }
+          { id: "seo", label: "SEO Metadata", icon: Settings2 },
+          { id: "logistics", label: "Fulfillment Settings", icon: Calendar }
         ].map(tab => {
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
@@ -473,6 +474,62 @@ export function SiteEditorClient({ initialSettings, allPhotos }: { initialSettin
 
               <button type="submit" disabled={isSaving} className="w-full py-5 bg-brand-accent text-black text-[10px] font-black uppercase tracking-[0.3em] hover:brightness-110 transition-all rounded-full flex items-center justify-center gap-2 shadow-brand-glow disabled:opacity-50">
                 {isSaving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />} Save Search Metadata
+              </button>
+            </form>
+          )}
+
+          {activeTab === "logistics" && (
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const fd = new FormData(e.currentTarget);
+              await handleUpdateSettings({
+                booking_is_active: fd.get("booking_is_active") === "on" || settings?.booking_is_active === true,
+                booking_min_advance_days: parseInt(fd.get("booking_min_advance_days") as string || "21"),
+                booking_max_advance_days: parseInt(fd.get("booking_max_advance_days") as string || "180")
+              });
+            }} className="max-w-4xl bg-card border border-white/5 p-10 rounded-[2.5rem] shadow-premium space-y-8">
+              <div className="flex justify-between items-center pb-6 border-b border-white/5">
+                <div>
+                  <h3 className="text-xl font-black uppercase tracking-tighter text-white">Fulfillment Logistics</h3>
+                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1">Configure booking availability thresholds and controls</p>
+                </div>
+                {success && (
+                  <div className="text-[10px] font-black uppercase tracking-widest text-brand-accent bg-brand-accent/5 px-4 py-2 rounded-full border border-brand-accent/20">
+                     Logistics Synced
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-center justify-between p-6 bg-black/40 border border-white/5 rounded-2xl">
+                  <div>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-white mb-1">Open for Bookings</h4>
+                    <p className="text-[9px] text-zinc-500 uppercase tracking-widest">Toggle the global visibility of your booking engine</p>
+                  </div>
+                  <button 
+                    type="button"
+                    onClick={() => setSettings({...settings, booking_is_active: !settings.booking_is_active})}
+                    className={`w-14 h-7 rounded-full relative transition-all ${settings?.booking_is_active ? 'bg-brand-accent' : 'bg-background'}`}
+                  >
+                    <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all ${settings?.booking_is_active ? 'left-8' : 'left-1'}`} />
+                    <input type="checkbox" name="booking_is_active" checked={settings?.booking_is_active} className="hidden" readOnly />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Min Advance Days</label>
+                    <input name="booking_min_advance_days" type="number" defaultValue={settings?.booking_min_advance_days || 21} required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Max Advance Days</label>
+                    <input name="booking_max_advance_days" type="number" defaultValue={settings?.booking_max_advance_days || 180} required className="w-full bg-secondary border border-white/5 px-6 py-4 text-white outline-none rounded-full focus:border-brand-accent shadow-inner text-sm font-bold" />
+                  </div>
+                </div>
+              </div>
+
+              <button type="submit" disabled={isSaving} className="w-full py-5 bg-brand-accent text-black text-[10px] font-black uppercase tracking-[0.3em] hover:brightness-110 transition-all rounded-full flex items-center justify-center gap-2 shadow-brand-glow disabled:opacity-50">
+                {isSaving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />} Save Logistics DNA
               </button>
             </form>
           )}

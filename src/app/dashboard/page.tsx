@@ -319,9 +319,9 @@ export default function DashboardPage() {
             <div className="flex justify-between items-start mb-8">
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">Quick Actions</p>
               <Link 
-                href="/dashboard/settings"
+                href="/dashboard/site"
                 className="w-10 h-10 rounded-full bg-secondary hover:bg-white/5 border border-white/5 flex items-center justify-center transition-all hover:scale-105 active:scale-95"
-                title="Site Settings"
+                title="Site Editor"
               >
                 <Settings className="text-zinc-400" size={18} />
               </Link>
@@ -349,10 +349,10 @@ export default function DashboardPage() {
                 <DollarSign className="text-brand-accent" size={14} /> Packages & Pricing
              </Link>
              <Link 
-               href="/dashboard/settings" 
+               href="/dashboard/site" 
                className="w-full py-5 bg-brand-accent text-black font-black uppercase text-[10px] tracking-widest rounded-full hover:brightness-110 transition-all flex items-center justify-center gap-3 shadow-brand-glow"
              >
-                <Settings size={14} /> Site Settings
+                <Settings size={14} /> Site Editor
              </Link>
           </div>
         </motion.div>

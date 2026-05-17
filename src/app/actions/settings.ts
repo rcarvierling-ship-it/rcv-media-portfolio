@@ -23,5 +23,5 @@ export async function updateSiteSettings(updates: any) {
 
   revalidatePath("/");
   revalidatePath("/about");
-  revalidatePath("/dashboard/settings");
+  revalidatePath("/dashboard/site");
 }
