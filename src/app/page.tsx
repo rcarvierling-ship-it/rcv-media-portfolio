@@ -12,6 +12,7 @@ export default function HomePage() {
   const [featuredPhotos, setFeaturedPhotos] = useState<any[]>([]);
   const [activeCampaign, setActiveCampaign] = useState<any>(null);
   const [heroSetting, setHeroSetting] = useState<any>(null);
+  const [heroPhoto, setHeroPhoto] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [newestGallery, setNewestGallery] = useState<any>(null);
@@ -35,6 +36,18 @@ export default function HomePage() {
         setHeroSetting(settingsData);
         if (settingsData.active_campaign) {
           setActiveCampaign(settingsData.active_campaign);
+        }
+        
+        // Fetch matching hero photo details for dynamic EXIF tags
+        if (settingsData.hero_image_url) {
+          const { data: pData } = await supabase
+            .from("photos")
+            .select("*")
+            .eq("image_url", settingsData.hero_image_url)
+            .limit(1);
+          if (pData && pData.length > 0) {
+            setHeroPhoto(pData[0]);
+          }
         }
       }
 
@@ -192,10 +205,14 @@ export default function HomePage() {
                   </div>
                   <div className="hidden lg:flex gap-2">
                      <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-black uppercase text-white tracking-widest">
-                       ISO {featuredPhotos[0]?.iso || "100"}
+                       ISO {heroPhoto?.iso || featuredPhotos[0]?.iso || "100"}
                      </div>
                      <div className="px-4 py-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-[8px] font-black uppercase text-white tracking-widest">
-                       {featuredPhotos[0]?.aperture ? (featuredPhotos[0].aperture.includes('f/') ? featuredPhotos[0].aperture : `f/${featuredPhotos[0].aperture}`) : "f/1.2"}
+                       {heroPhoto?.aperture 
+                         ? (heroPhoto.aperture.includes('f/') ? heroPhoto.aperture : `f/${heroPhoto.aperture}`) 
+                         : (featuredPhotos[0]?.aperture 
+                             ? (featuredPhotos[0].aperture.includes('f/') ? featuredPhotos[0].aperture : `f/${featuredPhotos[0].aperture}`) 
+                             : "f/1.2")}
                      </div>
                   </div>
                </div>

@@ -14,6 +14,58 @@ import { uploadMultipleToCloudinary } from "@/app/actions/upload";
 import { addPhoto } from "@/app/actions/photos";
 import Link from "next/link";
 
+function parseTechnicalMetadata(res: any) {
+  const meta = { ...res.metadata };
+  
+  // 1. ISO
+  let iso: number | undefined = undefined;
+  const isoVal = meta.ISOSpeedRatings || meta.ISOSpeed || meta.ISO || meta.iso || meta.isoSpeedRatings;
+  if (isoVal) {
+    const parsed = parseInt(isoVal);
+    if (!isNaN(parsed)) {
+      iso = parsed;
+    }
+  }
+
+  // 2. Aperture
+  let aperture: string | undefined = undefined;
+  const apVal = meta.FNumber || meta.ApertureValue || meta.aperture || meta.Aperture;
+  if (apVal) {
+    const str = String(apVal).trim();
+    aperture = str.toLowerCase().startsWith('f/') ? str : `f/${str}`;
+  }
+
+  // 3. Shutter Speed
+  let shutter_speed: string | undefined = undefined;
+  const ssVal = meta.ExposureTime || meta.ShutterSpeedValue || meta.shutter_speed || meta.ShutterSpeed;
+  if (ssVal) {
+    shutter_speed = String(ssVal).trim();
+  }
+
+  // 4. Focal Length
+  let focal_length: string | undefined = undefined;
+  const flVal = meta.FocalLength || meta.focal_length || meta.FocalLengthIn35mmFormat;
+  if (flVal) {
+    focal_length = String(flVal).trim();
+  }
+
+  // 5. Camera Model
+  let camera_model: string | undefined = undefined;
+  const camVal = meta.Model || meta.model || meta.CameraModel;
+  if (camVal) {
+    camera_model = String(camVal).trim();
+  }
+
+  // 6. Lens Model
+  let lens_model: string | undefined = undefined;
+  const lensVal = meta.LensModel || meta.LensInfo || meta.Lens || meta.lens_model;
+  if (lensVal) {
+    lens_model = String(lensVal).trim();
+  }
+
+  return { iso, aperture, shutter_speed, focal_length, camera_model, lens_model };
+}
+
 export default function AlbumMediaManager() {
   const { id } = useParams();
   const [album, setAlbum] = useState<any>(null);
@@ -68,6 +120,7 @@ export default function AlbumMediaManager() {
       const newPhotoIds: string[] = [];
       for (let i = 0; i < cloudinaryResults.length; i++) {
         const res = cloudinaryResults[i];
+        const techDetails = parseTechnicalMetadata(res);
         const result = await addPhoto({
           title: `${album.title} Asset ${Date.now() + i}`,
           category: album.category || "Client Vault",
@@ -78,12 +131,7 @@ export default function AlbumMediaManager() {
           width: res.width,
           height: res.height,
           // Technical Details
-          iso: res.metadata?.ISO ? parseInt(res.metadata.ISO) : undefined,
-          aperture: res.metadata?.FNumber || res.metadata?.ApertureValue,
-          shutter_speed: res.metadata?.ExposureTime,
-          focal_length: res.metadata?.FocalLength,
-          camera_model: res.metadata?.Model,
-          lens_model: res.metadata?.LensModel,
+          ...techDetails
         }) as any;
         if (result?.success) {
           newPhotoIds.push(result.data.id);

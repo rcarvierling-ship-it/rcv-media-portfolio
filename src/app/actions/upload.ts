@@ -30,6 +30,7 @@ export async function uploadToCloudinary(formData: FormData) {
       {
         folder: "rcv_media",
         image_metadata: true,
+        exif: true,
       },
       (error, result) => {
         if (error) reject(error);
@@ -39,7 +40,7 @@ export async function uploadToCloudinary(formData: FormData) {
             public_id: result.public_id,
             width: result.width,
             height: result.height,
-            metadata: result.image_metadata,
+            metadata: { ...result.exif, ...result.image_metadata },
           });
         }
       }
@@ -67,6 +68,7 @@ export async function uploadMultipleToCloudinary(formData: FormData) {
           { 
             folder: "rcv_media",
             image_metadata: true,
+            exif: true,
           },
           (error, result) => {
             if (error) reject(error);
@@ -76,7 +78,7 @@ export async function uploadMultipleToCloudinary(formData: FormData) {
                 public_id: result.public_id,
                 width: result.width,
                 height: result.height,
-                metadata: result.image_metadata,
+                metadata: { ...result.exif, ...result.image_metadata },
               });
             }
           }
@@ -96,7 +98,8 @@ export async function getCloudinarySignature() {
     { 
       timestamp, 
       folder: "rcv_media",
-      image_metadata: true 
+      image_metadata: true,
+      exif: true
     },
     process.env.CLOUDINARY_API_SECRET!
   );
@@ -108,6 +111,7 @@ export async function getCloudinarySignature() {
     apiKey: process.env.CLOUDINARY_API_KEY,
     folder: "rcv_media",
     image_metadata: true,
+    exif: true,
   };
 }
 

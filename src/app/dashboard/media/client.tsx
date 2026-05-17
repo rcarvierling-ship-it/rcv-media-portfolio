@@ -16,6 +16,58 @@ import { updatePhoto, deletePhoto, addPhoto } from "@/app/actions/photos";
 import { uploadToCloudinary, getCloudinarySignature } from "@/app/actions/upload";
 import { createClient } from "@/utils/supabase/client";
 
+function parseTechnicalMetadata(res: any) {
+  const meta = { ...res.exif, ...res.image_metadata };
+  
+  // 1. ISO
+  let iso: number | undefined = undefined;
+  const isoVal = meta.ISOSpeedRatings || meta.ISOSpeed || meta.ISO || meta.iso || meta.isoSpeedRatings;
+  if (isoVal) {
+    const parsed = parseInt(isoVal);
+    if (!isNaN(parsed)) {
+      iso = parsed;
+    }
+  }
+
+  // 2. Aperture
+  let aperture: string | undefined = undefined;
+  const apVal = meta.FNumber || meta.ApertureValue || meta.aperture || meta.Aperture;
+  if (apVal) {
+    const str = String(apVal).trim();
+    aperture = str.toLowerCase().startsWith('f/') ? str : `f/${str}`;
+  }
+
+  // 3. Shutter Speed
+  let shutter_speed: string | undefined = undefined;
+  const ssVal = meta.ExposureTime || meta.ShutterSpeedValue || meta.shutter_speed || meta.ShutterSpeed;
+  if (ssVal) {
+    shutter_speed = String(ssVal).trim();
+  }
+
+  // 4. Focal Length
+  let focal_length: string | undefined = undefined;
+  const flVal = meta.FocalLength || meta.focal_length || meta.FocalLengthIn35mmFormat;
+  if (flVal) {
+    focal_length = String(flVal).trim();
+  }
+
+  // 5. Camera Model
+  let camera_model: string | undefined = undefined;
+  const camVal = meta.Model || meta.model || meta.CameraModel;
+  if (camVal) {
+    camera_model = String(camVal).trim();
+  }
+
+  // 6. Lens Model
+  let lens_model: string | undefined = undefined;
+  const lensVal = meta.LensModel || meta.LensInfo || meta.Lens || meta.lens_model;
+  if (lensVal) {
+    lens_model = String(lensVal).trim();
+  }
+
+  return { iso, aperture, shutter_speed, focal_length, camera_model, lens_model };
+}
+
 export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: any[], albums: any[] }) {
   const [photos, setPhotos] = useState(initialPhotos);
   const [searchTerm, setSearchTerm] = useState("");
@@ -177,6 +229,9 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         if (signData.image_metadata) {
            directData.append("image_metadata", "true");
         }
+        if (signData.exif) {
+           directData.append("exif", "true");
+        }
         
         const uploadResponse = await fetch(
           `https://api.cloudinary.com/v1_1/${signData.cloudName}/image/upload`,
@@ -187,7 +242,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
         if (res.error) throw new Error(res.error.message || "Cloudinary upload failed");
         
         // 4. Archive in Database with Dual Links & Technical Metadata
-        const metadata = res.image_metadata || {};
+        const techDetails = parseTechnicalMetadata(res);
         
         const result = await addPhoto({
           title: "RCV Frame",
@@ -202,12 +257,7 @@ export function MediaLibraryClient({ initialPhotos, albums }: { initialPhotos: a
           width: res.width,
           height: res.height,
           // Technical Details
-          iso: metadata.ISO ? parseInt(metadata.ISO) : undefined,
-          aperture: metadata.FNumber || metadata.ApertureValue,
-          shutter_speed: metadata.ExposureTime,
-          focal_length: metadata.FocalLength,
-          camera_model: metadata.Model,
-          lens_model: metadata.LensModel,
+          ...techDetails
         }) as any;
         
         if (result?.success) {
