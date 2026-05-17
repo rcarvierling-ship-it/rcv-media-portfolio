@@ -143,7 +143,9 @@ export async function submitBooking(formData: FormData) {
 
         // 2. SMS NOTIFICATION (Verizon Gateway)
         if (process.env.ADMIN_PHONE) {
-          const smsEmail = `${process.env.ADMIN_PHONE.replace(/[^0-9]/g, "")}@vtext.com`;
+          const cleanPhone = process.env.ADMIN_PHONE.replace(/[^0-9]/g, "");
+          const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+          const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
           await resend.emails.send({
             from: "RCV Media <bookings@rcv-media.com>",
             to: smsEmail,
@@ -307,10 +309,14 @@ export async function sendMessageToClient(bookingId: string, message: string) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
+      const cleanPhone = (process.env.ADMIN_PHONE || "8129141183").replace(/[^0-9]/g, "");
+      const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+      const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
+
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: booking.email,
-        replyTo: "8129141183@vtext.com",
+        replyTo: smsEmail,
         subject: `Message from RCV.Media regarding your booking`,
         html: `
           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
@@ -358,10 +364,14 @@ export async function deliverGallery(bookingId: string) {
 
       const vaultLink = `${siteUrl}/gallery/${booking.albums.slug}`;
 
+      const cleanPhone = (process.env.ADMIN_PHONE || "8129141183").replace(/[^0-9]/g, "");
+      const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+      const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
+
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: booking.email,
-        replyTo: "8129141183@vtext.com",
+        replyTo: smsEmail,
         subject: `PHOTOS DELIVERED: ${booking.albums.title}`,
         html: `
           <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background-color: #000000; color: #ffffff; border: 1px solid #18181b;">
@@ -468,9 +478,13 @@ export async function submitInquiry(formData: { name: string; email: string; sub
     // 2. Send SMS Notification via Gateway
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
+      const cleanPhone = (process.env.ADMIN_PHONE || "8129141183").replace(/[^0-9]/g, "");
+      const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+      const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
+
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
-        to: "8129141183@vtext.com", // Your phone
+        to: smsEmail, // Your phone
         subject: `NEW INQUIRY: ${formData.name}`,
         text: `New question from ${formData.name} (${formData.email}): ${formData.message}`,
       });
@@ -499,10 +513,14 @@ export async function replyToInquiry(inquiryId: string, message: string) {
     // 2. Send Reply Email
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
+      const cleanPhone = (process.env.ADMIN_PHONE || "8129141183").replace(/[^0-9]/g, "");
+      const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+      const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
+
       await resend.emails.send({
         from: "RCV Media <info@rcv-media.com>",
         to: inquiry.email,
-        replyTo: "8129141183@vtext.com", // SMS Bridge
+        replyTo: smsEmail, // SMS Bridge
         subject: `RE: ${inquiry.subject || "Your Inquiry"}`,
         text: message,
         html: `

@@ -29,7 +29,9 @@ export async function submitContact(formData: FormData) {
 
     // 2. Send SMS (Verizon)
     if (process.env.ADMIN_PHONE) {
-      const smsEmail = `${process.env.ADMIN_PHONE.replace(/[^0-9]/g, "")}@vtext.com`;
+      const cleanPhone = process.env.ADMIN_PHONE.replace(/[^0-9]/g, "");
+      const carrierGateway = process.env.CARRIER_GATEWAY || "@vtext.com";
+      const smsEmail = `${cleanPhone}${carrierGateway.startsWith('@') ? '' : '@'}${carrierGateway}`;
       await resend.emails.send({
         from: "RCV Media <bookings@rcv-media.com>",
         to: smsEmail,
