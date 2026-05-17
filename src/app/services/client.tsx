@@ -78,7 +78,7 @@ export function ServicesClient() {
               </p>
               
               <Link 
-                href="/booking"
+                href="/book"
                 className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-black uppercase tracking-widest text-[10px] rounded-full hover:bg-brand-accent transition-all group/btn"
               >
                 Secure Booking <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />

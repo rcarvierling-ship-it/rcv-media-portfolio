@@ -59,8 +59,8 @@ export function PricingClient({ packages }: { packages: any[] }) {
                 </div>
                 <h3 className="text-4xl font-black uppercase tracking-tighter text-foreground group-hover:text-brand-accent transition-colors mb-4">{pkg.name}</h3>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-foreground tracking-tighter italic">
-                    ${Number(pkg.price.toString().replace(/[^0-9.]/g, '')).toLocaleString()}
+                  <span className="text-5xl font-black text-foreground tracking-tighter italic text-white">
+                    {pkg.price.includes('$') ? pkg.price : `$${pkg.price}`}
                   </span>
                 </div>
               </div>
