@@ -58,12 +58,12 @@ export default function DashboardLayout({
       <div className="pt-8 px-8 fixed top-0 left-0 right-0 z-50">
         <header className="max-w-[3200px] mx-auto bg-dark-panel text-white rounded-full py-3 px-6 flex items-center justify-between shadow-premium backdrop-blur-xl border border-white/5">
           <div className="flex items-center gap-10">
-             <div className="flex items-center gap-3">
+             <Link href="/" className="flex items-center gap-3 hover:opacity-85 transition-opacity">
                 <div className="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center shadow-brand-glow">
                    <span className="text-black font-black text-xl italic">R</span>
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-[0.4em] hidden xl:block">RCV.Media Dashboard</span>
-             </div>
+             </Link>
              
              <nav className="hidden lg:flex items-center gap-2">
                 {[
