@@ -79,14 +79,14 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 -- ====================================================================
 
 -- Foreign Key Indexes
-CREATE INDEX idx_photos_album_id ON public.photos (album_id);
+CREATE INDEX IF NOT EXISTS idx_photos_album_id ON public.photos (album_id);
 
 -- Sorting and Filtering Indexes
-CREATE INDEX idx_photos_created_at ON public.photos (created_at DESC);
-CREATE INDEX idx_photos_sort_order ON public.photos (sort_order ASC);
-CREATE INDEX idx_photos_is_featured ON public.photos (is_featured);
-CREATE INDEX idx_albums_created_at ON public.albums (created_at DESC);
-CREATE INDEX idx_albums_is_public ON public.albums (is_public);
+CREATE INDEX IF NOT EXISTS idx_photos_created_at ON public.photos (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_photos_sort_order ON public.photos (sort_order ASC);
+CREATE INDEX IF NOT EXISTS idx_photos_is_featured ON public.photos (is_featured);
+CREATE INDEX IF NOT EXISTS idx_albums_created_at ON public.albums (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_albums_is_public ON public.albums (is_public);
 
 -- ====================================================================
 -- 4. ENABLE ROW LEVEL SECURITY (RLS)
@@ -177,9 +177,9 @@ CREATE TABLE public.marketing_vault (
 );
 
 -- Indexes
-CREATE INDEX idx_bookings_status ON public.bookings (status);
-CREATE INDEX idx_bookings_event_date ON public.bookings (event_date);
-CREATE INDEX idx_blocked_dates_date ON public.blocked_dates (date);
+CREATE INDEX IF NOT EXISTS idx_bookings_status ON public.bookings (status);
+CREATE INDEX IF NOT EXISTS idx_bookings_event_date ON public.bookings (event_date);
+CREATE INDEX IF NOT EXISTS idx_blocked_dates_date ON public.blocked_dates (date);
 
 -- Enable RLS
 ALTER TABLE public.bookings ENABLE ROW LEVEL SECURITY;
