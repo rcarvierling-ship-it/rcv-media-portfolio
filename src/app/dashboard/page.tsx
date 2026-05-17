@@ -57,6 +57,7 @@ export default function DashboardPage() {
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
   const [selectedMetric, setSelectedMetric] = useState<string>("all");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   
   const supabase = createClient();
   const router = useRouter();
@@ -74,7 +75,12 @@ export default function DashboardPage() {
       ]);
 
       if (photosData) setPhotos(photosData);
-      if (bookingsData) setBookings(bookingsData);
+      if (bookingsData) {
+        setBookings(bookingsData);
+        if (bookingsData.length > 0) {
+          setSelectedBooking(bookingsData[0]);
+        }
+      }
       if (pkgData) setPackages(pkgData);
       setLoading(false);
     }
@@ -141,6 +147,10 @@ export default function DashboardPage() {
     const result = await deleteBooking(deletingId);
     if (result.success) {
       setBookings(bookings.filter(b => b.id !== deletingId));
+      if (selectedBooking?.id === deletingId) {
+        const remaining = bookings.filter(b => b.id !== deletingId);
+        setSelectedBooking(remaining.length > 0 ? remaining[0] : null);
+      }
       setDeletingId(null);
       router.refresh();
     }
@@ -336,104 +346,116 @@ export default function DashboardPage() {
                  <h3 className="text-2xl font-black uppercase tracking-tight text-white italic">Bookings Queue</h3>
                  <Settings className="text-zinc-700" size={18} />
                </div>
-                <div className="space-y-4">
-                  {(() => {
-                    const filtered = bookings.filter(b => {
-                      if (selectedMetric === "all") return b.pipeline_stage !== 'delivered' && b.status !== 'cancelled';
-                      if (selectedMetric === 'confirmed') return b.pipeline_stage === 'confirmed';
-                      if (selectedMetric === 'operational') return ['shooting', 'editing'].includes(b.pipeline_stage);
-                      if (selectedMetric === 'delivered') return b.pipeline_stage === 'delivered';
-                      if (selectedMetric === 'stalled') return b.pipeline_stage === 'stalled';
-                      return true;
-                    });
-                    
-                    if (filtered.length === 0) {
-                      return (
-                        <div className="py-20 text-center opacity-30">
-                          <Activity className="mx-auto mb-4 text-zinc-500" size={32} />
-                          <p className="text-[10px] font-black uppercase tracking-widest">No matching bookings</p>
-                        </div>
-                      );
-                    }
+                 <div className="space-y-4">
+                   {(() => {
+                     const filtered = bookings.filter(b => {
+                       if (selectedMetric === "all") return b.pipeline_stage !== 'delivered' && b.status !== 'cancelled';
+                       if (selectedMetric === 'confirmed') return b.pipeline_stage === 'confirmed';
+                       if (selectedMetric === 'operational') return ['shooting', 'editing'].includes(b.pipeline_stage);
+                       if (selectedMetric === 'delivered') return b.pipeline_stage === 'delivered';
+                       if (selectedMetric === 'stalled') return b.pipeline_stage === 'stalled';
+                       return true;
+                     });
+                     
+                     if (filtered.length === 0) {
+                       return (
+                         <div className="py-20 text-center opacity-30">
+                           <Activity className="mx-auto mb-4 text-zinc-500" size={32} />
+                           <p className="text-[10px] font-black uppercase tracking-widest">No matching bookings</p>
+                         </div>
+                       );
+                     }
 
-                    return filtered.slice(0, 5).map((booking, idx) => (
-                   <motion.div 
-                     key={booking.id}
-                     initial={{ opacity: 0, x: -20 }}
-                     animate={{ opacity: 1, x: 0 }}
-                     transition={{ delay: idx * 0.1 }}
-                      className={cn(
-                        "p-8 rounded-[2.5rem] border transition-all cursor-pointer group flex items-center justify-between",
-                        idx === 0 ? "bg-white/5 border-white/10 shadow-xl" : "border-transparent hover:bg-white/5"
-                      )}
-                   >
-                     <div className="flex items-center gap-6">
-                        <div className="w-14 h-14 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
-                           <User size={24} className="text-zinc-500" />
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{booking.name || 'Guest Client'}</h4>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{booking.shoot_type || 'Custom Package'}</p>
-                        </div>
-                     </div>
-                     <div className="text-right">
-                        <p className="text-lg font-black text-white italic mb-1">${(Number(booking.total_amount) || 0).toLocaleString()}</p>
-                        <span className={cn(
-                          "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
-                          idx === 0 ? "bg-brand-accent text-black" : "bg-white/10 text-zinc-400"
-                        )}>
-                          {booking.pipeline_stage || 'Ready'}
-                        </span>
-                     </div>
-                   </motion.div>
-                 ));
-                })()}
-                </div>
+                     return filtered.slice(0, 5).map((booking, idx) => {
+                       const isActive = selectedBooking ? selectedBooking.id === booking.id : idx === 0;
+                       return (
+                         <motion.div 
+                           key={booking.id}
+                           initial={{ opacity: 0, x: -20 }}
+                           animate={{ opacity: 1, x: 0 }}
+                           transition={{ delay: idx * 0.1 }}
+                           onClick={() => setSelectedBooking(booking)}
+                           className={cn(
+                             "p-8 rounded-[2.5rem] border transition-all cursor-pointer group flex items-center justify-between",
+                             isActive ? "bg-white/5 border-white/10 shadow-xl" : "border-transparent hover:bg-white/5"
+                           )}
+                         >
+                           <div className="flex items-center gap-6">
+                              <div className="w-14 h-14 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center overflow-hidden">
+                                 <User size={24} className="text-zinc-500" />
+                              </div>
+                              <div>
+                                  <h4 className="text-lg font-black uppercase tracking-tight text-white mb-1">{booking.name || 'Guest Client'}</h4>
+                                  <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{booking.shoot_type || 'Custom Package'}</p>
+                              </div>
+                           </div>
+                           <div className="text-right">
+                              <p className="text-lg font-black text-white italic mb-1">${(Number(booking.total_amount) || 0).toLocaleString()}</p>
+                              <span className={cn(
+                                "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest",
+                                isActive ? "bg-brand-accent text-black" : "bg-white/10 text-zinc-400"
+                              )}>
+                                {booking.pipeline_stage || 'Ready'}
+                              </span>
+                           </div>
+                         </motion.div>
+                       );
+                     });
+                   })()}
+                 </div>
             </div>
 
             {/* Right: Booking Details */}
             <div className="flex-1 p-16 bg-white/5">
-               <div className="max-w-4xl mx-auto space-y-16">
-                  <header className="flex justify-between items-start">
-                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-4">Booking ID</p>
-                        <h2 className="text-5xl font-black text-white italic tracking-tighter">#BK-{bookings[0]?.id.slice(0, 8).toUpperCase() || 'BK-01'}</h2>
-                     </div>
-                     <div className="px-8 py-3 bg-white/5 border border-white/10 rounded-full text-white text-[10px] font-black uppercase tracking-widest">
-                        Active
-                     </div>
-                  </header>
+               {selectedBooking ? (
+                 <div className="max-w-4xl mx-auto space-y-16">
+                    <header className="flex justify-between items-start">
+                       <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 mb-4">Booking ID</p>
+                          <h2 className="text-5xl font-black text-white italic tracking-tighter">#BK-{selectedBooking.id.slice(0, 8).toUpperCase()}</h2>
+                       </div>
+                       <div className="px-8 py-3 bg-white/5 border border-white/10 rounded-full text-white text-[10px] font-black uppercase tracking-widest">
+                          {selectedBooking.pipeline_stage === 'delivered' ? 'Completed' : 'Active'}
+                       </div>
+                    </header>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {[
-                        { label: 'Client Name', val: bookings[0]?.name || 'Alex Johnson', icon: Users },
-                        { label: 'Booking Total', val: `$${(Number(bookings[0]?.total_amount) || 1200).toLocaleString()}`, icon: DollarSign },
-                        { label: 'Shoot Type', val: bookings[0]?.shoot_type || 'Sports Media Day', icon: Activity }
-                      ].map((item, i) => (
-                        <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-[#C8FF00] transition-all">
-                           <item.icon className="text-[#C8FF00] mb-6" size={24} />
-                           <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.label}</p>
-                           <h4 className="text-xl font-black text-white uppercase tracking-tight">{item.val}</h4>
-                        </div>
-                      ))}
-                  </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                          { label: 'Client Name', val: selectedBooking.name, icon: Users },
+                          { label: 'Booking Total', val: `$${(Number(selectedBooking.total_amount) || 0).toLocaleString()}`, icon: DollarSign },
+                          { label: 'Shoot Type', val: selectedBooking.shoot_type, icon: Activity }
+                        ].map((item, i) => (
+                          <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-[2.5rem] group hover:border-[#C8FF00] transition-all">
+                             <item.icon className="text-[#C8FF00] mb-6" size={24} />
+                             <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">{item.label}</p>
+                             <h4 className="text-xl font-black text-white uppercase tracking-tight">{item.val}</h4>
+                          </div>
+                        ))}
+                    </div>
 
-                  <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
-                     <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
-                     <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
-                        <div className="space-y-6">
-                           <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Media Delivery</h3>
-                           <p className="text-zinc-500 text-sm font-medium max-w-sm">Upload and organize deliverable photos for this client booking.</p>
-                        </div>
-                          <Link 
-                            href="/dashboard/media"
-                            className="px-12 py-6 bg-[#C8FF00] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
-                          >
-                             Upload Photos
-                          </Link>
-                     </div>
-                  </div>
-               </div>
+                    <div className="p-12 bg-white/5 border border-white/10 rounded-[3rem] relative overflow-hidden group">
+                       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-accent/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+                       <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+                          <div className="space-y-6">
+                             <h3 className="text-3xl font-black text-white uppercase tracking-tighter italic">Media Delivery</h3>
+                             <p className="text-zinc-500 text-sm font-medium max-w-sm">Upload and organize deliverable photos for this client booking.</p>
+                          </div>
+                            <Link 
+                              href="/dashboard/media"
+                              className="px-12 py-6 bg-[#C8FF00] hover:brightness-110 text-black font-black uppercase tracking-widest text-[11px] rounded-full shadow-[0_0_20px_rgba(200,255,0,0.3)] hover:scale-105 transition-all active:scale-95 flex items-center justify-center"
+                            >
+                               Upload Photos
+                            </Link>
+                       </div>
+                    </div>
+                 </div>
+               ) : (
+                 <div className="max-w-4xl mx-auto h-full flex flex-col items-center justify-center text-center opacity-30 py-40">
+                    <Users className="text-zinc-500 mb-6" size={48} />
+                    <h3 className="text-xl font-black uppercase tracking-widest text-white">No Bookings Selected</h3>
+                    <p className="text-xs text-zinc-500 mt-2">Active client bookings will populate details here.</p>
+                 </div>
+               )}
             </div>
           </div>
         </motion.div>
