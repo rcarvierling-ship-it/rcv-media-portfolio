@@ -249,17 +249,52 @@ export default function DashboardPage() {
                })}
             </div>
 
-            {/* Client Avatars */}
-            <div className="flex items-center -space-x-3">
-               {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="w-12 h-12 rounded-full border-4 border-card bg-secondary overflow-hidden shadow-sm relative">
-                   <User size={24} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-zinc-500" />
-                </div>
-              ))}
-              <div className="w-12 h-12 rounded-full border-4 border-card bg-secondary flex items-center justify-center text-[10px] font-black text-zinc-500 shadow-sm">
-                +12
+            {/* Dynamic Client Avatars */}
+            {bookings.length > 0 ? (
+              <div className="flex items-center -space-x-3">
+                 {bookings.slice(0, 5).map((booking, idx) => {
+                    const initials = booking.name
+                      ? booking.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")
+                          .substring(0, 2)
+                          .toUpperCase()
+                      : "??";
+                    
+                    const colors = [
+                      "bg-zinc-800 text-brand-accent border-card",
+                      "bg-zinc-900 text-zinc-400 border-card",
+                      "bg-secondary text-white border-card",
+                      "bg-zinc-800 text-zinc-300 border-card",
+                      "bg-secondary text-brand-accent border-card"
+                    ];
+                    const colorClass = colors[idx % colors.length];
+
+                    return (
+                      <div 
+                        key={booking.id} 
+                        className={cn(
+                          "w-12 h-12 rounded-full border-4 flex items-center justify-center text-[10px] font-black tracking-wider shadow-premium select-none uppercase relative",
+                          colorClass
+                        )}
+                        title={booking.name}
+                      >
+                         {initials}
+                      </div>
+                    );
+                 })}
+                 {bookings.length > 5 && (
+                   <div className="w-12 h-12 rounded-full border-4 border-card bg-secondary flex items-center justify-center text-[10px] font-black text-zinc-400 shadow-premium">
+                     +{bookings.length - 5}
+                   </div>
+                 )}
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-600">
+                <User size={14} /> No active roster
+              </div>
+            )}
           </div>
         </motion.div>
 
