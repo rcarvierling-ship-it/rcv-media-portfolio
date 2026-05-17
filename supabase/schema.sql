@@ -102,15 +102,29 @@ ALTER TABLE public.marketing_vault ENABLE ROW LEVEL SECURITY;
 -- ====================================================================
 
 -- Policies for public access (Read-Only)
+DROP POLICY IF EXISTS "Public can view photos" ON public.photos;
 CREATE POLICY "Public can view photos" ON public.photos FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can view public albums" ON public.albums;
 CREATE POLICY "Public can view public albums" ON public.albums FOR SELECT USING (is_public = true);
+
+DROP POLICY IF EXISTS "Public can view site settings" ON public.site_settings;
 CREATE POLICY "Public can view site settings" ON public.site_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public can view marketing vault" ON public.marketing_vault;
 CREATE POLICY "Public can view marketing vault" ON public.marketing_vault FOR SELECT USING (true);
 
 -- Policies for authenticated access (Admin: Create, Read, Update, Delete)
+DROP POLICY IF EXISTS "Admin full access photos" ON public.photos;
 CREATE POLICY "Admin full access photos" ON public.photos FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admin full access albums" ON public.albums;
 CREATE POLICY "Admin full access albums" ON public.albums FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admin full access site settings" ON public.site_settings;
 CREATE POLICY "Admin full access site settings" ON public.site_settings FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Admin full access marketing vault" ON public.marketing_vault;
 CREATE POLICY "Admin full access marketing vault" ON public.marketing_vault FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ====================================================================
@@ -187,14 +201,18 @@ ALTER TABLE public.blocked_dates ENABLE ROW LEVEL SECURITY;
 
 -- Booking Policies
 -- Anyone can insert a booking
+DROP POLICY IF EXISTS "Public can insert bookings" ON public.bookings;
 CREATE POLICY "Public can insert bookings" ON public.bookings FOR INSERT WITH CHECK (true);
 -- Only authenticated (admin) can read/update bookings
+DROP POLICY IF EXISTS "Admin full access bookings" ON public.bookings;
 CREATE POLICY "Admin full access bookings" ON public.bookings FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Blocked Dates Policies
 -- Public can read blocked dates to disable them in the calendar
+DROP POLICY IF EXISTS "Public can view blocked dates" ON public.blocked_dates;
 CREATE POLICY "Public can view blocked dates" ON public.blocked_dates FOR SELECT USING (true);
 -- Only authenticated (admin) can manage blocked dates
+DROP POLICY IF EXISTS "Admin full access blocked dates" ON public.blocked_dates;
 CREATE POLICY "Admin full access blocked dates" ON public.blocked_dates FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- ====================================================================
@@ -218,7 +236,10 @@ CREATE TABLE IF NOT EXISTS public.pricing_packages (
 ALTER TABLE public.pricing_packages ENABLE ROW LEVEL SECURITY;
 
 -- Pricing Policies
+DROP POLICY IF EXISTS "Public can view active packages" ON public.pricing_packages;
 CREATE POLICY "Public can view active packages" ON public.pricing_packages FOR SELECT USING (is_active = true);
+
+DROP POLICY IF EXISTS "Admin full access pricing" ON public.pricing_packages;
 CREATE POLICY "Admin full access pricing" ON public.pricing_packages FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Seed Initial Packages
@@ -285,12 +306,15 @@ CREATE TABLE IF NOT EXISTS public.inquiries (
 -- Enable RLS for inquiries
 ALTER TABLE public.inquiries ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can submit an inquiry" ON public.inquiries;
 CREATE POLICY "Anyone can submit an inquiry" ON public.inquiries
     FOR INSERT WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Admins can view inquiries" ON public.inquiries;
 CREATE POLICY "Admins can view inquiries" ON public.inquiries
     FOR SELECT USING (auth.role() = 'authenticated');
 
+DROP POLICY IF EXISTS "Admins can update inquiries" ON public.inquiries;
 CREATE POLICY "Admins can update inquiries" ON public.inquiries
     FOR UPDATE USING (auth.role() = 'authenticated');
 
@@ -298,6 +322,7 @@ CREATE POLICY "Admins can update inquiries" ON public.inquiries
 ALTER TABLE public.photos ADD COLUMN IF NOT EXISTS is_curated BOOLEAN DEFAULT false;
 
 -- Allow public to view curated photos regardless of album privacy
+DROP POLICY IF EXISTS "Public can view curated photos" ON public.photos;
 CREATE POLICY "Public can view curated photos" ON public.photos
     FOR SELECT USING (is_curated = true);
 
@@ -321,10 +346,12 @@ CREATE TABLE IF NOT EXISTS public.contracts (
 ALTER TABLE public.contracts ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Admins can manage contracts" ON public.contracts;
 CREATE POLICY "Admins can manage contracts" ON public.contracts
     FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
 -- Public can view their specific contract by ID (we will use UUID as a secure link)
+DROP POLICY IF EXISTS "Public can view specific contract" ON public.contracts;
 CREATE POLICY "Public can view specific contract" ON public.contracts
     FOR SELECT USING (true);
 
@@ -353,10 +380,12 @@ CREATE INDEX IF NOT EXISTS idx_analytics_event_type ON public.analytics_events(e
 ALTER TABLE public.analytics_events ENABLE ROW LEVEL SECURITY;
 
 -- Policies
+DROP POLICY IF EXISTS "Admins can view all analytics" ON public.analytics_events;
 CREATE POLICY "Admins can view all analytics" ON public.analytics_events
     FOR SELECT TO authenticated USING (true);
 
 -- Public can INSERT analytics (triggered by their actions)
+DROP POLICY IF EXISTS "Public can insert analytics" ON public.analytics_events;
 CREATE POLICY "Public can insert analytics" ON public.analytics_events
     FOR INSERT TO anon, authenticated WITH CHECK (true);
 
